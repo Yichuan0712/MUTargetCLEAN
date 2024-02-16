@@ -1,4 +1,3 @@
-
 import torch
 torch.manual_seed(0)
 from torch.utils.data import Dataset
@@ -32,8 +31,8 @@ class LocalizationDataset(Dataset):
     def __getitem__(self, idx):
         id, id_frag_list, seq_frag_list, target_frag_list, type_protein = self.samples[idx]
 
-        labels=np.where(type_protein==1)[0]
-        weights=[]
+        labels = np.where(type_protein == 1)[0]
+        weights = []
         for label in labels:
             weights.append(self.class_weights[label])
         sample_weight = max(weights)
@@ -73,13 +72,13 @@ def split_protein_sequence(prot_id, sequence, targets, configs):
             end = sequence_length
         fragment = sequence[start:end]
         target_frag = targets[:, start:end]
-        if target_frag.shape[1]<fragment_length:
-            pad=np.zeros([targets.shape[0],fragment_length-target_frag.shape[1]])
-            target_frag =  np.concatenate((target_frag, pad),axis=1)
+        if target_frag.shape[1] < fragment_length:
+            pad = np.zeros([targets.shape[0], fragment_length-target_frag.shape[1]])
+            target_frag = np.concatenate((target_frag, pad), axis=1)
         target_frags.append(target_frag)
         fragments.append(fragment)
         id_frags.append(prot_id+"@"+str(ind))
-        ind+=1
+        ind += 1
         if start + fragment_length > sequence_length:
             break
         start += fragment_length - overlap
@@ -145,22 +144,20 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
         samples = prepare_samples("./parsed_EC7_v2/PLANTS_uniprot.csv",configs)
         samples.extend(prepare_samples("./parsed_EC7_v2/ANIMALS_uniprot.csv", configs))
         samples.extend(prepare_samples("./parsed_EC7_v2/FUNGI_uniprot.csv", configs))
-        cv=pd.read_csv("./parsed_EC7_v2/split/type/partition.csv")
+        cv = pd.read_csv("./parsed_EC7_v2/split/type/partition.csv")
     elif configs.train_settings.dataset == 'v3':
         samples = prepare_samples("./parsed_EC7_v3/PLANTS_uniprot.csv",configs)
         samples.extend(prepare_samples("./parsed_EC7_v3/ANIMALS_uniprot.csv", configs))
         samples.extend(prepare_samples("./parsed_EC7_v3/FUNGI_uniprot.csv", configs))
-        cv=pd.read_csv("./parsed_EC7_v3/split/type/partition.csv")
+        cv = pd.read_csv("./parsed_EC7_v3/split/type/partition.csv")
     train_id = []
     val_id = []
     test_id = []
     id = cv.loc[:, 'entry']
-    # split=cv.loc[:,'split']
-    # fold=cv.loc[:,'fold']
+
     partition = cv.loc[:, 'partition']
     for i in range(len(id)):
-        # f=fold[i]
-        # s=split[i]
+
         p = partition[i]
         d = id[i]
         if p == valid_batch_number:
@@ -175,9 +172,7 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     test_sample = []
 
     for i in samples:
-        # id=i[0].split("@")[0]
         id = i[0]
-        # print(id)
         if id in train_id:
             train_sample.append(i)
         elif id in val_id:
@@ -195,7 +190,7 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     train_dataloader = DataLoader(train_dataset, batch_size=configs.train_settings.batch_size, shuffle=True, collate_fn=custom_collate)
     valid_dataloader = DataLoader(valid_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
     test_dataloader = DataLoader(test_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
-    return {'train': train_dataloader, 'test': test_dataloader , 'valid': valid_dataloader}
+    return {'train': train_dataloader, 'test': test_dataloader, 'valid': valid_dataloader}
 
 if __name__ == '__main__':
     config_path = './config.yaml'
@@ -207,7 +202,6 @@ if __name__ == '__main__':
     dataloaders_dict = prepare_dataloaders(configs_file, 0, 1)
 
     for batch in dataloaders_dict['train']:
-        # id_batch, fragments_batch, target_frags_batch, weights_batch = batch 
         (prot_id, id_frag_list, seq_frag_list, target_frag_nplist, type_protein_pt, sample_weight) = batch
         print("==========================")
         print(type(prot_id))
