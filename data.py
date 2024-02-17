@@ -43,6 +43,8 @@ class LocalizationDataset(Dataset):
 
 class TripletDataset(Dataset):
     def __init__(self, id_ec, ec_id, mine_neg):
+        # triplet 原来是一个ec一个anchor
+        # (self, samples, configs)
         # self.id_ec = id_ec
         # self.ec_id = ec_id
         # self.full_list = []
@@ -211,6 +213,7 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     # Shuffle the list
     random.shuffle(samples)
 
+    # 改 local 参考Triplet_dataset_with_mine_EC
     train_dataset = LocalizationDataset(train_sample, configs=configs)
     valid_dataset = LocalizationDataset(valid_sample, configs=configs)
     test_dataset = LocalizationDataset(test_sample, configs=configs)
