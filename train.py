@@ -18,22 +18,19 @@ pd.set_option('display.max_columns', None)
 
 
 def loss_fix(id_frag, motif_logits, target_frag, tools):
-    #id_frag [batch]
-    #motif_logits [batch, num_clas, seq]
-    #target_frag [batch, num_clas, seq]
     fixed_loss = 0
     for i in range(len(id_frag)):
         frag_ind = id_frag[i].split('@')[1]
-        target_thylakoid = target_frag[i,-1]  # -1 for Thylakoid, [seq]; -2 for chloroplast
+        target_thylakoid = target_frag[i, -1]  # -1 for Thylakoid, [seq]; -2 for chloroplast
         # label_first = target_thylakoid[0] # 1 or 0
-        target_chlo = target_frag[i,-2]
-        if frag_ind == '0' and torch.max(target_chlo)==0 and torch.max(target_thylakoid)==1:
+        target_chlo = target_frag[i, -2]
+        if frag_ind == '0' and torch.max(target_chlo) == 0 and torch.max(target_thylakoid) == 1:
             # print("case2")
-            l=torch.where(target_thylakoid==1)[0][0]
-            true_chlo = target_frag[i,-2,:(l-1)] == 1
-            false_chlo = target_frag[i,-2,:(l-1)] == 0
-            motif_logits[i,-2,:(l-1)][true_chlo] = 100
-            motif_logits[i,-2,:(l-1)][false_chlo] = -100
+            l = torch.where(target_thylakoid == 1)[0][0]
+            true_chlo = target_frag[i, -2, :(l-1)] == 1
+            false_chlo = target_frag[i, -2, :(l-1)] == 0
+            motif_logits[i, -2, :(l-1)][true_chlo] = 100
+            motif_logits[i, -2, :(l-1)][false_chlo] = -100
     # return fixed_loss
     # return target_frag
     return motif_logits, target_frag
@@ -63,7 +60,7 @@ def train_loop(tools):
     scaler = GradScaler()
     size = len(tools['train_loader'].dataset)
     num_batches = len(tools['train_loader'])
-    train_loss=0
+    train_loss = 0
     # cs_num=np.zeros(9)
     # cs_correct=np.zeros(9)
     # type_num=np.zeros(10)
@@ -87,8 +84,6 @@ def train_loop(tools):
 
 
             motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
-            # print(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])).size())
-            # print(torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).size())
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
@@ -104,36 +99,12 @@ def train_loop(tools):
             loss, current = weighted_loss_sum.item(), (batch + 1) * len(id_tuple)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
             customlog(tools["logfilepath"], f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]\n")
-    # epoch_acc = accuracy.compute().cpu().item()
-    # epoch_f1 = f1_score.compute().cpu().item()
+
     epoch_loss = train_loss/num_batches
-    # acc_cs = cs_correct / cs_num
+
     customlog(tools["logfilepath"], f" loss: {epoch_loss:>5f}\n")
-    # customlog(tools["logfilepath"], f" accuracy_macro: {epoch_acc:>5f}\n")
-    # customlog(tools["logfilepath"], f" f1_macro: {epoch_f1:>5f}\n")
-    # customlog(tools["logfilepath"], f" acc_cs: {acc_cs:>5f}\n")
-    # Reset metrics at the end of epoch
-    # accuracy.reset()
-    # f1_score.reset()
+
     return epoch_loss
-
-
-# def train_on_batch(model, seq, label, cs):
-#     with autocast():
-#         # Compute prediction and loss
-#         type_probab, cs_probab = model(seq)
-#         if cs_probab.size()[1]<200:
-#           zero_pad=200-cs_probab.size()[1]
-#           additional_elements = torch.zeros([cs_probab.size()[0],zero_pad]).to(device)
-#           cs_probab = torch.cat((cs_probab, additional_elements), dim=1)
-#         # loss1 = loss_fn(type_probab, label.cuda())
-#         loss1 = loss_fn(type_probab, label.to(device))
-#         mask =  cs[:, 0] != 1
-#         # loss2 = loss_fn(cs_probab[mask], cs[mask].cuda())
-#         loss2 = loss_fn(cs_probab[mask], cs[mask].to(device))
-#         loss = loss1 + loss2
-#         return loss
-
 
 
 def test_loop(tools, dataloader):
@@ -186,70 +157,8 @@ def test_loop(tools, dataloader):
             # f1_score.update(type_pred.detach(), label.detach().to(tools['valid_device']))
 
         test_loss = test_loss / num_batches
-        # epoch_acc = np.array(accuracy.compute().cpu())
-        # epoch_macro_f1 = macro_f1_score.compute().cpu().item()
-        # epoch_f1 = np.array(f1_score.compute().cpu())
-        # acc_cs = cs_correct / cs_num
         customlog(tools["logfilepath"], f" loss: {test_loss:>5f}\n")
-        # customlog(tools["logfilepath"], f" accuracy: "+str(epoch_acc)+"\n")
-        # customlog(tools["logfilepath"], f" f1: "+str(epoch_f1)+"\n")
-        # customlog(tools["logfilepath"], f" f1_macro: {epoch_macro_f1:>5f}\n")
-        # customlog(tools["logfilepath"], f" acc_cs: {acc_cs:>5f}\n")
-        # Reset metrics at the end of epoch
-        # accuracy.reset()
-        # macro_f1_score.reset()
-        # f1_score.reset()
     return test_loss
-
-# def evaluate(tools, dataloader):
-
-#     model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
-#     model_checkpoint = torch.load(model_path, map_location='cpu')
-#     tools['net'].load_state_dict(model_checkpoint['model_state_dict'])
-#     tools['net'].eval().to(tools["valid_device"])
-#     n=tools['num_classes']
-
-#     num_batches = len(dataloader)
-#     TP_num=np.zeros(n)
-#     FP_num=np.zeros(n)
-#     FN_num=np.zeros(n)
-
-#     IoU = np.zeros(n)
-#     Negtive_detect_num=0
-#     Negtive_num=0
-#     size = len(tools['train_loader'].dataset)
-#     cutoff = tools['cutoff']
-
-#     with torch.no_grad():
-#         for batch, (id, seq_frag, target_frag, sample_weight) in enumerate(dataloader):
-#             encoded_seq=tokenize(tools, seq_frag)
-#             if type(encoded_seq)==dict:
-#                 for k in encoded_seq.keys():
-#                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
-#             else:
-#                 encoded_seq=encoded_seq.to(tools['valid_device'])
-#             motif_logits = tools["net"](encoded_seq)
-#             m=torch.nn.Sigmoid()
-#             motif_logits = m(motif_logits)
-
-#             for head in range(motif_logits.size()[1]):
-#                 x = np.array(motif_logits[:, head, :].cpu())
-#                 y = np.array(target_frag[:,head].cpu())
-#                 Negtive_num += sum(np.max(y, axis=1)==0)
-#                 Negtive_detect_num += sum((np.max(y, axis=1)==0) * (np.max(x>=cutoff, axis=1)==1))
-#                 TP_num[head] += np.sum((x>=cutoff) * (y==1))
-#                 FP_num[head] += np.sum((x>=cutoff) * (y==0))
-#                 FN_num[head] += np.sum((x<cutoff) * (y==1))
-
-
-#         for head in range(n):
-#             IoU[head] = TP_num[head] / (TP_num[head] + FP_num[head] + FN_num[head])
-#         Negtive_detect_ratio = Negtive_detect_num / Negtive_num
-
-#         customlog(tools["logfilepath"], f" Jaccard Index: "+ str(IoU)+"\n")
-#         customlog(tools["logfilepath"], f" Negtive detect ratio: {Negtive_detect_ratio:>5f}\n")
-
-#     return 0
 
 def frag2protein(data_dict, tools):
     overlap=tools['frag_overlap']
@@ -426,7 +335,7 @@ def get_scores(tools, cutoff, n, data_dict):
             y_pro = data_dict[id_protein]['type_target'][head]  #[1]   
             x_list.append(x_pro)  
             y_list.append(y_pro)
-            if y_pro==1:
+            if y_pro == 1:
                 x_frag = data_dict[id_protein]['motif_logits_protein'][head]  #[seq]
                 y_frag = data_dict[id_protein]['motif_target_protein'][head]
                 # Negtive_pro += np.sum(np.max(y)==0)
@@ -437,18 +346,18 @@ def get_scores(tools, cutoff, n, data_dict):
                 # x_list.append(np.max(x))
                 # y_list.append(np.max(y))
     
-                cs_num[head] += np.sum(y_frag==1)>0
-                if np.sum(y_frag==1)>0:
+                cs_num[head] += np.sum(y_frag == 1) > 0
+                if np.sum(y_frag == 1) > 0:
                     cs_correct[head] += (np.argmax(x_frag) == np.argmax(y_frag))
               
         pred=np.array(x_list)
         target=np.array(y_list)
-        result_pro[head,0] = roc_auc_score(target, pred)
-        result_pro[head,1] = average_precision_score(target, pred)
-        result_pro[head,2] = matthews_corrcoef(target, pred>=cutoff)
-        result_pro[head,3] = recall_score(target, pred>=cutoff)
-        result_pro[head,4] = precision_score(target, pred>=cutoff)
-        result_pro[head,5] = f1_score(target, pred>=cutoff)
+        result_pro[head, 0] = roc_auc_score(target, pred)
+        result_pro[head, 1] = average_precision_score(target, pred)
+        result_pro[head, 2] = matthews_corrcoef(target, pred >= cutoff)
+        result_pro[head, 3] = recall_score(target, pred >=cutoff)
+        result_pro[head, 4] = precision_score(target, pred >= cutoff)
+        result_pro[head, 5] = f1_score(target, pred >= cutoff)
     
     for head in range(n):
         # IoU[head] = TP_frag[head] / (TP_frag[head] + FP_frag[head] + FN_frag[head])
@@ -473,18 +382,18 @@ def main(config_dict, valid_batch_number, test_batch_number):
     torch.cuda.empty_cache()
     curdir_path, result_path, checkpoint_path, logfilepath = prepare_saving_dir(configs)
 
-    npz_file=os.path.join(curdir_path, "targetp_data.npz")
-    seq_file=os.path.join(curdir_path, "idmapping_2023_08_25.tsv")
+    npz_file = os.path.join(curdir_path, "targetp_data.npz")
+    seq_file = os.path.join(curdir_path, "idmapping_2023_08_25.tsv")
 
     customlog(logfilepath, f'use k-fold index: {valid_batch_number}\n')
     # dataloaders_dict = prepare_dataloaders(valid_batch_number, test_batch_number, npz_file, seq_file, configs)
     dataloaders_dict = prepare_dataloaders(configs, valid_batch_number, test_batch_number)
     customlog(logfilepath, "Done Loading data\n")
 
-    tokenizer=prepare_tokenizer(configs, curdir_path)
+    tokenizer = prepare_tokenizer(configs, curdir_path)
     customlog(logfilepath, "Done initialize tokenizer\n")
 
-    encoder=prepare_models(configs,logfilepath, curdir_path)
+    encoder = prepare_models(configs, logfilepath, curdir_path)
     customlog(logfilepath, "Done initialize model\n")
     
     optimizer, scheduler = prepare_optimizer(encoder, configs, len(dataloaders_dict["train"]), logfilepath)
@@ -495,7 +404,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
     encoder, start_epoch = load_checkpoints(configs, optimizer, scheduler, logfilepath, encoder)
 
     # w=(torch.ones([9,1,1])*5).to(configs.train_settings.device)
-    w= torch.tensor(configs.train_settings.loss_pos_weight, dtype=torch.float32).to(configs.train_settings.device)
+    w = torch.tensor(configs.train_settings.loss_pos_weight, dtype=torch.float32).to(configs.train_settings.device)
 
     tools = {
         'frag_overlap': configs.encoder.frag_overlap,
@@ -528,19 +437,19 @@ def main(config_dict, valid_batch_number, test_batch_number):
     customlog(logfilepath, f'number of train steps per epoch: {len(tools["train_loader"])}\n')
     customlog(logfilepath, "Start training...\n")
 
-    best_valid_loss=np.inf
+    best_valid_loss = np.inf
     for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
         tools['epoch'] = epoch
         print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
         customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
         start_time = time()
-        train_loss= train_loop(tools)
+        train_loss = train_loop(tools)
         end_time = time()
 
         if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
-            dataloader=tools["valid_loader"]
+            dataloader = tools["valid_loader"]
             valid_loss = test_loop(tools, dataloader)
             end_time = time()
 
@@ -555,7 +464,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
 
     customlog(logfilepath, f"Fold {valid_batch_number} test\n-------------------------------\n")
     start_time = time()
-    dataloader=tools["test_loader"]
+    dataloader = tools["test_loader"]
     # evaluate(tools, dataloader)
     evaluate_protein(dataloader, tools)
     end_time = time()
@@ -575,13 +484,12 @@ if __name__ == "__main__":
     with open(config_path) as file:
         config_dict = yaml.full_load(file)
 
-
     for i in range(5):
-        valid_num=i
-        if valid_num==4:
-            test_num=0
+        valid_num = i
+        if valid_num == 4:
+            test_num = 0
         else:
-            test_num=valid_num+1
+            test_num = valid_num+1
         main(config_dict, valid_num, test_num)
         break
 

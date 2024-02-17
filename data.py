@@ -40,7 +40,33 @@ class LocalizationDataset(Dataset):
         type_protein = torch.from_numpy(type_protein)
         return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight 
 
-    
+
+class TripletDataset(Dataset):
+    def __init__(self, id_ec, ec_id, mine_neg):
+        # self.id_ec = id_ec
+        # self.ec_id = ec_id
+        # self.full_list = []
+        # self.mine_neg = mine_neg
+        # for ec in ec_id.keys():
+        #     if '-' not in ec:
+        #         self.full_list.append(ec)
+        return
+
+    def __len__(self):
+        # return len(self.full_list)
+        return
+
+    def __getitem__(self, index):
+        return
+        # anchor_ec = self.full_list[index]
+        # anchor = random.choice(self.ec_id[anchor_ec])
+        # pos = random_positive(anchor, self.id_ec, self.ec_id)
+        # neg = mine_negative(anchor, self.id_ec, self.ec_id, self.mine_neg)
+        # a = torch.load('./data/esm_data/' + anchor + '.pt')
+        # p = torch.load('./data/esm_data/' + pos + '.pt')
+        # n = torch.load('./data/esm_data/' + neg + '.pt')
+        # return format_esm(a), format_esm(p), format_esm(n)
+
 def custom_collate(batch):
     id, id_frags, fragments, target_frags, type_protein, sample_weight = zip(*batch)
     return id, id_frags, fragments, target_frags, type_protein, sample_weight
@@ -141,15 +167,16 @@ def prepare_samples(csv_file, configs):
 def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     # id_to_seq = prot_id_to_seq(seq_file)
     if configs.train_settings.dataset == 'v2':
-        samples = prepare_samples("./parsed_EC7_v2/PLANTS_uniprot.csv",configs)
+        samples = prepare_samples("./parsed_EC7_v2/PLANTS_uniprot.csv", configs)
         samples.extend(prepare_samples("./parsed_EC7_v2/ANIMALS_uniprot.csv", configs))
         samples.extend(prepare_samples("./parsed_EC7_v2/FUNGI_uniprot.csv", configs))
         cv = pd.read_csv("./parsed_EC7_v2/split/type/partition.csv")
     elif configs.train_settings.dataset == 'v3':
-        samples = prepare_samples("./parsed_EC7_v3/PLANTS_uniprot.csv",configs)
+        samples = prepare_samples("./parsed_EC7_v3/PLANTS_uniprot.csv", configs)
         samples.extend(prepare_samples("./parsed_EC7_v3/ANIMALS_uniprot.csv", configs))
         samples.extend(prepare_samples("./parsed_EC7_v3/FUNGI_uniprot.csv", configs))
         cv = pd.read_csv("./parsed_EC7_v3/split/type/partition.csv")
+
     train_id = []
     val_id = []
     test_id = []
@@ -190,6 +217,8 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     train_dataloader = DataLoader(train_dataset, batch_size=configs.train_settings.batch_size, shuffle=True, collate_fn=custom_collate)
     valid_dataloader = DataLoader(valid_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
     test_dataloader = DataLoader(test_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
+
+    # LocalizationDataset -> TripletDataset
     return {'train': train_dataloader, 'test': test_dataloader, 'valid': valid_dataloader}
 
 if __name__ == '__main__':
