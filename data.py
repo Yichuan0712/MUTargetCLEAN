@@ -41,33 +41,74 @@ class LocalizationDataset(Dataset):
         return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight 
 
 
-class TripletDataset(Dataset):
-    def __init__(self, id_ec, ec_id, mine_neg):
-        # triplet 原来是一个ec一个anchor
-        # (self, samples, configs)
-        # self.id_ec = id_ec
-        # self.ec_id = ec_id
-        # self.full_list = []
-        # self.mine_neg = mine_neg
-        # for ec in ec_id.keys():
-        #     if '-' not in ec:
-        #         self.full_list.append(ec)
-        return
+class SupconDataset(Dataset):
+    # prot_id, id_frag_list, seq_frag_list, target_frag_list, type_protein
+    def __init__(self, samples, configs):
+        # try not to change the input format of LocalizationDataset
+        self.samples = samples
+        self.configs = configs
+        label2idx = {"Nucleus": 0, "ER": 1, "Peroxisome": 2, "Mitochondrion": 3, "Nucleus_export": 4,
+                     "SIGNAL": 5, "chloroplast": 6, "Thylakoid": 7}
+        idx2label = {v: k for k, v in label2idx.items()}
 
+        simplified_samples = [(id_frag_list, seq_frag_list, type_protein) for _, id_frag_list, seq_frag_list, __, type_protein in samples]
+
+        converted_samples = []
+        for id_frag_list, seq_frag_list, type_protein in simplified_samples:
+            labels = [idx2label[i] for i, val in enumerate(type_protein) if val == 1]
+            converted_samples.append((id_frag_list, seq_frag_list, labels))
+
+        extended_converted_samples = []
+        for id_frag_list, seq_frag_list, labels in converted_samples:
+            if len(id_frag_list) != len(seq_frag_list):
+                raise ValueError("Length of id_frag_list and seq_frag_list does not match.")
+            length = len(id_frag_list)
+            extended_labels = [labels for _ in range(length)]
+            extended_converted_samples.append((id_frag_list, seq_frag_list, extended_labels))
+
+        flattened_samples = []
+        for id_frag_list, seq_frag_list, extended_labels in extended_converted_samples:
+            for i in range(len(id_frag_list)):
+                labels = extended_labels[0]
+                flattened_samples.append((id_frag_list[i], seq_frag_list[i], labels))
+        self.id_seq_label = flattened_samples
+
+        self.id_label = {item[0]: item[2] for item in self.id_seq_label}
+        self.label_id = {}
+        for item in self.id_seq_label:
+            id, seq, labels = item
+            for label in labels:
+                if label not in self.label_id:
+                    self.label_id[label] = [id]
+                else:
+                    self.label_id[label].append(id)
+
+        self.full_list = []
+        self.mine_neg = None  # hard mining function here
+        for label in self.label_id.keys():
+            if '-' not in label:
+                self.full_list.append(label)
+        return
+    @staticmethod
+    def count_samples_by_class(n, samples):
+        """Count the number of samples for each class."""
+        class_counts = np.zeros(n)  # one extra is for samples without motif
+        # Iterate over the samples
+        for id, id_frag_list, seq_frag_list, target_frag_list, type_protein in samples:
+            class_counts += type_protein
+        return class_counts
     def __len__(self):
-        # return len(self.full_list)
-        return
-
+        return len(self.full_list)
     def __getitem__(self, index):
-        return
-        # anchor_ec = self.full_list[index]
-        # anchor = random.choice(self.ec_id[anchor_ec])
-        # pos = random_positive(anchor, self.id_ec, self.ec_id)
-        # neg = mine_negative(anchor, self.id_ec, self.ec_id, self.mine_neg)
+        anchor_label = self.full_list[index]
+        anchor = random.choice(self.ec_id[anchor_label])
+        # pos = random_positive(anchor, self.id_label, self.label_id)
+        # neg = mine_negative(anchor, self.id_label, self.label_id, self.mine_neg)
         # a = torch.load('./data/esm_data/' + anchor + '.pt')
         # p = torch.load('./data/esm_data/' + pos + '.pt')
         # n = torch.load('./data/esm_data/' + neg + '.pt')
         # return format_esm(a), format_esm(p), format_esm(n)
+        return
 
 def custom_collate(batch):
     id, id_frags, fragments, target_frags, type_protein, sample_weight = zip(*batch)
