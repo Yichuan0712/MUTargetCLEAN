@@ -52,23 +52,11 @@ def make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tupl
 
 
 def train_loop(tools):
-    # accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=tools['num_classes'], average='macro')
-    # f1_score = torchmetrics.F1Score(num_classes=tools['num_classes'], average='macro', task="multiclass")
-    # accuracy.to(tools['train_device'])
-    # f1_score.to(tools["train_device"])
     tools["optimizer"].zero_grad()
     scaler = GradScaler()
     size = len(tools['train_loader'].dataset)
     num_batches = len(tools['train_loader'])
     train_loss = 0
-    # cs_num=np.zeros(9)
-    # cs_correct=np.zeros(9)
-    # type_num=np.zeros(10)
-    # type_correct=np.zeros(10)
-    # cutoff=0.5
-    # Set the model to training mode - important for batch normalization and dropout layers
-    # Unnecessary in this situation but added for best practices
-    # model.train().cuda()
     tools['net'].train().to(tools['train_device'])
     for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple) in enumerate(tools['train_loader']):
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
@@ -256,48 +244,21 @@ def evaluate_protein(dataloader, tools):
         cut_dim=0
         for cutoff in cutoffs:
             scores=get_scores(tools, cutoff, n, data_dict)
-            # IoU_difcut[:,cut_dim]=scores['IoU']
-            # IoU_difcut[:,cut_dim]=np.array([float("{:.3f}".format(i)) for i in scores['IoU']])
-            # FDR_frag_difcut[:,cut_dim]=scores['FDR_frag']
-            # FDR_frag_difcut[:,cut_dim]=float("{:.3f}".format(scores['FDR_frag']))
             IoU_pro_difcut[:,cut_dim]=scores['IoU_pro']
-            # IoU_pro_difcut[:,cut_dim]=np.array([float("{:.3f}".format(i)) for i in scores['IoU_pro']])
-            # FDR_pro_difcut[:,cut_dim]=scores['FDR_pro']
-            # FDR_pro_difcut[:,cut_dim]=float("{:.3f}".format(scores['FDR_pro']))
             result_pro_difcut[:,:,cut_dim]=scores['result_pro']
-            # result_pro_difcut[:,:,cut_dim]=np.array([float("{:.3f}".format(i)) for i in scores['result_pro'].reshape(-1)]).reshape(scores['result_pro'].shape)
-            cs_acc_difcut[:,cut_dim]=scores['cs_acc'] 
+            cs_acc_difcut[:,cut_dim]=scores['cs_acc']
             cut_dim+=1
 
         customlog(tools["logfilepath"], f"===========================================\n")
-        # classname=["Nucleus", "ER", "Peroxisome", "Mitochondrion", "Nucleus_export",
-        #          "dual", "SIGNAL", "chloroplast", "Thylakoid"]
-        
-        # customlog(tools["logfilepath"], f" Jaccard Index (fragment): \n")
-        # IoU_difcut=pd.DataFrame(IoU_difcut,columns=cutoffs,index=classname)
-        # customlog(tools["logfilepath"], IoU_difcut.__repr__())
-        # # IoU_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t") 
-        # customlog(tools["logfilepath"], f"===========================================\n")
-        # customlog(tools["logfilepath"], f" FDR (fragment): \n")
-        # FDR_frag_difcut=pd.DataFrame(FDR_frag_difcut,columns=cutoffs)
-        # customlog(tools["logfilepath"], FDR_frag_difcut.__repr__())
-        # # FDR_frag_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t")
-        # customlog(tools["logfilepath"], f"===========================================\n")
         customlog(tools["logfilepath"], f" Jaccard Index (protein): \n")
         IoU_pro_difcut=pd.DataFrame(IoU_pro_difcut,columns=cutoffs,index=classname)
         customlog(tools["logfilepath"], IoU_pro_difcut.__repr__())
-        # IoU_pro_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t")
         customlog(tools["logfilepath"], f"===========================================\n")
-        # customlog(tools["logfilepath"], f" FDR (protein): \n")
-        # FDR_pro_difcut=pd.DataFrame(FDR_pro_difcut,columns=cutoffs)
-        # customlog(tools["logfilepath"], FDR_pro_difcut.__repr__())
 
-        # customlog(tools["logfilepath"], f"===========================================\n")
         customlog(tools["logfilepath"], f" cs acc: \n")
         cs_acc_difcut=pd.DataFrame(cs_acc_difcut,columns=cutoffs,index=classname)
         customlog(tools["logfilepath"], cs_acc_difcut.__repr__())
 
-        # FDR_pro_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t")
         customlog(tools["logfilepath"], f"===========================================\n")
         for i in range(len(classname)):
             customlog(tools["logfilepath"], f" Class prediction performance ({classname[i]}): \n")
@@ -312,20 +273,11 @@ def get_scores(tools, cutoff, n, data_dict):
     cs_correct = np.zeros(n)
     cs_acc = np.zeros(n)
 
-    # TP_frag=np.zeros(n)
-    # FP_frag=np.zeros(n)
-    # FN_frag=np.zeros(n)
-    # #Intersection over Union (IoU) or Jaccard Index
-    # IoU = np.zeros(n)
-    # Negtive_detect_num=0
-    # Negtive_num=0
-
     TP_pro=np.zeros(n)
     FP_pro=np.zeros(n)
     FN_pro=np.zeros(n)
     IoU_pro = np.zeros(n)
-    # Negtive_detect_pro=0
-    # Negtive_pro=0
+
     result_pro=np.zeros([n,6])
     for head in range(n):
         x_list=[]
@@ -338,14 +290,11 @@ def get_scores(tools, cutoff, n, data_dict):
             if y_pro == 1:
                 x_frag = data_dict[id_protein]['motif_logits_protein'][head]  #[seq]
                 y_frag = data_dict[id_protein]['motif_target_protein'][head]
-                # Negtive_pro += np.sum(np.max(y)==0)
-                # Negtive_detect_pro += np.sum((np.max(y)==0) * (np.max(x>=cutoff)==1))
+
                 TP_pro[head] += np.sum((x_frag>=cutoff) * (y_frag==1))
                 FP_pro[head] += np.sum((x_frag>=cutoff) * (y_frag==0))
                 FN_pro[head] += np.sum((x_frag<cutoff) * (y_frag==1))
-                # x_list.append(np.max(x))
-                # y_list.append(np.max(y))
-    
+
                 cs_num[head] += np.sum(y_frag == 1) > 0
                 if np.sum(y_frag == 1) > 0:
                     cs_correct[head] += (np.argmax(x_frag) == np.argmax(y_frag))
@@ -360,12 +309,9 @@ def get_scores(tools, cutoff, n, data_dict):
         result_pro[head, 5] = f1_score(target, pred >= cutoff)
     
     for head in range(n):
-        # IoU[head] = TP_frag[head] / (TP_frag[head] + FP_frag[head] + FN_frag[head])
         IoU_pro[head] = TP_pro[head] / (TP_pro[head] + FP_pro[head] + FN_pro[head])
         cs_acc[head] = cs_correct[head] / cs_num[head]
-    # FDR_frag = Negtive_detect_num / Negtive_num
-    # FDR_pro = Negtive_detect_pro / Negtive_pro
-    
+
     scores={"IoU_pro":IoU_pro, #[n]
             "result_pro":result_pro, #[n, 6]
             "cs_acc": cs_acc} #[n]
