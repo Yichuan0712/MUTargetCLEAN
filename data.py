@@ -33,7 +33,7 @@ class LocalizationDataset(Dataset):
 
         labels = np.where(type_protein == 1)[0]
         weights = []
-        print(id, id_frag_list, type_protein)
+        # print(id, id_frag_list, type_protein)
         for label in labels:
             weights.append(self.class_weights[label])
         sample_weight = max(weights)
