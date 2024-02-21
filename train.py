@@ -69,8 +69,8 @@ def train_loop(tools):
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
             classification_head, motif_logits = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
-            print('classification_head: ', classification_head)
-            print('motif_logits: ', motif_logits)
+            # print('classification_head: ', classification_head)
+            # print('motif_logits: ', motif_logits)
 
             motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
