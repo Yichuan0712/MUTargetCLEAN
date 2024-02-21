@@ -203,6 +203,7 @@ def prepare_samples(csv_file, configs):
                     elif label == "Nucleus" or label == "Nucleus_export":
                         targets[index_row, motif_left:motif_right] = 1
                 else:
+                    print(label)
                     print('WTF it is dual!')
         id_frag_list, seq_frag_list, target_frag_list = split_protein_sequence(prot_id, seq, targets, configs)
         samples.append((prot_id, id_frag_list, seq_frag_list, target_frag_list, type_protein))
