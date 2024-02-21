@@ -182,6 +182,7 @@ def prepare_samples(csv_file, configs):
         targets = np.zeros([n, len(seq)])
         type_protein = np.zeros(n)
         motifs = df.loc[i, "MOTIF"].split("|")
+        notdual_flag = True
         for motif in motifs:
             if not pd.isnull(motif):
                 label = motif.split(":")[1]
@@ -205,8 +206,10 @@ def prepare_samples(csv_file, configs):
                 else:
                     print(label)
                     print('WTF it is dual!')
-        id_frag_list, seq_frag_list, target_frag_list = split_protein_sequence(prot_id, seq, targets, configs)
-        samples.append((prot_id, id_frag_list, seq_frag_list, target_frag_list, type_protein))
+                    notdual_flag = False
+        if notdual_flag:
+            id_frag_list, seq_frag_list, target_frag_list = split_protein_sequence(prot_id, seq, targets, configs)
+            samples.append((prot_id, id_frag_list, seq_frag_list, target_frag_list, type_protein))
 
     return samples
 
