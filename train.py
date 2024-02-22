@@ -79,7 +79,7 @@ def train_loop(tools):
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
-            weighted_loss_sum += tools['loss_function_supcon']
+            # weighted_loss_sum += tools['loss_function_supcon']
 
             train_loss += weighted_loss_sum.item()
 
