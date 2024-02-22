@@ -33,7 +33,7 @@ train_settings:
 valid_settings:
   do_every: 1
   batch_size: 16
-  device: cuda
+  device: cpu
 
 
 predict_settings:
