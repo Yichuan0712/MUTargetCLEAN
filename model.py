@@ -222,7 +222,7 @@ class Encoder(nn.Module):
         motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1) #[batch, num_class, maxlen-2]
 
         emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
-        print(emb_pro_list[0][0].shape)
+        print(emb_pro_list[0])
         # print(emb_pro_list[0].shape)
         exit(0)
         emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
