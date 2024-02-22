@@ -68,7 +68,7 @@ def train_loop(tools):
                     encoded_seq[k]=encoded_seq[k].to(tools['train_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
-            print(len(id_frag_list))
+            print(len(id_frags_list))
             classification_head, motif_logits = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
             # print('classification_head: ', classification_head)
             # print('motif_logits: ', motif_logits)
