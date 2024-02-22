@@ -57,3 +57,6 @@ optimizer:
     gamma: 0.2
     num_restarts: 1
   mode: skip #skip, cosine
+
+supcon:
+  apply: False

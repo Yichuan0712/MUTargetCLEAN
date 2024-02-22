@@ -11,7 +11,6 @@ from transformers import EsmModel
 from utils import customlog
 
 
-
 class LayerNormNet(nn.Module):
     def __init__(self, hidden_dim, out_dim, device, dtype, drop_out=0.1):
         super(LayerNormNet, self).__init__()
@@ -208,6 +207,9 @@ class Encoder(nn.Module):
                                                              output_sizes=[1] * configs.encoder.num_classes)
         self.type_head = nn.Linear(self.model.embeddings.position_embeddings.embedding_dim, configs.encoder.num_classes)
         self.overlap = configs.encoder.frag_overlap
+
+        self.apply_supcon = configs.supcon.apply
+        self.projection_head = LayerNormNet(512, 256)
         # self.mhatt = nn.MultiheadAttention(embed_dim=320, num_heads=10, batch_first=True)
         # self.attheadlist = []
         # self.headlist = []
@@ -260,7 +262,10 @@ class Encoder(nn.Module):
         # pooled_features = self.pooling_layer(transposed_feature).squeeze(2) #[sample, dim]
         classification_head = self.type_head(emb_pro) #[sample, num_class]
 
-        return classification_head, motif_logits
+        if self.apply_supcon:
+            pass
+        else:
+            return classification_head, motif_logits
 
 class Bothmodels(nn.Module):
     def __init__(self, configs, pretrain_loc, trainable_layers, model_name='facebook/esm2_t33_650M_UR50D', model_type='esm_v2'):
