@@ -265,9 +265,9 @@ class Encoder(nn.Module):
 
         if self.apply_supcon:
             projection_head = self.projection_head(emb_pro)
-            return classification_head, motif_logits#, projection_head
+            return classification_head, motif_logits, projection_head
         else:
-            return classification_head, motif_logits
+            return classification_head, motif_logits, None
 
 class Bothmodels(nn.Module):
     def __init__(self, configs, pretrain_loc, trainable_layers, model_name='facebook/esm2_t33_650M_UR50D', model_type='esm_v2'):
