@@ -34,6 +34,7 @@ class LayerNormNet(nn.Module):
         x = self.dropout(self.ln2(self.fc2(x)))
         x = torch.relu(x)
         x = self.fc3(x)
+        print('inside projection head')
         return x
 
 
