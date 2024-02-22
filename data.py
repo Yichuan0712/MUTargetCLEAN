@@ -45,8 +45,8 @@ class LocalizationDataset(Dataset):
         type_protein = torch.from_numpy(type_protein)
         return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight
 
-    @staticmethod
-    def get_pos_neg_samples():
+    # @staticmethod
+    def get_pos_neg_samples(self, anchor_id):
 
         pass
 
