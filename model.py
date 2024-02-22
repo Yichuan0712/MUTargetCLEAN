@@ -195,6 +195,7 @@ class Encoder(nn.Module):
         # self.device = device
         # self.device=configs.train_settings.device
     def get_pro_emb(self, id, id_frags_list, seq_frag_tuple, emb_frags, overlap):
+        print(seq_frag_tuple)
         emb_pro_list=[]
         for id_protein in id:
             ind_frag=0
