@@ -44,6 +44,8 @@ class LocalizationDataset(Dataset):
 
         type_protein = torch.from_numpy(type_protein)
         # extras = None
+        # if self.apply_supcon:
+        #     pass
         return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight#, extras
 
 

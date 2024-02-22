@@ -12,7 +12,7 @@ from utils import customlog
 
 
 class LayerNormNet(nn.Module):
-    def __init__(self, hidden_dim, out_dim, device, dtype, drop_out=0.1):
+    def __init__(self, hidden_dim, out_dim, device='cpu', dtype=torch.float32, drop_out=0.1):
         super(LayerNormNet, self).__init__()
         self.hidden_dim1 = hidden_dim
         self.out_dim = out_dim
@@ -263,7 +263,6 @@ class Encoder(nn.Module):
         classification_head = self.type_head(emb_pro) #[sample, num_class]
 
         if self.apply_supcon:
-            # return
             projection_head = self.projection_head(emb_pro)
             return classification_head, motif_logits, projection_head
         else:
