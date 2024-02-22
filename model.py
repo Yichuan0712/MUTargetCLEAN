@@ -214,7 +214,7 @@ class Encoder(nn.Module):
             print('-before mean', emb_pro.shape)
             emb_pro = torch.mean(emb_pro, dim=0)
             print('-after mean', emb_pro.shape)
-            exit(0)
+            # exit(0)
             emb_pro_list.append(emb_pro)
         return emb_pro_list
     def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple):  
