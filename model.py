@@ -227,6 +227,7 @@ class Encoder(nn.Module):
 
         emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
         print(emb_pro)
+        exit(0)
         # transposed_feature = emb_pro.transpose(1, 2)
         # pooled_features = self.pooling_layer(transposed_feature).squeeze(2) #[sample, dim]
         classification_head = self.type_head(emb_pro) #[sample, num_class]
