@@ -205,7 +205,7 @@ def prepare_samples(csv_file, configs):
                         targets[index_row, motif_left:motif_right] = 1
                 else:
                     # print(label)
-                    # print('WTF it is dual!')
+                    # print('It is dual!')
                     notdual_flag = False
         if notdual_flag:
             id_frag_list, seq_frag_list, target_frag_list = split_protein_sequence(prot_id, seq, targets, configs)

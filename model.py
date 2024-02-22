@@ -222,14 +222,14 @@ class Encoder(nn.Module):
         motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1) #[batch, num_class, maxlen-2]
 
         emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
-        print(emb_pro_list[0])
-        print(len(emb_pro_list))
-        print(emb_pro_list[0].shape)
+        # print(emb_pro_list[0])
+        # print(len(emb_pro_list))
+        # print(emb_pro_list[0].shape)
 
         emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
-        print(emb_pro)
-        print(emb_pro.shape)
-        exit(0)
+        # print(emb_pro)
+        # print(emb_pro.shape)
+        # exit(0)
         # transposed_feature = emb_pro.transpose(1, 2)
         # pooled_features = self.pooling_layer(transposed_feature).squeeze(2) #[sample, dim]
         classification_head = self.type_head(emb_pro) #[sample, num_class]
