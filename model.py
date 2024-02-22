@@ -12,21 +12,21 @@ from utils import customlog
 
 
 class LayerNormNet(nn.Module):
-    def __init__(self, hidden_dim, out_dim, device='cpu', dtype=torch.float32, drop_out=0.1):
+    def __init__(self, configs, hidden_dim=512, out_dim=256):
         super(LayerNormNet, self).__init__()
         self.hidden_dim1 = hidden_dim
         self.out_dim = out_dim
-        self.drop_out = drop_out
-        self.device = device
-        self.dtype = dtype
+        self.drop_out = configs.supcon.drop_out
+        self.device = configs.supcon.device
+        self.dtype = torch.float32
 
-        self.fc1 = nn.Linear(320, hidden_dim, dtype=dtype, device=device)
-        self.ln1 = nn.LayerNorm(hidden_dim, dtype=dtype, device=device)
+        self.fc1 = nn.Linear(320, hidden_dim, dtype=self.dtype, device=self.device)
+        self.ln1 = nn.LayerNorm(hidden_dim, dtype=self.dtype, device=self.device)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim,
-                             dtype=dtype, device=device)
-        self.ln2 = nn.LayerNorm(hidden_dim, dtype=dtype, device=device)
-        self.fc3 = nn.Linear(hidden_dim, out_dim, dtype=dtype, device=device)
-        self.dropout = nn.Dropout(p=drop_out)
+                             dtype=self.dtype, device=self.device)
+        self.ln2 = nn.LayerNorm(hidden_dim, dtype=self.dtype, device=self.device)
+        self.fc3 = nn.Linear(hidden_dim, out_dim, dtype=self.dtype, device=self.device)
+        self.dropout = nn.Dropout(p=self.drop_out)
 
     def forward(self, x):
         x = self.dropout(self.ln1(self.fc1(x)))
@@ -209,7 +209,7 @@ class Encoder(nn.Module):
         self.overlap = configs.encoder.frag_overlap
 
         self.apply_supcon = configs.supcon.apply
-        self.projection_head = LayerNormNet(512, 256)
+        self.projection_head = LayerNormNet(configs)
         # self.mhatt = nn.MultiheadAttention(embed_dim=320, num_heads=10, batch_first=True)
         # self.attheadlist = []
         # self.headlist = []
@@ -264,7 +264,7 @@ class Encoder(nn.Module):
 
         if self.apply_supcon:
             projection_head = self.projection_head(emb_pro)
-            return classification_head, motif_logits, projection_head
+            return classification_head, motif_logits#, projection_head
         else:
             return classification_head, motif_logits
 
