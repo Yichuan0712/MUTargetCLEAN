@@ -263,7 +263,9 @@ class Encoder(nn.Module):
         classification_head = self.type_head(emb_pro) #[sample, num_class]
 
         if self.apply_supcon:
-            pass
+            # return
+            projection_head = self.projection_head(emb_pro)
+            return classification_head, motif_logits, projection_head
         else:
             return classification_head, motif_logits
 

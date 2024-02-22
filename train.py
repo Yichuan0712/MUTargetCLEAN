@@ -79,6 +79,7 @@ def train_loop(tools):
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
+            weighted_loss_sum += tools['loss_function_supcon']
 
             train_loss += weighted_loss_sum.item()
 
@@ -131,7 +132,7 @@ def test_loop(tools, dataloader):
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
-            
+
                 # tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device']))
             
             # losses=[]
@@ -376,6 +377,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
         'loss_function': torch.nn.BCEWithLogitsLoss(pos_weight=w, reduction="mean"),
         # 'loss_function_pro': torch.nn.BCEWithLogitsLoss(reduction="mean"),
         'loss_function_pro': torch.nn.BCEWithLogitsLoss(reduction="none"),
+        'loss_function_supcon': None,  # yichuan
         'checkpoints_every': configs.checkpoints_every,
         'scheduler': scheduler,
         'result_path': result_path,

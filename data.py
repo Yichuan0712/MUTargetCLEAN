@@ -18,6 +18,10 @@ class LocalizationDataset(Dataset):
         print(self.count_samples_by_class(self.n, self.samples))
         self.class_weights = calculate_class_weights(self.count_samples_by_class(self.n, self.samples))
         print(self.class_weights)
+
+        self.apply_supcon = configs.supcon.apply
+        self.n_pos = configs.supcon.n_pos
+        self.n_neg = configs.supcon.n_neg
     @staticmethod
     def count_samples_by_class(n, samples):
         """Count the number of samples for each class."""
@@ -39,7 +43,8 @@ class LocalizationDataset(Dataset):
         sample_weight = max(weights)
 
         type_protein = torch.from_numpy(type_protein)
-        return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight 
+        extras = None
+        return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight, extras
 
 
 class SupconDataset(Dataset):

@@ -60,3 +60,6 @@ optimizer:
 
 supcon:
   apply: False
+  n_pos: 9
+  n_neg: 30
+  temperature: 0.1
