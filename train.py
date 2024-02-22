@@ -73,6 +73,7 @@ def train_loop(tools):
             print(len(id_frags_list))
             classification_head, motif_logits, extra = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
             projection_head = extra
+            print('projection_head: ', projection_head)
             # print('classification_head: ', classification_head)
             # print('motif_logits: ', motif_logits)
 
