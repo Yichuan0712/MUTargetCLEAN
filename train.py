@@ -72,8 +72,6 @@ def train_loop(tools):
             print(id_frag_list_tuple)
             print(len(id_frags_list))
             classification_head, motif_logits, extra = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
-            projection_head = extra
-            print('projection_head: ', projection_head)
             # print('classification_head: ', classification_head)
             # print('motif_logits: ', motif_logits)
 
@@ -81,6 +79,14 @@ def train_loop(tools):
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
+            """
+            if true
+                projection_head = extra
+                print('projection_head: ', projection_head)
+                得到pos neg
+                算出来所有的projection head
+                loss+=supconloss
+            """
             # weighted_loss_sum += tools['loss_function_supcon']
 
             train_loss += weighted_loss_sum.item()
