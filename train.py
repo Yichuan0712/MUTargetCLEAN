@@ -114,15 +114,15 @@ def train_loop(tools, configs):
                 for i in range(len(pos_transformed)):
                     print(type_protein_pt_tuple)
                     print(tuple(pos_transformed[i][4]))
-                    exit(0)
+                    # exit(0)
                     id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
                         tuple(pos_transformed[i][1]),
                         tuple(pos_transformed[i][2]),
                         tuple(pos_transformed[i][3]),
-                        tuple(pos_transformed[i][4]))
+                        tuple(torch.from_numpy(arr) for arr in pos_transformed[i][4]))
                     __, __, projection_headP = tools['net'](encoded_seq, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
                     projection_head_P_list.append(projection_headP)
-
+                print(encoded_seq)
                 for i in range(configs.train_settings.batch_size):
                     for j in range(configs.supcon.n_neg):
                         for k in range(5):
@@ -130,12 +130,13 @@ def train_loop(tools, configs):
                 projection_head_N_list = []
                 for i in range(len(neg_transformed)):
                     id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
-                        neg_transformed[i][1],
-                        neg_transformed[i][2],
-                        neg_transformed[i][3],
-                        neg_transformed[i][4])
+                        tuple(neg_transformed[i][1]),
+                        tuple(neg_transformed[i][2]),
+                        tuple(neg_transformed[i][3]),
+                        tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
                     __, __, projection_headN = tools['net'](encoded_seq, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
                     projection_head_N_list.append(projection_headN)
+                print(encoded_seq)
                 print(len(projection_head_P_list))
                 print(len(projection_head_N_list))
                 exit(0)
