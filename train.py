@@ -115,22 +115,24 @@ def train_loop(tools, configs):
                 for binx in range(len(pos_neg)):
                     # embeddings.append(projection_head)
                     print(len(pos_neg[binx][0]))
-                    exit(0)
+                    # exit(0)
                     pos_samples = pos_neg[binx][0]
                     neg_samples = pos_neg[binx][1]
 
                     embeddingsP = []
                     for idx in range(len(pos_samples)):
-                        print(pos_samples[idx])
-                        print(type(pos_samples[idx]))
+                        # print(pos_samples[idx])
+                        # print(type(pos_samples[idx]))
                         id_tupleP, id_frag_list_tupleP, seq_frag_list_tupleP, target_frag_nplist_tupleP, type_protein_pt_tupleP, __ = pos_samples[idx]
                         id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(id_frag_list_tupleP,
                                                                                                      seq_frag_list_tupleP,
                                                                                                      target_frag_nplist_tupleP,
                                                                                                      type_protein_pt_tupleP)
                         __, __, projection_headP = tools['net'](encoded_seq, id_tupleP, id_frags_listP, seq_frag_tupleP)
-                        print(encoded_seq)
+                        # print(encoded_seq)
                         embeddingsP.append(projection_headP)
+                    print(len(embeddingsP))
+                    exit(0)
 
                     embeddingsN = []
                     for idx in range(len(neg_samples)):
