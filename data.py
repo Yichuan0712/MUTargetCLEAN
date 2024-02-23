@@ -57,7 +57,7 @@ class LocalizationDataset(Dataset):
         type_protein = torch.from_numpy(type_protein)
         pos_samples = self.get_pos_samples(idx)
         neg_samples = self.get_neg_samples(idx)
-        pos_neg = (pos_samples, neg_samples)
+        pos_neg = [pos_samples, neg_samples]
         return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight, pos_neg
         # return id, type_protein
 
@@ -70,9 +70,9 @@ class LocalizationDataset(Dataset):
             raise ValueError(f"Not enough positive samples found: {len(pos_samples)}. Required: {self.n_pos}.")
         if len(pos_samples) > self.n_pos:
             pos_samples = random.sample(pos_samples, self.n_pos)
-        print(len(pos_samples))
-        print(self.n_pos)
-        exit(0)
+        # print(len(pos_samples))
+        # print(self.n_pos)
+        # exit(0)
         return pos_samples
     def get_neg_samples(self, anchor_idx):
         """
