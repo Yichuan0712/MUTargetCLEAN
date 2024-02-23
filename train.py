@@ -111,10 +111,7 @@ def train_loop(tools, configs):
                         for k in range(5):
                             pos_transformed[j][k].append(pos_neg[i][0][j][k])
                 projection_head_P_list = []
-                for i in pos_transformed:
-                    print(pos_transformed[i][0])
-                    print('*')
-                    exit(0)
+                for i in range(len(pos_transformed)):
                     id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
                         tuple(pos_transformed[i][1]),
                         tuple(pos_transformed[i][2]),
@@ -128,7 +125,7 @@ def train_loop(tools, configs):
                         for k in range(5):
                             neg_transformed[j][k].append(pos_neg[i][1][j][k])
                 projection_head_N_list = []
-                for i in neg_transformed:
+                for i in range(len(neg_transformed)):
                     id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
                         neg_transformed[i][1],
                         neg_transformed[i][2],
