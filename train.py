@@ -114,6 +114,7 @@ def train_loop(tools, configs):
                 for i in pos_transformed:
                     print(pos_transformed[i][0])
                     print('*')
+                    exit(0)
                     id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
                         tuple(pos_transformed[i][1]),
                         tuple(pos_transformed[i][2]),
