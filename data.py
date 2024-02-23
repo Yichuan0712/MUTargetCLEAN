@@ -86,8 +86,8 @@ class LocalizationDataset(Dataset):
         return pos_samples
 
 def custom_collate(batch):
-    id, id_frags, fragments, target_frags, type_protein, sample_weight = zip(*batch)
-    return id, id_frags, fragments, target_frags, type_protein, sample_weight
+    id, id_frags, fragments, target_frags, type_protein, sample_weight, extra = zip(*batch)
+    return id, id_frags, fragments, target_frags, type_protein, sample_weight, extra
 
 
 def prot_id_to_seq(seq_file):
