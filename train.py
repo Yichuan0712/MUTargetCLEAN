@@ -123,7 +123,7 @@ def train_loop(tools, configs):
                     for idx in range(len(pos_samples)):
                         # print(pos_samples[idx])
                         print(len(pos_samples[idx]))
-                        id_tupleP, id_frag_list_tupleP, seq_frag_list_tupleP, target_frag_nplist_tupleP, type_protein_pt_tupleP, __ = pos_samples[idx]
+                        id_tupleP, id_frag_list_tupleP, seq_frag_list_tupleP, target_frag_nplist_tupleP, type_protein_pt_tupleP = pos_samples[idx]
                         id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(id_frag_list_tupleP,
                                                                                                      seq_frag_list_tupleP,
                                                                                                      target_frag_nplist_tupleP,
@@ -136,7 +136,7 @@ def train_loop(tools, configs):
 
                     embeddingsN = []
                     for idx in range(len(neg_samples)):
-                        id_tupleN, id_frag_list_tupleN, seq_frag_list_tupleN, target_frag_nplist_tupleN, type_protein_pt_tupleN, __ = neg_samples[idx]
+                        id_tupleN, id_frag_list_tupleN, seq_frag_list_tupleN, target_frag_nplist_tupleN, type_protein_pt_tupleN = neg_samples[idx]
                         id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(id_frag_list_tupleN,
                                                                                                      seq_frag_list_tupleN,
                                                                                                      target_frag_nplist_tupleN,
