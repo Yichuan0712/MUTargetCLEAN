@@ -73,7 +73,7 @@ def train_loop(tools, configs):
     # Unnecessary in this situation but added for best practices
     # model.train().cuda()
     tools['net'].train().to(tools['train_device'])
-    for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, extra) in enumerate(tools['train_loader']):
+    for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(tools['train_loader']):
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
         with autocast():
             # Compute prediction and loss
@@ -86,7 +86,7 @@ def train_loop(tools, configs):
             print('id', id_tuple)
             print(id_frag_list_tuple)
             print(len(id_frags_list))
-            classification_head, motif_logits, extra = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
             # print('classification_head: ', classification_head)
             # print('motif_logits: ', motif_logits)
 
@@ -105,8 +105,10 @@ def train_loop(tools, configs):
                 loss+=supconloss
             """
             if configs.supcon.apply:
-                projection_head = extra
                 print('projection_head: ', projection_head)
+                pos_samples = pos_neg[0]
+                neg_samples = pos_neg[1]
+
                 # print(tools['train_loader'][0])
                 # tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
             # weighted_loss_sum += tools['loss_function_supcon']
