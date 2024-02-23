@@ -122,7 +122,7 @@ def train_loop(tools, configs):
                     embeddingsP = []
                     for idx in range(len(pos_samples)):
                         # print(pos_samples[idx])
-                        # print(type(pos_samples[idx]))
+                        print(len(pos_samples[idx]))
                         id_tupleP, id_frag_list_tupleP, seq_frag_list_tupleP, target_frag_nplist_tupleP, type_protein_pt_tupleP, __ = pos_samples[idx]
                         id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(id_frag_list_tupleP,
                                                                                                      seq_frag_list_tupleP,
