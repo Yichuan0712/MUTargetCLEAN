@@ -54,7 +54,7 @@ def make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tupl
     return id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt
 
 
-def train_loop(tools):
+def train_loop(tools, configs):
     # accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=tools['num_classes'], average='macro')
     # f1_score = torchmetrics.F1Score(num_classes=tools['num_classes'], average='macro', task="multiclass")
     # accuracy.to(tools['train_device'])
@@ -104,6 +104,11 @@ def train_loop(tools):
                 算出来所有的projection head
                 loss+=supconloss
             """
+            if configs.supcon.apply:
+                projection_head = extra
+                print('projection_head: ', projection_head)
+                #
+                # tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
             # weighted_loss_sum += tools['loss_function_supcon']
 
             train_loss += weighted_loss_sum.item()
@@ -548,7 +553,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
         print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
         customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
         start_time = time()
-        train_loss = train_loop(tools)
+        train_loss = train_loop(tools, configs)
         end_time = time()
 
         if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
