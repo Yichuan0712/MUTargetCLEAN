@@ -40,7 +40,8 @@ class LocalizationDataset(Dataset):
         return len(self.samples)
     def __getitem__(self, idx):
         id, id_frag_list, seq_frag_list, target_frag_list, type_protein = self.samples[idx]
-
+        print(type_protein)
+        exit(0)
         labels = np.where(type_protein == 1)[0]
         weights = []
         for label in labels:
@@ -56,12 +57,13 @@ class LocalizationDataset(Dataset):
         # sample_weight = max(weights)
         # target_frags = torch.from_numpy(np.stack(target_frags, axis=0))
         type_protein = torch.from_numpy(type_protein)
-        return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight
+        pos_neg_list = None
+        return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight, pos_neg_list
         # return id, type_protein
 
-    # @staticmethod
-    def get_pos_neg_samples(self, anchor_id):
-
+    def get_pos_samples(self, anchor_id):
+        pass
+    def get_neg_samples(self, anchor_id):
         pass
 
 def custom_collate(batch):
