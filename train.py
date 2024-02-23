@@ -139,7 +139,7 @@ def train_loop(tools, configs):
                 print(encoded_seq)
                 print(len(projection_head_P_list))
                 print(len(projection_head_N_list))
-                exit(0)
+                # exit(0)
 
                 # print(len(pos_neg))
                 # print(len(pos_neg[:][0]))
