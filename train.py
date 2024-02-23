@@ -108,10 +108,31 @@ def train_loop(tools, configs):
                 print('projection_head: ', projection_head)
                 pos_samples = pos_neg[0]
                 neg_samples = pos_neg[1]
-
+                print('len(pos_samples) =', len(pos_samples))
+                print('len(neg_samples) =', len(neg_samples))
+                embeddings = []
+                embeddings.append(projection_head)
+                for idx in range(len(pos_samples)):
+                    id_tupleP, id_frag_list_tupleP, seq_frag_list_tupleP, target_frag_nplist_tupleP, type_protein_pt_tupleP, __ = pos_samples[idx]
+                    id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(id_frag_list_tupleP,
+                                                                                                 seq_frag_list_tupleP,
+                                                                                                 target_frag_nplist_tupleP,
+                                                                                                 type_protein_pt_tupleP)
+                    __, __, projection_headP = tools['net'](encoded_seq, id_tupleP, id_frags_listP, seq_frag_tupleP)
+                    print(encoded_seq)
+                    embeddings.append(projection_headP)
+                exit(0)
+                for idx in range(len(neg_samples)):
+                    id_tupleN, id_frag_list_tupleN, seq_frag_list_tupleN, target_frag_nplist_tupleN, type_protein_pt_tupleN, __ = neg_samples[idx]
+                    id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(id_frag_list_tupleN,
+                                                                                                 seq_frag_list_tupleN,
+                                                                                                 target_frag_nplist_tupleN,
+                                                                                                 type_protein_pt_tupleN)
+                    __, __, projection_headN = tools['net'](encoded_seq, id_tupleN, id_frags_listN, seq_frag_tupleN)
+                    embeddings.append(projection_headN)
                 # print(tools['train_loader'][0])
                 # tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
-            # weighted_loss_sum += tools['loss_function_supcon']
+                # weighted_loss_sum += tools['loss_function_supcon']
 
             train_loss += weighted_loss_sum.item()
 
