@@ -122,7 +122,7 @@ def train_loop(tools, configs):
                         tuple(torch.from_numpy(arr) for arr in pos_transformed[i][4]))
                     __, __, projection_headP = tools['net'](encoded_seq, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
                     projection_head_P_list.append(projection_headP)
-                print(encoded_seq)
+                # print(encoded_seq)
                 for i in range(configs.train_settings.batch_size):
                     for j in range(configs.supcon.n_neg):
                         for k in range(5):
