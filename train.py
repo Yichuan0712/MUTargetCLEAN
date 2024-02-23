@@ -114,11 +114,13 @@ def train_loop(tools, configs):
                 # bsz_embeddings = []
                 # for binx in range(len(pos_neg)):
                     # embeddings.append(projection_head)
+                print(len(pos_neg))
                 print(len(pos_neg[:][0]))
                 pos_samples = pos_neg[:][0]
                 neg_samples = pos_neg[:][1]
                 print(len(pos_samples[0]))
                 print(len(pos_samples[0][0]))
+                print(pos_samples[0][0][0])
                 exit(0)
                 embeddingsP = []
                 for idx in range(len(pos_samples)):
