@@ -70,6 +70,9 @@ class LocalizationDataset(Dataset):
             raise ValueError(f"Not enough positive samples found: {len(pos_samples)}. Required: {self.n_pos}.")
         if len(pos_samples) > self.n_pos:
             pos_samples = random.sample(pos_samples, self.n_pos)
+        print(len(pos_samples))
+        print(self.n_pos)
+        exit(0)
         return pos_samples
     def get_neg_samples(self, anchor_idx):
         """
@@ -79,10 +82,10 @@ class LocalizationDataset(Dataset):
         anchor_type_protein = self.samples[anchor_idx][4]
         pos_samples = [sample for sample in filtered_samples if
                        np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
-        if len(pos_samples) < self.n_pos:
-            raise ValueError(f"Not enough positive samples found: {len(pos_samples)}. Required: {self.n_pos}.")
-        if len(pos_samples) > self.n_pos:
-            pos_samples = random.sample(pos_samples, self.n_pos)
+        if len(pos_samples) < self.n_neg:
+            raise ValueError(f"Not enough positive samples found: {len(pos_samples)}. Required: {self.n_neg}.")
+        if len(pos_samples) > self.n_neg:
+            pos_samples = random.sample(pos_samples, self.n_neg)
         return pos_samples
 
 def custom_collate(batch):
