@@ -40,8 +40,6 @@ class LocalizationDataset(Dataset):
         return len(self.samples)
     def __getitem__(self, idx):
         id, id_frag_list, seq_frag_list, target_frag_list, type_protein = self.samples[idx]
-        print(type_protein)
-        exit(0)
         labels = np.where(type_protein == 1)[0]
         weights = []
         for label in labels:
@@ -57,14 +55,35 @@ class LocalizationDataset(Dataset):
         # sample_weight = max(weights)
         # target_frags = torch.from_numpy(np.stack(target_frags, axis=0))
         type_protein = torch.from_numpy(type_protein)
-        pos_neg_list = None
-        return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight, pos_neg_list
+        pos_samples = self.get_pos_samples(idx)
+        neg_samples = self.get_neg_samples(idx)
+        pos_neg = (pos_samples, neg_samples)
+        return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight, pos_neg
         # return id, type_protein
 
-    def get_pos_samples(self, anchor_id):
-        pass
-    def get_neg_samples(self, anchor_id):
-        pass
+    def get_pos_samples(self, anchor_idx):
+        filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
+        anchor_type_protein = self.samples[anchor_idx][4]
+        pos_samples = [sample for sample in filtered_samples if
+                       np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
+        if len(pos_samples) < self.n_pos:
+            raise ValueError(f"Not enough positive samples found: {len(pos_samples)}. Required: {self.n_pos}.")
+        if len(pos_samples) > self.n_pos:
+            pos_samples = random.sample(pos_samples, self.n_pos)
+        return pos_samples
+    def get_neg_samples(self, anchor_idx):
+        """
+        not finished, just placeholder
+        """
+        filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
+        anchor_type_protein = self.samples[anchor_idx][4]
+        pos_samples = [sample for sample in filtered_samples if
+                       np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
+        if len(pos_samples) < self.n_pos:
+            raise ValueError(f"Not enough positive samples found: {len(pos_samples)}. Required: {self.n_pos}.")
+        if len(pos_samples) > self.n_pos:
+            pos_samples = random.sample(pos_samples, self.n_pos)
+        return pos_samples
 
 def custom_collate(batch):
     id, id_frags, fragments, target_frags, type_protein, sample_weight = zip(*batch)

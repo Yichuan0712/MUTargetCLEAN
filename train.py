@@ -73,7 +73,7 @@ def train_loop(tools, configs):
     # Unnecessary in this situation but added for best practices
     # model.train().cuda()
     tools['net'].train().to(tools['train_device'])
-    for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple) in enumerate(tools['train_loader']):
+    for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, extra) in enumerate(tools['train_loader']):
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
         with autocast():
             # Compute prediction and loss
