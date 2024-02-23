@@ -107,7 +107,7 @@ def train_loop(tools, configs):
             if configs.supcon.apply:
                 projection_head = extra
                 print('projection_head: ', projection_head)
-                #
+                print(tools['train_loader'][0])
                 # tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
             # weighted_loss_sum += tools['loss_function_supcon']
 
