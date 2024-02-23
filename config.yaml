@@ -22,7 +22,7 @@ PEFT: lora # FT, PFT, frozen, lora, PromT
 train_settings:
   num_epochs: 1
   shuffle: True
-  device: cpu
+  device: cuda
   batch_size: 16
   grad_accumulation: 1
   loss_pos_weight: 15
@@ -33,12 +33,12 @@ train_settings:
 valid_settings:
   do_every: 1
   batch_size: 16
-  device: cpu
+  device: cuda
 
 
 predict_settings:
   batch_size: 16
-  device: cpu
+  device: cuda
   cutoffs: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
 optimizer:
@@ -60,8 +60,8 @@ optimizer:
 
 supcon:
   apply: True
-  device: cpu
+  device: cuda
   drop_out: 0.1
-  n_pos: 9
-  n_neg: 30
+  n_pos: 1
+  n_neg: 1
   temperature: 0.1
