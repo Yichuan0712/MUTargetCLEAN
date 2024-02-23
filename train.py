@@ -124,7 +124,7 @@ def train_loop(tools, configs):
                 # print('shape:', list_shape(pos_neg))
                 pos_samples = pos_neg[0]
                 neg_samples = pos_neg[1]
-                print(pos_neg[0][0].shape)
+                print(pos_neg[0][0])
                 # print('shape:', list_shape(pos_samples))
                 embeddingsP = []
                 for idx in range(len(pos_samples)):
