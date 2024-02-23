@@ -112,11 +112,13 @@ def train_loop(tools, configs):
                             pos_transformed[j][k].append(pos_neg[i][0][j][k])
                 projection_head_P_list = []
                 for i in pos_transformed:
+                    print(pos_transformed[i][0])
+                    print('*')
                     id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
-                        pos_transformed[i][1],
-                        pos_transformed[i][2],
-                        pos_transformed[i][3],
-                        pos_transformed[i][4])
+                        tuple(pos_transformed[i][1]),
+                        tuple(pos_transformed[i][2]),
+                        tuple(pos_transformed[i][3]),
+                        tuple(pos_transformed[i][4]))
                     __, __, projection_headP = tools['net'](encoded_seq, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
                     projection_head_P_list.append(projection_headP)
 
