@@ -108,6 +108,7 @@ def train_loop(tools, configs):
                 print('projection_head: ', projection_head)
                 pos_samples = pos_neg[0]
                 neg_samples = pos_neg[1]
+                print('len(pos_neg) =', len(pos_neg))
                 print('len(pos_samples) =', len(pos_samples))
                 print('len(neg_samples) =', len(neg_samples))
                 embeddings = []
