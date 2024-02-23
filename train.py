@@ -106,38 +106,64 @@ def train_loop(tools, configs):
             """
             if configs.supcon.apply:
                 print('projection_head shape: ', projection_head.shape)
-                # pos_samples = pos_neg[0]
-                # neg_samples = pos_neg[1]
-                # print('len(pos_neg) =', len(pos_neg))
-                # print('len(pos_samples) =', len(pos_samples))
-                # print('len(neg_samples) =', len(neg_samples))
-                # bsz_embeddings = []
-                # for binx in range(len(pos_neg)):
-                    # embeddings.append(projection_head)
-                print(len(pos_neg))
-                print(len(pos_neg[:][0]))
-                pos_samples = pos_neg[:][0]
-                neg_samples = pos_neg[:][1]
-                print(len(pos_samples[0]))
-                print(len(pos_samples[0][0]))
-                print(pos_samples[0][0][0])
-                exit(0)
-                embeddingsP = []
-                for idx in range(len(pos_samples)):
-                    # print(pos_samples[idx])
-                    print(len(pos_samples[idx]))
-                    id_tupleP, id_frag_list_tupleP, seq_frag_list_tupleP, target_frag_nplist_tupleP, type_protein_pt_tupleP = \
-                    pos_samples[idx]
+                pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
+                neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
+
+                for i in range(configs.train_settings.batch_size):
+                    for j in range(configs.supcon.n_pos):
+                        for k in range(5):
+                            pos_transformed[j][k].append(pos_neg[i][0][j][k])
+                projection_head_P_list = []
+                for i in pos_transformed:
                     id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
-                        id_frag_list_tupleP,
-                        seq_frag_list_tupleP,
-                        target_frag_nplist_tupleP,
-                        type_protein_pt_tupleP)
-                    __, __, projection_headP = tools['net'](encoded_seq, id_tupleP, id_frags_listP, seq_frag_tupleP)
-                    # print(encoded_seq)
-                    embeddingsP.append(projection_headP)
-                print(len(embeddingsP))
+                        pos_transformed[i][1],
+                        pos_transformed[i][2],
+                        pos_transformed[i][3],
+                        pos_transformed[i][4])
+                    __, __, projection_headP = tools['net'](encoded_seq, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
+                    projection_head_P_list.append(projection_headP)
+
+                for i in range(configs.train_settings.batch_size):
+                    for j in range(configs.supcon.n_neg):
+                        for k in range(5):
+                            neg_transformed[j][k].append(pos_neg[i][1][j][k])
+                projection_head_N_list = []
+                for i in neg_transformed:
+                    id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
+                        neg_transformed[i][1],
+                        neg_transformed[i][2],
+                        neg_transformed[i][3],
+                        neg_transformed[i][4])
+                    __, __, projection_headN = tools['net'](encoded_seq, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
+                    projection_head_N_list.append(projection_headN)
+                print(len(projection_head_P_list))
+                print(len(projection_head_N_list))
                 exit(0)
+
+                # print(len(pos_neg))
+                # print(len(pos_neg[:][0]))
+                # pos_samples = pos_neg[:][0]
+                # neg_samples = pos_neg[:][1]
+                # print(len(pos_samples[0]))
+                # print(len(pos_samples[0][0]))
+                # print(pos_samples[0][0][0])
+                # exit(0)
+                # embeddingsP = []
+                # for idx in range(len(pos_samples)):
+                #     # print(pos_samples[idx])
+                #     print(len(pos_samples[idx]))
+                #     id_tupleP, id_frag_list_tupleP, seq_frag_list_tupleP, target_frag_nplist_tupleP, type_protein_pt_tupleP = \
+                #     pos_samples[idx]
+                #     id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
+                #         id_frag_list_tupleP,
+                #         seq_frag_list_tupleP,
+                #         target_frag_nplist_tupleP,
+                #         type_protein_pt_tupleP)
+                #     __, __, projection_headP = tools['net'](encoded_seq, id_tupleP, id_frags_listP, seq_frag_tupleP)
+                #     # print(encoded_seq)
+                #     embeddingsP.append(projection_headP)
+                # print(len(embeddingsP))
+                # exit(0)
 
                 # embeddingsN = []
                 # for idx in range(len(neg_samples)):
