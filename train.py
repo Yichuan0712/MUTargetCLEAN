@@ -120,8 +120,15 @@ def train_loop(tools, configs):
                         tuple(pos_transformed[i][2]),
                         tuple(pos_transformed[i][3]),
                         tuple(torch.from_numpy(arr) for arr in pos_transformed[i][4]))
-                    __, __, projection_headP = tools['net'](encoded_seq, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
+                    encoded_seqP = tokenize(tools, seq_frag_tupleP)
+                    if type(encoded_seqP) == dict:
+                        for k in encoded_seqP.keys():
+                            encoded_seqP[k] = encoded_seqP[k].to(tools['train_device'])
+                    else:
+                        encoded_seqP = encoded_seqP.to(tools['train_device'])
+                    __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
                     projection_head_P_list.append(projection_headP)
+
                 # print(encoded_seq)
                 for i in range(configs.train_settings.batch_size):
                     for j in range(configs.supcon.n_neg):
@@ -134,7 +141,13 @@ def train_loop(tools, configs):
                         tuple(neg_transformed[i][2]),
                         tuple(neg_transformed[i][3]),
                         tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
-                    __, __, projection_headN = tools['net'](encoded_seq, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
+                    encoded_seqN = tokenize(tools, seq_frag_tupleN)
+                    if type(encoded_seqN) == dict:
+                        for k in encoded_seqN.keys():
+                            encoded_seqN[k] = encoded_seqN[k].to(tools['train_device'])
+                    else:
+                        encoded_seqN = encoded_seqN.to(tools['train_device'])
+                    __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
                     projection_head_N_list.append(projection_headN)
                 # print(encoded_seq)
                 # print(len(projection_head_P_list))
