@@ -83,12 +83,7 @@ def train_loop(tools, configs):
                     encoded_seq[k]=encoded_seq[k].to(tools['train_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
-            print('id', id_tuple)
-            print(id_frag_list_tuple)
-            print(len(id_frags_list))
             classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
-            # print('classification_head: ', classification_head)
-            # print('motif_logits: ', motif_logits)
 
             motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
             # print(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])).size())
@@ -105,6 +100,8 @@ def train_loop(tools, configs):
                 loss+=supconloss
             """
             if configs.supcon.apply:
+                print(type(id_tuple))
+                print('id', id_tuple)
                 print('projection_head shape: ', projection_head.shape)
                 pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
                 neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
