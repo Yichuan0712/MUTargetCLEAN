@@ -100,9 +100,9 @@ def train_loop(tools, configs):
                 loss+=supconloss
             """
             if configs.supcon.apply:
-                print(type(id_tuple))
-                print('id', id_tuple)
-                print('projection_head shape: ', projection_head.shape)
+                # print(type(id_tuple))
+                # print('id', id_tuple)
+                # print('projection_head shape: ', projection_head.shape)
                 pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
                 neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
 
@@ -136,9 +136,9 @@ def train_loop(tools, configs):
                         tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
                     __, __, projection_headN = tools['net'](encoded_seq, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
                     projection_head_N_list.append(projection_headN)
-                print(encoded_seq)
-                print(len(projection_head_P_list))
-                print(len(projection_head_N_list))
+                # print(encoded_seq)
+                # print(len(projection_head_P_list))
+                # print(len(projection_head_N_list))
                     # print(tools['train_loader'][0])
                     # tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
                     # weighted_loss_sum += tools['loss_function_supcon']
