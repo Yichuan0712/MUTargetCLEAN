@@ -254,7 +254,7 @@ class Encoder(nn.Module):
         emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
         # print(emb_pro_list[0])
         # print(len(emb_pro_list))
-        print(emb_pro_list[0].shape)
+        # print(emb_pro_list[0].shape)
 
         emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
         # print(emb_pro)

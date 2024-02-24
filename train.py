@@ -92,17 +92,22 @@ def train_loop(tools, configs):
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
-            """
-            if apply supcon is true
-                get projection_head
-                get pos & neg samples
-                get projection_head of pos & neg
-                loss += supconloss
-            """
+
             if configs.supcon.apply:
-                # print(type(id_tuple))
-                # print('id', id_tuple)
-                # print('projection_head shape: ', projection_head.shape)
+                """
+                if apply supcon is true
+                    get projection_head
+                    get pos & neg samples
+                    get projection_head of pos & neg
+                    loss += supconloss
+                """
+                """
+                [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
+                -> [n_pos, 5, bsz] + [n_neg, 5, bsz]
+                
+                We need some complex dimension transformations 
+                to achieve modifications with minimal disruption to the old code
+                """
                 pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
                 neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
 
@@ -146,14 +151,16 @@ def train_loop(tools, configs):
                         encoded_seqN = encoded_seqN.to(tools['train_device'])
                     __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
                     projection_head_list.append(projection_headN)
-                # print(len(projection_head_list))
-                # print(projection_head_list[0].shape)
+
                 projection_head_tensor = torch.stack(projection_head_list, dim=1)
-                # print(projection_head_tensor.shape)
+
                 supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
                                                                    configs.supcon.temperature,
                                                                    configs.supcon.n_pos)
                 weighted_loss_sum += supcon_loss
+                """
+                if ends here
+                """
 
             train_loss += weighted_loss_sum.item()  # do these losses need to be weighted sum?
 
