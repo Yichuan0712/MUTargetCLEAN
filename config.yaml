@@ -59,7 +59,7 @@ optimizer:
   mode: skip #skip, cosine
 
 supcon:
-  apply: True
+  apply: False
   device: cuda
   drop_out: 0.1
   n_pos: 1
