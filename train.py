@@ -155,7 +155,7 @@ def train_loop(tools, configs):
                                                                    configs.supcon.n_pos)
                 weighted_loss_sum += supcon_loss
 
-            train_loss += weighted_loss_sum.item()  # do these losses need to be weighted?
+            train_loss += weighted_loss_sum.item()  # do these losses need to be weighted sum?
 
         # Backpropagation
         scaler.scale(weighted_loss_sum).backward()

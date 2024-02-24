@@ -76,23 +76,21 @@ class LocalizationDataset(Dataset):
         return pos_samples
     def get_neg_samples(self, anchor_idx):
         """
-        not finished
+        NOT a hard sample selection
         """
-        # label2idx = {"Nucleus": 0, "ER": 1, "Peroxisome": 2, "Mitochondrion": 3, "Nucleus_export": 4,
-        #              "SIGNAL": 5, "chloroplast": 6, "Thylakoid": 7}
         filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
         anchor_type_protein = self.samples[anchor_idx][4]
         neg_samples = [sample for sample in filtered_samples if
                        not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
         if len(neg_samples) < self.n_neg:
-            raise ValueError(f"Not enough positive samples found: {len(neg_samples)}. Required: {self.n_neg}.")
+            raise ValueError(f"Not enough negative samples found: {len(neg_samples)}. Required: {self.n_neg}.")
         if len(neg_samples) > self.n_neg:
             neg_samples = random.sample(neg_samples, self.n_neg)
         return neg_samples
 
 def custom_collate(batch):
-    id, id_frags, fragments, target_frags, type_protein, sample_weight, extra = zip(*batch)
-    return id, id_frags, fragments, target_frags, type_protein, sample_weight, extra
+    id, id_frags, fragments, target_frags, type_protein, sample_weight, pos_neg = zip(*batch)
+    return id, id_frags, fragments, target_frags, type_protein, sample_weight, pos_neg
 
 
 def prot_id_to_seq(seq_file):

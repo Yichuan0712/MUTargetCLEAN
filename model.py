@@ -12,6 +12,9 @@ from utils import customlog
 
 
 class LayerNormNet(nn.Module):
+    """
+    From https://github.com/tttianhao/CLEAN
+    """
     def __init__(self, configs, hidden_dim=512, out_dim=256):
         super(LayerNormNet, self).__init__()
         self.hidden_dim1 = hidden_dim
@@ -34,7 +37,6 @@ class LayerNormNet(nn.Module):
         x = self.dropout(self.ln2(self.fc2(x)))
         x = torch.relu(x)
         x = self.fc3(x)
-        print('inside projection head')
         return x
 
 
