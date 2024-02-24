@@ -153,7 +153,7 @@ def train_loop(tools, configs):
                     projection_head_list.append(projection_headN)
 
                 projection_head_tensor = torch.stack(projection_head_list, dim=1)
-
+                print(projection_head_tensor)
                 supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
                                                                    configs.supcon.temperature,
                                                                    configs.supcon.n_pos)
