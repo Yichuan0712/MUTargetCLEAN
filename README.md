@@ -23,4 +23,4 @@ Here's a summary of the changes made:
    
    - Current challenge: The hard-mine function has significantly slowed down, making inference times unacceptable due to the updating ESM2.
 
-3. **Evaluation & Testing for SupCon**: MaxSep and Pvalue... later.
+3. **Evaluation & Testing for SupCon**: MaxSep and Pvalue, I will do this later.
