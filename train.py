@@ -106,11 +106,14 @@ def train_loop(tools, configs):
                 pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
                 neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
 
+                projection_head_list = []
+                projection_head_list.append(projection_head)
+
                 for i in range(configs.train_settings.batch_size):
                     for j in range(configs.supcon.n_pos):
                         for k in range(5):
                             pos_transformed[j][k].append(pos_neg[i][0][j][k])
-                projection_head_P_list = []
+
                 for i in range(len(pos_transformed)):
                     # print(type_protein_pt_tuple)
                     # print(tuple(pos_transformed[i][4]))
@@ -127,14 +130,14 @@ def train_loop(tools, configs):
                     else:
                         encoded_seqP = encoded_seqP.to(tools['train_device'])
                     __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
-                    projection_head_P_list.append(projection_headP)
+                    projection_head_list.append(projection_headP)
 
                 # print(encoded_seq)
                 for i in range(configs.train_settings.batch_size):
                     for j in range(configs.supcon.n_neg):
                         for k in range(5):
                             neg_transformed[j][k].append(pos_neg[i][1][j][k])
-                projection_head_N_list = []
+
                 for i in range(len(neg_transformed)):
                     id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
                         tuple(neg_transformed[i][1]),
@@ -148,11 +151,10 @@ def train_loop(tools, configs):
                     else:
                         encoded_seqN = encoded_seqN.to(tools['train_device'])
                     __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
-                    projection_head_N_list.append(projection_headN)
-                print(len(projection_head_P_list))
-                print(len(projection_head_N_list))
-                print(projection_head_P_list)
-                print(projection_head_N_list)
+                    projection_head_list.append(projection_headN)
+                print(len(projection_head_list))
+                print(projection_head_list)
+                print(projection_head_list[0].shape)
                 # weighted_loss_sum += tools['loss_function_supcon']
 
 
