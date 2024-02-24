@@ -1,6 +1,6 @@
 # MUTarget + CLEAN 240223
 
-The primary objective of this repository is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.
+The primary objective of this branch is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.
 
 ## Modifications
 
