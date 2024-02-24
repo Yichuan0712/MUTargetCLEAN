@@ -152,9 +152,10 @@ def train_loop(tools, configs):
                         encoded_seqN = encoded_seqN.to(tools['train_device'])
                     __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
                     projection_head_list.append(projection_headN)
-                print(len(projection_head_list))
-                print(projection_head_list)
-                print(projection_head_list[0].shape)
+                # print(len(projection_head_list))
+                # print(projection_head_list[0].shape)
+                projection_head_tensor = torch.stack(projection_head_list, dim=1)
+                print(projection_head_tensor.shape)
                 # weighted_loss_sum += tools['loss_function_supcon']
 
 
