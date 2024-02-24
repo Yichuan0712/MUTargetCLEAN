@@ -1,14 +1,26 @@
 # MUTarget + CLEAN
 
-1. Can I simply add 3 losses together? 
+The primary objective of this repository is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.
 
-    Don't do it, temporarily applying a small weight to the SupCon loss to mitigate gradient explosion
+## Modifications
 
+Here's a summary of the changes made:
 
-2. How to improve distance map efficiency?
+1. Added new configurations related to SupCon in `configs.yaml`.
+2. Updated `data.py`: `LocalizationDataset` can now fetch both positive and negative samples from the dataset.
+3. Introduced `LayerNormNet` from the CLEAN methodology into `model.py` as the projection head for SupCon.
+4. Implemented the projection head after the ESM layer. This is activated when `configs.supcon.apply` is set to `True`; otherwise, the standard MUTarget process is followed.
+5. Introduced a new `loss.py` incorporating `SupConHardLoss` from the CLEAN method.
+6. Fixed a minor bug in `prepare_samples` that prevented handling datasets including the deprecated label 'dual'.
 
-    hardmine() is much slower now, infer time is way too big with an updating esm
+## To-Do List
 
+1. **Combining Losses**: Is it feasible to simply aggregate three different losses?
+   
+   - Recommendation: Avoid direct aggregation. Temporarily apply a small weight to the SupCon loss to prevent gradient explosion issues.
 
-3. Evaluate & test?
+2. **Distance Map Efficiency**: How can we enhance the efficiency of the distance map calculation?
+   
+   - Current challenge: The `hardmine()` function has significantly slowed down, making inference times unacceptable due to the updating ESM2.
 
+3. **Evaluation & Testing**: To be done.

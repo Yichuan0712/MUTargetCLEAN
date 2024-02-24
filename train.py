@@ -105,8 +105,7 @@ def train_loop(tools, configs):
                 [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
                 -> [n_pos, 5, bsz] + [n_neg, 5, bsz]
                 
-                We need some complex dimension transformations 
-                to achieve modifications with minimal disruption to the old code
+                We need some complex dimension transformations to achieve modifications with minimal disruption to the old code
                 This code is quite ugly but I would leave them here since there is very low chance for any reuse
                 """
                 pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
