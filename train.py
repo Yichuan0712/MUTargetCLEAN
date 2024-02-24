@@ -157,6 +157,7 @@ def train_loop(tools, configs):
                 supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
                                                                    configs.supcon.temperature,
                                                                    configs.supcon.n_pos)
+                print(supcon_loss)
                 weighted_loss_sum += supcon_loss
                 """
                 if ends here
