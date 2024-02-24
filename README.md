@@ -3,8 +3,7 @@
 can i simply add 3 loss together?
 
 how to improve distance map efficiency?
-
-can i finish neghardmine() by Saturday?
+- hardmine() is much slower now, infer time is way too big with an updating esm
 
 evaluate & test?
 
