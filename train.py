@@ -153,13 +153,14 @@ def train_loop(tools, configs):
                     projection_head_list.append(projection_headN)
                 if batch == 2:
                     exit(0)
-                print(projection_head_list)
                 projection_head_tensor = torch.stack(projection_head_list, dim=1)
                 supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
                                                                    configs.supcon.temperature,
                                                                    configs.supcon.n_pos)
-                weighted_loss_sum += 0 * supcon_loss
-                print(batch, supcon_loss)
+                print('batch:', batch)
+                print('old loss sum:', weighted_loss_sum)
+                print('supcon loss:', supcon_loss)
+                weighted_loss_sum += 0.01 * supcon_loss
                 """
                 if ends here
                 """
