@@ -237,9 +237,9 @@ class Encoder(nn.Module):
                     emb_pro = torch.concatenate((emb_pro[:-overlap], overlap_emb, emb_frag[overlap:l]), axis=0)
                 ind_frag+=1
                 id_frag = id_protein+"@"+str(ind_frag)
-            print('-before mean', emb_pro.shape)
+            # print('-before mean', emb_pro.shape)
             emb_pro = torch.mean(emb_pro, dim=0)
-            print('-after mean', emb_pro.shape)
+            # print('-after mean', emb_pro.shape)
             emb_pro_list.append(emb_pro)
         return emb_pro_list
     def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple):  
