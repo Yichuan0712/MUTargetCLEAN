@@ -1,5 +1,10 @@
 # MUTarget + CLEAN
 
-torch.stack 不工作, 寄
+can i simply add 3 loss together?
 
+how to improve distance map efficiency?
+
+can i finish neghardmine() by Saturday?
+
+evaluate & test?
 

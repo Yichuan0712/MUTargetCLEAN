@@ -93,12 +93,11 @@ def train_loop(tools, configs):
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
             """
-            if true
-                projection_head = extra
-                print('projection_head: ', projection_head)
-                得到pos neg
-                算出来所有的projection head
-                loss+=supconloss
+            if apply supcon is true
+                get projection_head
+                get pos & neg samples
+                get projection_head of pos & neg
+                loss += supconloss
             """
             if configs.supcon.apply:
                 # print(type(id_tuple))
@@ -114,11 +113,7 @@ def train_loop(tools, configs):
                     for j in range(configs.supcon.n_pos):
                         for k in range(5):
                             pos_transformed[j][k].append(pos_neg[i][0][j][k])
-
                 for i in range(len(pos_transformed)):
-                    # print(type_protein_pt_tuple)
-                    # print(tuple(pos_transformed[i][4]))
-                    # exit(0)
                     id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
                         tuple(pos_transformed[i][1]),
                         tuple(pos_transformed[i][2]),
@@ -133,12 +128,10 @@ def train_loop(tools, configs):
                     __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
                     projection_head_list.append(projection_headP)
 
-                # print(encoded_seq)
                 for i in range(configs.train_settings.batch_size):
                     for j in range(configs.supcon.n_neg):
                         for k in range(5):
                             neg_transformed[j][k].append(pos_neg[i][1][j][k])
-
                 for i in range(len(neg_transformed)):
                     id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
                         tuple(neg_transformed[i][1]),
@@ -162,7 +155,7 @@ def train_loop(tools, configs):
                                                                    configs.supcon.n_pos)
                 weighted_loss_sum += supcon_loss
 
-            train_loss += weighted_loss_sum.item()
+            train_loss += weighted_loss_sum.item()  # do these losses need to be weighted?
 
         # Backpropagation
         scaler.scale(weighted_loss_sum).backward()
