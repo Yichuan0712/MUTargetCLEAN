@@ -21,6 +21,6 @@ Here's a summary of the changes made:
 
 2. **Distance Map Efficiency**: How can we enhance the efficiency of the distance map calculation?
    
-   - Current challenge: The hard-mine function has significantly slowed down, making inference times unacceptable due to the updating ESM2.
+   - Current challenge: The hard-mine function will significantly slow down, making inference times unacceptable due to the updating ESM2.
 
 3. **Evaluation & Testing for SupCon**: MaxSep and Pvalue, I will do this later.
