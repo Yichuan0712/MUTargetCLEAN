@@ -16,6 +16,7 @@ import sys
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
+from loss import SupConHardLoss
 
 def loss_fix(id_frag, motif_logits, target_frag, tools):
     #id_frag [batch]
@@ -155,9 +156,11 @@ def train_loop(tools, configs):
                 # print(len(projection_head_list))
                 # print(projection_head_list[0].shape)
                 projection_head_tensor = torch.stack(projection_head_list, dim=1)
-                print(projection_head_tensor.shape)
-                # weighted_loss_sum += tools['loss_function_supcon']
-
+                # print(projection_head_tensor.shape)
+                supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
+                                                                   configs.supcon.temperature,
+                                                                   configs.supcon.n_pos)
+                weighted_loss_sum += supcon_loss
 
             train_loss += weighted_loss_sum.item()
 
@@ -583,7 +586,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
         'loss_function': torch.nn.BCEWithLogitsLoss(pos_weight=w, reduction="mean"),
         # 'loss_function_pro': torch.nn.BCEWithLogitsLoss(reduction="mean"),
         'loss_function_pro': torch.nn.BCEWithLogitsLoss(reduction="none"),
-        'loss_function_supcon': None,  # yichuan
+        'loss_function_supcon': SupConHardLoss,  # Yichuan
         'checkpoints_every': configs.checkpoints_every,
         'scheduler': scheduler,
         'result_path': result_path,
