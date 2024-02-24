@@ -151,9 +151,9 @@ def train_loop(tools, configs):
                     projection_head_N_list.append(projection_headN)
                 print(len(projection_head_P_list))
                 print(len(projection_head_N_list))
-                    # print(tools['train_loader'][0])
-                    # tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
-                    # weighted_loss_sum += tools['loss_function_supcon']
+                print(projection_head_P_list)
+                print(projection_head_N_list)
+                # weighted_loss_sum += tools['loss_function_supcon']
 
 
             train_loss += weighted_loss_sum.item()
