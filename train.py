@@ -107,6 +107,7 @@ def train_loop(tools, configs):
                 
                 We need some complex dimension transformations 
                 to achieve modifications with minimal disruption to the old code
+                This code is quite ugly but I would leave them here since there is very low chance for any reuse
                 """
                 pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
                 neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
@@ -151,8 +152,8 @@ def train_loop(tools, configs):
                         encoded_seqN = encoded_seqN.to(tools['train_device'])
                     __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
                     projection_head_list.append(projection_headN)
-                if batch == 2:
-                    exit(0)
+                # if batch == 2:
+                #     exit(0)
                 projection_head_tensor = torch.stack(projection_head_list, dim=1)
                 supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
                                                                    configs.supcon.temperature,
@@ -165,7 +166,7 @@ def train_loop(tools, configs):
                 weighted_loss_sum += 0.01 * supcon_loss
 
                 """
-                if ends here
+                if apply supcon ends here
                 """
 
             train_loss += weighted_loss_sum.item()  # do these losses need to be weighted sum?
