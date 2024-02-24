@@ -157,10 +157,13 @@ def train_loop(tools, configs):
                 supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
                                                                    configs.supcon.temperature,
                                                                    configs.supcon.n_pos)
-                print('batch:', batch)
-                print('old loss sum:', weighted_loss_sum)
-                print('supcon loss:', supcon_loss)
+                # print('batch:', batch)
+                # print('old loss sum:', weighted_loss_sum)
+                # print('supcon loss:', supcon_loss)
+
+                # Temporarily applying a small weight to the SupCon loss to mitigate gradient explosion issues
                 weighted_loss_sum += 0.01 * supcon_loss
+
                 """
                 if ends here
                 """
