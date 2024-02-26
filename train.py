@@ -92,7 +92,8 @@ def train_loop(tools, configs):
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
-
+            # 纯分step
+            # 带着motif loss
             if configs.supcon.apply:
                 """
                 if apply supcon is true
@@ -160,6 +161,7 @@ def train_loop(tools, configs):
                 # print('batch:', batch)
                 # print('old loss sum:', weighted_loss_sum)
                 # print('supcon loss:', supcon_loss)
+
 
                 # Temporarily applying a small weight to the SupCon loss to mitigate gradient explosion issues
                 weighted_loss_sum += 0.01 * supcon_loss
