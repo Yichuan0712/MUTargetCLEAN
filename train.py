@@ -624,7 +624,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
             dataloader = tools["valid_loader"]
-            valid_loss = test_loop(tools, dataloader, configs, warm_starting)
+            valid_loss = test_loop(tools, dataloader)
             end_time = time()
         
 
