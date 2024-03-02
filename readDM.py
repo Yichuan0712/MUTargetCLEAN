@@ -7,6 +7,6 @@ def read_data_from_file(filename):
     return dictionary
 
 # 假设你的文件名为"data.txt"
-filename = "dm.txt"
+filename = "distance_map.txt"
 data_dict = read_data_from_file(filename)
 print(data_dict)

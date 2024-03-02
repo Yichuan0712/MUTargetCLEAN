@@ -27,6 +27,7 @@ class LocalizationDataset(Dataset):
         self.apply_supcon = configs.supcon.apply
         self.n_pos = configs.supcon.n_pos
         self.n_neg = configs.supcon.n_neg
+        self.hard_neg = configs.supcon.hard_neg
     @staticmethod
     def count_samples_by_class(n, samples):
         """Count the number of samples for each class."""
@@ -76,19 +77,52 @@ class LocalizationDataset(Dataset):
         # print(self.n_pos)
         # exit(0)
         return pos_samples
+
     def get_neg_samples(self, anchor_idx):
-        """
-        NOT a hard sample selection
-        """
         filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
         anchor_type_protein = self.samples[anchor_idx][4]
-        neg_samples = [sample for sample in filtered_samples if
-                       not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
+        if self.hard_neg:
+            print('hard')
+            hneg = self.hard_mining(anchor_type_protein)
+            neg_samples = [sample for sample in filtered_samples if
+                           np.any(np.logical_and(hneg == 1, sample[4] == 1))]
+        else:
+            neg_samples = [sample for sample in filtered_samples if
+                           not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
         if len(neg_samples) < self.n_neg:
             raise ValueError(f"Not enough negative samples found: {len(neg_samples)}. Required: {self.n_neg}.")
         if len(neg_samples) > self.n_neg:
             neg_samples = random.sample(neg_samples, self.n_neg)
         return neg_samples
+
+    @staticmethod
+    def hard_mining(anchor_type_protein, file_path='distance_map.txt'):
+        with open(file_path, 'r') as source_file:
+            content = eval(source_file.read())
+
+        print(content)
+        min_non_zero_keys = {}
+
+        for main_key, sub_dict in content.items():
+            # Filter out zero values and find the minimum
+            non_zero_values = {k: v for k, v in sub_dict.items() if v > 0}
+            min_key = min(non_zero_values, key=non_zero_values.get)
+            min_non_zero_keys[main_key] = min_key
+
+        label2idx = {"Nucleus": 0, "ER": 1, "Peroxisome": 2, "Mitochondrion": 3, "Nucleus_export": 4,
+                     "SIGNAL": 5, "chloroplast": 6, "Thylakoid": 7}
+        mapped_dict = {label2idx[key]: label2idx[value] for key, value in min_non_zero_keys.items()}
+
+        neg = [0, 0, 0, 0, 0, 0, 0, 0]
+        for i in range(len(anchor_type_protein)):
+            if anchor_type_protein[i] == 1:
+                neg[mapped_dict[i]] = 1
+        for i in range(len(anchor_type_protein)):
+            if anchor_type_protein[i] == 1:
+                neg[i] = 0
+        if all(v == 0 for v in neg):
+            neg = [1 if x == 0 else 0 for x in anchor_type_protein]
+        return neg
 
 def custom_collate(batch):
     id, id_frags, fragments, target_frags, type_protein, sample_weight, pos_neg = zip(*batch)
