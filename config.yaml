@@ -68,3 +68,4 @@ supcon:
   hard_neg: True
   weight: 1
   warm_start: 30
+  exclusive: True
