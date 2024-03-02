@@ -83,15 +83,8 @@ class LocalizationDataset(Dataset):
         anchor_type_protein = self.samples[anchor_idx][4]
         if self.hard_neg:
             hneg = self.hard_mining(anchor_type_protein)
-            print(1, anchor_type_protein)
-            print(len(self.samples))
-            # neg_samples = [sample for sample in filtered_samples if
-            #                np.any(np.logical_and(hneg == 1, sample[4] == 1))]
-            neg_samples = []
-            for sample in filtered_samples:
-                print(sample[4])  # 打印当前样本的类型
-                if np.any(np.logical_and(hneg == 1, sample[4] == 1)):
-                    neg_samples.append(sample)
+            neg_samples = [sample for sample in filtered_samples if
+                           np.any(np.logical_and(hneg == 1, sample[4] == 1))]
 
         else:
             neg_samples = [sample for sample in filtered_samples if
@@ -107,7 +100,7 @@ class LocalizationDataset(Dataset):
         with open(file_path, 'r') as source_file:
             content = eval(source_file.read())
 
-        print(content)
+        # print(content)
         min_non_zero_keys = {}
 
         for main_key, sub_dict in content.items():
@@ -121,18 +114,14 @@ class LocalizationDataset(Dataset):
         mapped_dict = {label2idx[key]: label2idx[value] for key, value in min_non_zero_keys.items()}
 
         neg = [0, 0, 0, 0, 0, 0, 0, 0]
-        print(neg)
         for i in range(len(anchor_type_protein)):
             if anchor_type_protein[i] == 1:
                 neg[mapped_dict[i]] = 1
-        print(neg)
         for i in range(len(anchor_type_protein)):
             if anchor_type_protein[i] == 1:
                 neg[i] = 0
-        print(neg)
         if all(v == 0 for v in neg):
             neg = [1 if x == 0 else 0 for x in anchor_type_protein]
-        print(neg)
         return np.array(neg)
 
 def custom_collate(batch):
