@@ -244,12 +244,12 @@ class Encoder(nn.Module):
             # print('-after mean', emb_pro.shape)
             emb_pro_list.append(emb_pro)
         return emb_pro_list
-    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, iswarming):
+    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, warm_starting):
         
         features = self.model(input_ids=encoded_sequence['input_ids'], attention_mask=encoded_sequence['attention_mask'])
         last_hidden_state = remove_s_e_token(features.last_hidden_state, encoded_sequence['attention_mask']) #[batch, maxlen-2, dim]
         motif_logits = None
-        if not iswarming:
+        if not warm_starting:
             motif_logits = self.ParallelLinearDecoders(last_hidden_state)
             motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1) #[batch, num_class, maxlen-2]
 
@@ -266,7 +266,7 @@ class Encoder(nn.Module):
         # pooled_features = self.pooling_layer(transposed_feature).squeeze(2) #[sample, dim]
         classification_head = self.type_head(emb_pro) #[sample, num_class]
 
-        if self.apply_supcon and iswarming:
+        if self.apply_supcon and warm_starting:
             projection_head = self.projection_head(emb_pro)
             return classification_head, motif_logits, projection_head
 

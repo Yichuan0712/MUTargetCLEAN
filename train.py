@@ -55,7 +55,7 @@ def make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tupl
     return id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt
 
 
-def train_loop(tools, configs, iswarming):
+def train_loop(tools, configs, warm_starting):
     # accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=tools['num_classes'], average='macro')
     # f1_score = torchmetrics.F1Score(num_classes=tools['num_classes'], average='macro', task="multiclass")
     # accuracy.to(tools['train_device'])
@@ -84,15 +84,15 @@ def train_loop(tools, configs, iswarming):
                     encoded_seq[k]=encoded_seq[k].to(tools['train_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, iswarming)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, warm_starting)
             weighted_loss_sum = 0
-            if not iswarming:
+            if not warm_starting:
                 motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
                 sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
                 weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
                     torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
 
-            if configs.supcon.apply and iswarming:
+            if configs.supcon.apply and warm_starting:
                 """
                 if apply supcon is true
                     get projection_head
@@ -129,7 +129,7 @@ def train_loop(tools, configs, iswarming):
                             encoded_seqP[k] = encoded_seqP[k].to(tools['train_device'])
                     else:
                         encoded_seqP = encoded_seqP.to(tools['train_device'])
-                    __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP, iswarming)
+                    __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP, warm_starting)
                     projection_head_list.append(projection_headP)
 
                 for i in range(configs.train_settings.batch_size):
@@ -148,7 +148,7 @@ def train_loop(tools, configs, iswarming):
                             encoded_seqN[k] = encoded_seqN[k].to(tools['train_device'])
                     else:
                         encoded_seqN = encoded_seqN.to(tools['train_device'])
-                    __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN, iswarming)
+                    __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN, warm_starting)
                     projection_head_list.append(projection_headN)
                 # if batch == 2:
                 #     exit(0)
@@ -211,7 +211,7 @@ def train_loop(tools, configs, iswarming):
 
 
 
-def test_loop(tools, dataloader):
+def test_loop(tools, dataloader, warm_starting):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
@@ -237,12 +237,13 @@ def test_loop(tools, dataloader):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
-            
-            motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
-            sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
-            weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
-                torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, warm_starting)
+            weighted_loss_sum = 0
+            if not warm_starting:
+                motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
+                sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
+                weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
+                    torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
 
                 # tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device']))
             
@@ -356,7 +357,7 @@ def frag2protein(data_dict, tools):
         data_dict[id_protein]['motif_target_protein']=motif_target_protein
     return data_dict
 
-def evaluate_protein(dataloader, tools):
+def evaluate_protein(dataloader, tools, warm_starting=False):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
@@ -379,7 +380,7 @@ def evaluate_protein(dataloader, tools):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, warm_starting)
             m=torch.nn.Sigmoid()
             motif_logits = m(motif_logits)
             classification_head = m(classification_head)
@@ -607,13 +608,13 @@ def main(config_dict, valid_batch_number, test_batch_number):
     best_valid_loss = np.inf
     for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
         if epoch < configs.supcon.warm_start:
-            iswarming = True
+            warm_starting = True
 
         tools['epoch'] = epoch
         print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
         customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
         start_time = time()
-        train_loss = train_loop(tools, configs, iswarming)
+        train_loss = train_loop(tools, configs, warm_starting)
         end_time = time()
 
 
@@ -621,7 +622,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
             dataloader = tools["valid_loader"]
-            valid_loss = test_loop(tools, dataloader)
+            valid_loss = test_loop(tools, dataloader, warm_starting)
             end_time = time()
 
 
