@@ -606,12 +606,17 @@ def main(config_dict, valid_batch_number, test_batch_number):
     customlog(logfilepath, "Start training...\n")
 
     best_valid_loss = np.inf
+    print('Warm Start Began')
     for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
+        warm_starting = False
         if epoch < configs.supcon.warm_start:
             warm_starting = True
 
+
         tools['epoch'] = epoch
         print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
+        if epoch == configs.supcon.warm_start:
+            print('Warm Start Finished')
         customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
         start_time = time()
         train_loss = train_loop(tools, configs, warm_starting)
