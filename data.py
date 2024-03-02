@@ -133,7 +133,7 @@ class LocalizationDataset(Dataset):
         if all(v == 0 for v in neg):
             neg = [1 if x == 0 else 0 for x in anchor_type_protein]
         print(neg)
-        return neg
+        return np.array(neg)
 
 def custom_collate(batch):
     id, id_frags, fragments, target_frags, type_protein, sample_weight, pos_neg = zip(*batch)
