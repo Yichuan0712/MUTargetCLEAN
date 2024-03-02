@@ -1,14 +1,14 @@
 # MUTarget + CLEAN 240302
 
-- `apply`: `False` - 是否使用SupCon，选择`False`以不使用。
-- `device`: `cuda` - 指定使用的设备。
-- `drop_out`: `0.1` - Dropout比率。
-- `n_pos`: `1` - 正样本的数量。
-- `n_neg`: `2` - 负样本的数量。
-- `temperature`: `0.1` - 温度参数，用于调整损失函数中的缩放。
-- `hard_neg`: `True` - 是否选择较难的negative sample计算loss。
-- `weight`: `0.1` - 暂时使用这个参数来避免NaN。
-- `warm_start`: `2` - Warm start结束的epoch。
+- `apply` - 是否使用SupCon，选择`False`以不使用。
+- `device` - 指定使用的设备。
+- `drop_out` - Dropout比率。
+- `n_pos` - 正样本的数量。
+- `n_neg` - 负样本的数量。
+- `temperature` - 温度参数，用于调整损失函数中的缩放。
+- `hard_neg` - 是否选择较难的negative sample计算loss。
+- `weight` - 暂时使用这个参数来避免NaN。
+- `warm_start` - Warm start结束的epoch。
 
 
 ~~The primary objective of this branch is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.~~
