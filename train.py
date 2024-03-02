@@ -266,7 +266,7 @@ def test_loop(tools, dataloader, configs, warm_starting):
                 projection_head_list = []
                 projection_head_list.append(projection_head)
 
-                for i in range(configs.train_settings.batch_size):
+                for i in range(configs.valid_settings.batch_size):
                     for j in range(configs.supcon.n_pos):
                         for k in range(5):
                             pos_transformed[j][k].append(pos_neg[i][0][j][k])
@@ -286,7 +286,7 @@ def test_loop(tools, dataloader, configs, warm_starting):
                                                             seq_frag_tupleP, warm_starting)
                     projection_head_list.append(projection_headP)
 
-                for i in range(configs.train_settings.batch_size):
+                for i in range(configs.valid_settings.batch_size):
                     for j in range(configs.supcon.n_neg):
                         for k in range(5):
                             neg_transformed[j][k].append(pos_neg[i][1][j][k])
