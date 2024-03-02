@@ -165,7 +165,7 @@ def train_loop(tools, configs):
 
                 # Temporarily applying a small weight to the SupCon loss to mitigate gradient explosion issues
                 weighted_loss_sum += 0.01 * supcon_loss
-
+                print(supcon_loss)
                 """
                 if apply supcon ends here
                 """
