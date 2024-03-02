@@ -164,7 +164,7 @@ def train_loop(tools, configs, warm_starting):
                 # Temporarily applying a small weight to the SupCon loss to mitigate gradient explosion issues
                 weighted_loss_sum += configs.supcon.weight * supcon_loss
                 # weighted_loss_sum += supcon_loss
-                print(supcon_loss)
+                # print(supcon_loss)
                 """
                 if apply supcon ends here
                 """
@@ -211,7 +211,7 @@ def train_loop(tools, configs, warm_starting):
 
 
 
-def test_loop(tools, dataloader, warm_starting):
+def test_loop(tools, dataloader, configs, warm_starting):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
@@ -245,7 +245,83 @@ def test_loop(tools, dataloader, warm_starting):
                 weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
                     torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
 
-                # tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device']))
+            if configs.supcon.apply and warm_starting:
+                """
+                if apply supcon is true
+                    get projection_head
+                    get pos & neg samples
+                    get projection_head of pos & neg
+                    loss += supconloss
+                """
+                """
+                [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
+                -> [n_pos, 5, bsz] + [n_neg, 5, bsz]
+
+                We need some complex dimension transformations to achieve modifications with minimal disruption to the old code
+                This code is quite ugly but I would leave them here since there is very low chance for any reuse
+                """
+                pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
+                neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
+
+                projection_head_list = []
+                projection_head_list.append(projection_head)
+
+                for i in range(configs.train_settings.batch_size):
+                    for j in range(configs.supcon.n_pos):
+                        for k in range(5):
+                            pos_transformed[j][k].append(pos_neg[i][0][j][k])
+                for i in range(len(pos_transformed)):
+                    id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
+                        tuple(pos_transformed[i][1]),
+                        tuple(pos_transformed[i][2]),
+                        tuple(pos_transformed[i][3]),
+                        tuple(torch.from_numpy(arr) for arr in pos_transformed[i][4]))
+                    encoded_seqP = tokenize(tools, seq_frag_tupleP)
+                    if type(encoded_seqP) == dict:
+                        for k in encoded_seqP.keys():
+                            encoded_seqP[k] = encoded_seqP[k].to(tools['train_device'])
+                    else:
+                        encoded_seqP = encoded_seqP.to(tools['train_device'])
+                    __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP,
+                                                            seq_frag_tupleP, warm_starting)
+                    projection_head_list.append(projection_headP)
+
+                for i in range(configs.train_settings.batch_size):
+                    for j in range(configs.supcon.n_neg):
+                        for k in range(5):
+                            neg_transformed[j][k].append(pos_neg[i][1][j][k])
+                for i in range(len(neg_transformed)):
+                    id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
+                        tuple(neg_transformed[i][1]),
+                        tuple(neg_transformed[i][2]),
+                        tuple(neg_transformed[i][3]),
+                        tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
+                    encoded_seqN = tokenize(tools, seq_frag_tupleN)
+                    if type(encoded_seqN) == dict:
+                        for k in encoded_seqN.keys():
+                            encoded_seqN[k] = encoded_seqN[k].to(tools['train_device'])
+                    else:
+                        encoded_seqN = encoded_seqN.to(tools['train_device'])
+                    __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN,
+                                                            seq_frag_tupleN, warm_starting)
+                    projection_head_list.append(projection_headN)
+                # if batch == 2:
+                #     exit(0)
+                projection_head_tensor = torch.stack(projection_head_list, dim=1)
+                supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
+                                                            configs.supcon.temperature,
+                                                            configs.supcon.n_pos)
+                # print('batch:', batch)
+                # print('old loss sum:', weighted_loss_sum)
+                # print('supcon loss:', supcon_loss)
+
+                # Temporarily applying a small weight to the SupCon loss to mitigate gradient explosion issues
+                weighted_loss_sum += configs.supcon.weight * supcon_loss
+                # weighted_loss_sum += supcon_loss
+                # print(supcon_loss)
+                """
+                if apply supcon ends here
+                """
             
             # losses=[]
             # for head in range(motif_logits.size()[1]):
@@ -627,7 +703,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
             dataloader = tools["valid_loader"]
-            valid_loss = test_loop(tools, dataloader, warm_starting)
+            valid_loss = test_loop(tools, dataloader, configs, warm_starting)
             end_time = time()
 
 
