@@ -211,7 +211,7 @@ def train_loop(tools, configs, warm_starting):
 
 
 
-def test_loop(tools, dataloader, configs, warm_starting):
+def test_loop(tools, dataloader):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
@@ -237,92 +237,11 @@ def test_loop(tools, dataloader, configs, warm_starting):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, warm_starting)
-            weighted_loss_sum = 0
-            if not warm_starting:
-                motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
-                sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
-                weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
-                    torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
-
-            if configs.supcon.apply and warm_starting:
-                """
-                if apply supcon is true
-                    get projection_head
-                    get pos & neg samples
-                    get projection_head of pos & neg
-                    loss += supconloss
-                """
-                """
-                [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
-                -> [n_pos, 5, bsz] + [n_neg, 5, bsz]
-
-                We need some complex dimension transformations to achieve modifications with minimal disruption to the old code
-                This code is quite ugly but I would leave them here since there is very low chance for any reuse
-                """
-                pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
-                neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
-
-                projection_head_list = []
-                projection_head_list.append(projection_head)
-
-                for i in range(configs.valid_settings.batch_size):
-                    for j in range(configs.supcon.n_pos):
-                        for k in range(5):
-                            pos_transformed[j][k].append(pos_neg[i][0][j][k])
-                for i in range(len(pos_transformed)):
-                    id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
-                        tuple(pos_transformed[i][1]),
-                        tuple(pos_transformed[i][2]),
-                        tuple(pos_transformed[i][3]),
-                        tuple(torch.from_numpy(arr) for arr in pos_transformed[i][4]))
-                    encoded_seqP = tokenize(tools, seq_frag_tupleP)
-                    if type(encoded_seqP) == dict:
-                        for k in encoded_seqP.keys():
-                            encoded_seqP[k] = encoded_seqP[k].to(tools['valid_device'])
-                    else:
-                        encoded_seqP = encoded_seqP.to(tools['valid_device'])
-                    __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP,
-                                                            seq_frag_tupleP, warm_starting)
-                    projection_head_list.append(projection_headP)
-
-                for i in range(configs.valid_settings.batch_size):
-                    for j in range(configs.supcon.n_neg):
-                        for k in range(5):
-                            neg_transformed[j][k].append(pos_neg[i][1][j][k])
-                for i in range(len(neg_transformed)):
-                    id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
-                        tuple(neg_transformed[i][1]),
-                        tuple(neg_transformed[i][2]),
-                        tuple(neg_transformed[i][3]),
-                        tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
-                    encoded_seqN = tokenize(tools, seq_frag_tupleN)
-                    if type(encoded_seqN) == dict:
-                        for k in encoded_seqN.keys():
-                            encoded_seqN[k] = encoded_seqN[k].to(tools['valid_device'])
-                    else:
-                        encoded_seqN = encoded_seqN.to(tools['valid_device'])
-                    __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN,
-                                                            seq_frag_tupleN, warm_starting)
-                    projection_head_list.append(projection_headN)
-                # if batch == 2:
-                #     exit(0)
-                projection_head_tensor = torch.stack(projection_head_list, dim=1)
-                supcon_loss = tools['loss_function_supcon'](projection_head_tensor,
-                                                            configs.supcon.temperature,
-                                                            configs.supcon.n_pos)
-                # print('batch:', batch)
-                # print('old loss sum:', weighted_loss_sum)
-                # print('supcon loss:', supcon_loss)
-
-                # Temporarily applying a small weight to the SupCon loss to mitigate gradient explosion issues
-                weighted_loss_sum += configs.supcon.weight * supcon_loss
-                # weighted_loss_sum += supcon_loss
-                # print(supcon_loss)
-                """
-                if apply supcon ends here
-                """
-            
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, False)
+            motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
+            sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
+            weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
+                                torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
             # losses=[]
             # for head in range(motif_logits.size()[1]):
             #     loss = tools['loss_function'](motif_logits[:, head, :], target_frag[:,head].to(tools['valid_device']))
@@ -433,7 +352,7 @@ def frag2protein(data_dict, tools):
         data_dict[id_protein]['motif_target_protein']=motif_target_protein
     return data_dict
 
-def evaluate_protein(dataloader, tools, warm_starting=False):
+def evaluate_protein(dataloader, tools):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
@@ -456,7 +375,7 @@ def evaluate_protein(dataloader, tools, warm_starting=False):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, warm_starting)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, False)
             m=torch.nn.Sigmoid()
             motif_logits = m(motif_logits)
             classification_head = m(classification_head)
@@ -698,7 +617,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
         train_loss = train_loop(tools, configs, warm_starting)
         end_time = time()
 
-        """
+
         if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
@@ -714,7 +633,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
                 # Set the path to save the model checkpoint.
                 model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
                 save_checkpoint(epoch, model_path, tools)
-"""
+
     customlog(logfilepath, f"Fold {valid_batch_number} test\n-------------------------------\n")
     start_time = time()
     dataloader = tools["test_loader"]
