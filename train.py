@@ -171,7 +171,6 @@ def train_loop(tools, configs):
                 """
 
             train_loss += weighted_loss_sum.item()  # do these losses need to be weighted sum?
-            print(batch, train_loss)
         # Backpropagation
         scaler.scale(weighted_loss_sum).backward()
         scaler.step(tools['optimizer'])
