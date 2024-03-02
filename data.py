@@ -114,14 +114,18 @@ class LocalizationDataset(Dataset):
         mapped_dict = {label2idx[key]: label2idx[value] for key, value in min_non_zero_keys.items()}
 
         neg = [0, 0, 0, 0, 0, 0, 0, 0]
+        print(neg)
         for i in range(len(anchor_type_protein)):
             if anchor_type_protein[i] == 1:
                 neg[mapped_dict[i]] = 1
+        print(neg)
         for i in range(len(anchor_type_protein)):
             if anchor_type_protein[i] == 1:
                 neg[i] = 0
+        print(neg)
         if all(v == 0 for v in neg):
             neg = [1 if x == 0 else 0 for x in anchor_type_protein]
+        print(neg)
         return neg
 
 def custom_collate(batch):
