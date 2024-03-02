@@ -80,7 +80,6 @@ class LocalizationDataset(Dataset):
 
     def get_neg_samples(self, anchor_idx):
         filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
-        print(filtered_samples)
         anchor_type_protein = self.samples[anchor_idx][4]
         if self.hard_neg:
             hneg = self.hard_mining(anchor_type_protein)
