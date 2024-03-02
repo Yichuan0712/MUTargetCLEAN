@@ -85,8 +85,14 @@ class LocalizationDataset(Dataset):
             hneg = self.hard_mining(anchor_type_protein)
             print(1, anchor_type_protein)
             print(len(self.samples))
-            neg_samples = [sample for sample in filtered_samples if
-                           np.any(np.logical_and(hneg == 1, sample[4] == 1))]
+            # neg_samples = [sample for sample in filtered_samples if
+            #                np.any(np.logical_and(hneg == 1, sample[4] == 1))]
+            neg_samples = []
+            for sample in filtered_samples:
+                print(sample[4])  # 打印当前样本的类型
+                if np.any(np.logical_and(hneg == 1, sample[4] == 1)):
+                    neg_samples.append(sample)
+
         else:
             neg_samples = [sample for sample in filtered_samples if
                            not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
