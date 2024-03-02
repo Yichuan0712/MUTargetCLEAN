@@ -698,14 +698,14 @@ def main(config_dict, valid_batch_number, test_batch_number):
         train_loss = train_loop(tools, configs, warm_starting)
         end_time = time()
 
-"""
+        """
         if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
             dataloader = tools["valid_loader"]
             valid_loss = test_loop(tools, dataloader, configs, warm_starting)
             end_time = time()
-"""
+        
 
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
@@ -714,7 +714,7 @@ def main(config_dict, valid_batch_number, test_batch_number):
                 # Set the path to save the model checkpoint.
                 model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
                 save_checkpoint(epoch, model_path, tools)
-
+"""
     customlog(logfilepath, f"Fold {valid_batch_number} test\n-------------------------------\n")
     start_time = time()
     dataloader = tools["test_loader"]
