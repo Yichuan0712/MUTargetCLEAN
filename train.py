@@ -55,7 +55,7 @@ def make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tupl
     return id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt
 
 
-def train_loop(tools, configs):
+def train_loop(tools, configs, iswarming):
     # accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=tools['num_classes'], average='macro')
     # f1_score = torchmetrics.F1Score(num_classes=tools['num_classes'], average='macro', task="multiclass")
     # accuracy.to(tools['train_device'])
@@ -84,17 +84,15 @@ def train_loop(tools, configs):
                     encoded_seq[k]=encoded_seq[k].to(tools['train_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, iswarming)
+            weighted_loss_sum = 0
+            if not iswarming:
+                motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
+                sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
+                weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
+                    torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
 
-            motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
-            # print(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])).size())
-            # print(torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).size())
-            sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
-            weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
-                torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
-            # 纯分step
-            # 带着motif loss
-            if configs.supcon.apply:
+            if configs.supcon.apply and iswarming:
                 """
                 if apply supcon is true
                     get projection_head
@@ -608,12 +606,16 @@ def main(config_dict, valid_batch_number, test_batch_number):
 
     best_valid_loss = np.inf
     for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
+        if epoch < configs.supcon.warm_start:
+            iswarming = True
+
         tools['epoch'] = epoch
         print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
         customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
         start_time = time()
-        train_loss = train_loop(tools, configs)
+        train_loss = train_loop(tools, configs, iswarming)
         end_time = time()
+
 
         if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
