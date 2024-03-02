@@ -129,7 +129,7 @@ def train_loop(tools, configs, iswarming):
                             encoded_seqP[k] = encoded_seqP[k].to(tools['train_device'])
                     else:
                         encoded_seqP = encoded_seqP.to(tools['train_device'])
-                    __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP)
+                    __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP, seq_frag_tupleP, iswarming)
                     projection_head_list.append(projection_headP)
 
                 for i in range(configs.train_settings.batch_size):
@@ -148,7 +148,7 @@ def train_loop(tools, configs, iswarming):
                             encoded_seqN[k] = encoded_seqN[k].to(tools['train_device'])
                     else:
                         encoded_seqN = encoded_seqN.to(tools['train_device'])
-                    __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN)
+                    __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN, seq_frag_tupleN, iswarming)
                     projection_head_list.append(projection_headN)
                 # if batch == 2:
                 #     exit(0)
