@@ -372,7 +372,7 @@ def evaluate_protein(dataloader, tools):
     data_dict={}
     with torch.no_grad():
         # for batch, (id, id_frags, seq_frag, target_frag, type_protein) in enumerate(dataloader):
-        for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple) in enumerate(dataloader):
+        for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(dataloader):
             # id_frags_list, seq_frag_tuple, target_frag_tuple = make_buffer(id_frags, seq_frag, target_frag)
             id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
             encoded_seq=tokenize(tools, seq_frag_tuple)
@@ -381,7 +381,7 @@ def evaluate_protein(dataloader, tools):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple)
             m=torch.nn.Sigmoid()
             motif_logits = m(motif_logits)
             classification_head = m(classification_head)
