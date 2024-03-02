@@ -279,9 +279,9 @@ def test_loop(tools, dataloader, configs, warm_starting):
                     encoded_seqP = tokenize(tools, seq_frag_tupleP)
                     if type(encoded_seqP) == dict:
                         for k in encoded_seqP.keys():
-                            encoded_seqP[k] = encoded_seqP[k].to(tools['train_device'])
+                            encoded_seqP[k] = encoded_seqP[k].to(tools['valid_device'])
                     else:
-                        encoded_seqP = encoded_seqP.to(tools['train_device'])
+                        encoded_seqP = encoded_seqP.to(tools['valid_device'])
                     __, __, projection_headP = tools['net'](encoded_seqP, pos_transformed[i][0], id_frags_listP,
                                                             seq_frag_tupleP, warm_starting)
                     projection_head_list.append(projection_headP)
@@ -299,9 +299,9 @@ def test_loop(tools, dataloader, configs, warm_starting):
                     encoded_seqN = tokenize(tools, seq_frag_tupleN)
                     if type(encoded_seqN) == dict:
                         for k in encoded_seqN.keys():
-                            encoded_seqN[k] = encoded_seqN[k].to(tools['train_device'])
+                            encoded_seqN[k] = encoded_seqN[k].to(tools['valid_device'])
                     else:
-                        encoded_seqN = encoded_seqN.to(tools['train_device'])
+                        encoded_seqN = encoded_seqN.to(tools['valid_device'])
                     __, __, projection_headN = tools['net'](encoded_seqN, neg_transformed[i][0], id_frags_listN,
                                                             seq_frag_tupleN, warm_starting)
                     projection_head_list.append(projection_headN)
@@ -698,14 +698,14 @@ def main(config_dict, valid_batch_number, test_batch_number):
         train_loss = train_loop(tools, configs, warm_starting)
         end_time = time()
 
-
+"""
         if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
             dataloader = tools["valid_loader"]
             valid_loss = test_loop(tools, dataloader, configs, warm_starting)
             end_time = time()
-
+"""
 
             if valid_loss < best_valid_loss:
                 best_valid_loss = valid_loss
