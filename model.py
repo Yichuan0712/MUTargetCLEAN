@@ -281,8 +281,8 @@ class Encoder(nn.Module):
             pos_transformed = [[[] for _ in range(5)] for _ in range(self.n_pos)]
             neg_transformed = [[[] for _ in range(5)] for _ in range(self.n_neg)]
 
-            # projection_head_list = []
-            # projection_head_list.append(projection_head)
+            emb_pro_list = []
+            emb_pro_list.append(emb_pro)
 
             for i in range(self.batch_size):
                 for j in range(self.n_pos):
@@ -307,8 +307,9 @@ class Encoder(nn.Module):
                 emb_pro_listP = self.get_pro_emb(pos_transformed[i][0], id_frags_listP, seq_frag_tupleP, last_hidden_stateP, self.overlap)
 
                 emb_proP = torch.stack(emb_pro_listP, dim=0)  # [sample, dim]
-                print(emb_proP.shape)
-                exit(0)
+
+                emb_pro_list.append(emb_proP)
+
             for i in range(self.batch_size):
                 for j in range(self.n_neg):
                     for k in range(5):
@@ -319,12 +320,30 @@ class Encoder(nn.Module):
                     tuple(neg_transformed[i][2]),
                     tuple(neg_transformed[i][3]),
                     tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
+                encoded_seqN = tokenize(self.tools, seq_frag_tupleN)
+                if type(encoded_seqN) == dict:
+                    for k in encoded_seqN.keys():
+                        encoded_seqN[k] = encoded_seqN[k].to(self.tools['train_device'])
+                else:
+                    encoded_seqN = encoded_seqN.to(self.tools['train_device'])
+                featuresN = self.model(input_ids=encoded_seqN['input_ids'],
+                                      attention_mask=encoded_seqN['attention_mask'])
+                last_hidden_stateN = remove_s_e_token(featuresN.last_hidden_state,
+                                                     encoded_seqN['attention_mask'])  # [batch, maxlen-2, dim]
+                emb_pro_listN = self.get_pro_emb(neg_transformed[i][0], id_frags_listN, seq_frag_tupleN, last_hidden_stateN, self.overlap)
 
+                emb_proN = torch.stack(emb_pro_listN, dim=0)  # [sample, dim]
 
+                emb_pro_list.append(emb_proN)
 
-            projection_head = self.projection_head(emb_pro)
-            print(id)
+            emb_pro_list_tensor = torch.stack(emb_pro_list, dim=1)
+
+            print(emb_pro_list_tensor.shape)
+
+            projection_head = self.projection_head(emb_pro_list_tensor)
+
             print(projection_head.shape)
+            exit(0)
             return classification_head, motif_logits, projection_head
 
         return classification_head, motif_logits, None
