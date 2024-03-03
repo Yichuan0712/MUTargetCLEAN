@@ -256,8 +256,6 @@ class Encoder(nn.Module):
         emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
 
         emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
-        print(emb_pro.shape)
-        # exit(0)
 
         classification_head = None
         if not warm_starting:
@@ -266,7 +264,6 @@ class Encoder(nn.Module):
         if self.apply_supcon and warm_starting:
             projection_head = self.projection_head(emb_pro)
             print(projection_head.shape)
-            exit(0)
             return classification_head, motif_logits, projection_head
 
         return classification_head, motif_logits, None
