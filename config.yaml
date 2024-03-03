@@ -64,7 +64,7 @@ supcon:
   drop_out: 0.1
   n_pos: 1
   n_neg: 2
-  temperature: 0.1
+  temperature: 1
   hard_neg: True
-  weight: 0.01
+  weight: 1
   warm_start: 2
