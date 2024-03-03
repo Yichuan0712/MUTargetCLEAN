@@ -75,16 +75,15 @@ class LocalizationDataset(Dataset):
             pos_samples = random.sample(pos_samples, self.n_pos)
         # print(len(pos_samples))
         # print(self.n_pos)
-        # exit(0)
         return pos_samples
 
     def get_neg_samples(self, anchor_idx):
         filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
         anchor_type_protein = self.samples[anchor_idx][4]
         if self.hard_neg:
-            hneg = self.hard_mining(anchor_type_protein)
+            hardneg = self.hard_mining(anchor_type_protein)
             neg_samples = [sample for sample in filtered_samples if
-                           np.any(np.logical_and(hneg == 1, sample[4] == 1))]
+                           np.any(np.logical_and(hardneg == 1, sample[4] == 1))]
 
         else:
             neg_samples = [sample for sample in filtered_samples if
