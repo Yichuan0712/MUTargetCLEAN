@@ -8,7 +8,8 @@ from transformers import AutoTokenizer
 from PromptProtein.utils import PromptConverter
 from PromptProtein.models import openprotein_promptprotein
 from transformers import EsmModel
-from utils import customlog
+from utils import customlog, prepare_saving_dir
+from train import make_buffer
 
 
 class LayerNormNet(nn.Module):
@@ -211,8 +212,22 @@ class Encoder(nn.Module):
         self.type_head = nn.Linear(self.model.embeddings.position_embeddings.embedding_dim, configs.encoder.num_classes)
         self.overlap = configs.encoder.frag_overlap
 
+        # SupCon
         self.apply_supcon = configs.supcon.apply
         self.projection_head = LayerNormNet(configs)
+        self.n_pos = configs.supcon.n_pos
+        self.n_neg = configs.supcon.n_neg
+        self.batch_size = configs.train_settings.batch_size
+        # mini tools for supcon
+        curdir_path, _, _, _ = prepare_saving_dir(configs)
+        tokenizer = prepare_tokenizer(configs, curdir_path)
+        self.tools = {
+        'composition': configs.encoder.composition,
+        'tokenizer': tokenizer,
+        'max_len': configs.encoder.max_len,
+        'train_device': configs.train_settings.device,
+        'prm4prmpro': configs.encoder.prm4prmpro
+        }
         # self.mhatt = nn.MultiheadAttention(embed_dim=320, num_heads=10, batch_first=True)
         # self.attheadlist = []
         # self.headlist = []
@@ -248,6 +263,7 @@ class Encoder(nn.Module):
         
         features = self.model(input_ids=encoded_sequence['input_ids'], attention_mask=encoded_sequence['attention_mask'])
         last_hidden_state = remove_s_e_token(features.last_hidden_state, encoded_sequence['attention_mask']) #[batch, maxlen-2, dim]
+
         motif_logits = None
         if not warm_starting:
             motif_logits = self.ParallelLinearDecoders(last_hidden_state)
@@ -262,6 +278,50 @@ class Encoder(nn.Module):
             classification_head = self.type_head(emb_pro) #[sample, num_class]
 
         if self.apply_supcon and warm_starting:
+            pos_transformed = [[[] for _ in range(5)] for _ in range(self.n_pos)]
+            neg_transformed = [[[] for _ in range(5)] for _ in range(self.n_neg)]
+
+            # projection_head_list = []
+            # projection_head_list.append(projection_head)
+
+            for i in range(self.batch_size):
+                for j in range(self.n_pos):
+                    for k in range(5):
+                        pos_transformed[j][k].append(pos_neg[i][0][j][k])
+            for i in range(len(pos_transformed)):
+                id_frags_listP, seq_frag_tupleP, target_frag_ptP, type_protein_ptP = make_buffer(
+                    tuple(pos_transformed[i][1]),
+                    tuple(pos_transformed[i][2]),
+                    tuple(pos_transformed[i][3]),
+                    tuple(torch.from_numpy(arr) for arr in pos_transformed[i][4]))
+                encoded_seqP = tokenize(self.tools, seq_frag_tupleP)
+                if type(encoded_seqP) == dict:
+                    for k in encoded_seqP.keys():
+                        encoded_seqP[k] = encoded_seqP[k].to(self.tools['train_device'])
+                else:
+                    encoded_seqP = encoded_seqP.to(self.tools['train_device'])
+                featuresP = self.model(input_ids=encoded_seqP['input_ids'],
+                                      attention_mask=encoded_seqP['attention_mask'])
+                last_hidden_stateP = remove_s_e_token(featuresP.last_hidden_state,
+                                                     encoded_seqP['attention_mask'])  # [batch, maxlen-2, dim]
+                emb_pro_listP = self.get_pro_emb(pos_transformed[i][0], id_frags_listP, seq_frag_tupleP, last_hidden_stateP, self.overlap)
+
+                emb_proP = torch.stack(emb_pro_listP, dim=0)  # [sample, dim]
+                print(emb_proP.shape)
+                exit(0)
+            for i in range(self.batch_size):
+                for j in range(self.n_neg):
+                    for k in range(5):
+                        neg_transformed[j][k].append(pos_neg[i][1][j][k])
+            for i in range(len(neg_transformed)):
+                id_frags_listN, seq_frag_tupleN, target_frag_ptN, type_protein_ptN = make_buffer(
+                    tuple(neg_transformed[i][1]),
+                    tuple(neg_transformed[i][2]),
+                    tuple(neg_transformed[i][3]),
+                    tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
+
+
+
             projection_head = self.projection_head(emb_pro)
             print(id)
             print(projection_head.shape)
