@@ -264,19 +264,35 @@ class Encoder(nn.Module):
         features = self.model(input_ids=encoded_sequence['input_ids'], attention_mask=encoded_sequence['attention_mask'])
         last_hidden_state = remove_s_e_token(features.last_hidden_state, encoded_sequence['attention_mask']) #[batch, maxlen-2, dim]
 
+        """
+        ParallelLinearDecoders - begin
+        """
         motif_logits = None
         if not warm_starting:
             motif_logits = self.ParallelLinearDecoders(last_hidden_state)
             motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1) #[batch, num_class, maxlen-2]
+        """
+        ParallelLinearDecoders - end
+        """
 
         emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
 
         emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
 
+        """
+        Linear - begin
+        """
         classification_head = None
         if not warm_starting:
             classification_head = self.type_head(emb_pro) #[sample, num_class]
+        """
+        Linear - end
+        """
 
+        """
+        Supcon - begin
+        """
+        projection_head = None
         if self.apply_supcon and warm_starting:
             """
             [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
@@ -343,17 +359,15 @@ class Encoder(nn.Module):
 
                 emb_pro_list.append(emb_proN)
 
-            emb_pro_list_tensor = torch.stack(emb_pro_list, dim=1)
-
+            emb_pro_list_tensor = torch.stack(emb_pro_list, dim=1)  # [bcz, (1+npos+nneg), L1]
             # print(emb_pro_list_tensor.shape)
-
-            projection_head = self.projection_head(emb_pro_list_tensor)
-
+            projection_head = self.projection_head(emb_pro_list_tensor)  # [bcz, (1+npos+nneg), L2]
             # print(projection_head.shape)
+        """
+        Supcon - end
+        """
 
-            return classification_head, motif_logits, projection_head
-
-        return classification_head, motif_logits, None
+        return classification_head, motif_logits, projection_head
 
 class Bothmodels(nn.Module):
     def __init__(self, configs, pretrain_loc, trainable_layers, model_name='facebook/esm2_t33_650M_UR50D', model_type='esm_v2'):
