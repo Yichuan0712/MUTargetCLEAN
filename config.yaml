@@ -67,4 +67,4 @@ supcon:
   temperature: 0.1
   hard_neg: True
   weight: 1
-  warm_start: 2
+  warm_start: 999 # 2
