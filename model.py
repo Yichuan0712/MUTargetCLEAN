@@ -278,6 +278,13 @@ class Encoder(nn.Module):
             classification_head = self.type_head(emb_pro) #[sample, num_class]
 
         if self.apply_supcon and warm_starting:
+            """
+            [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
+            -> [n_pos, 5, bsz] + [n_neg, 5, bsz]
+
+            We need some complex dimension transformations to achieve modifications with minimal disruption to the old code
+            This code is quite ugly but I would leave them here since there is very low chance for any reuse
+            """
             pos_transformed = [[[] for _ in range(5)] for _ in range(self.n_pos)]
             neg_transformed = [[[] for _ in range(5)] for _ in range(self.n_neg)]
 
@@ -338,12 +345,12 @@ class Encoder(nn.Module):
 
             emb_pro_list_tensor = torch.stack(emb_pro_list, dim=1)
 
-            print(emb_pro_list_tensor.shape)
+            # print(emb_pro_list_tensor.shape)
 
             projection_head = self.projection_head(emb_pro_list_tensor)
 
-            print(projection_head.shape)
-            exit(0)
+            # print(projection_head.shape)
+
             return classification_head, motif_logits, projection_head
 
         return classification_head, motif_logits, None
