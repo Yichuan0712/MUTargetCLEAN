@@ -84,7 +84,7 @@ def train_loop(tools, configs, warm_starting):
                     encoded_seq[k]=encoded_seq[k].to(tools['train_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, pos_neg, warm_starting)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, warm_starting)
             weighted_loss_sum = 0
             if not warm_starting:
                 motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
@@ -238,7 +238,7 @@ def test_loop(tools, dataloader):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, pos_neg, False)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, False)
             motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
             weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
@@ -376,7 +376,7 @@ def evaluate_protein(dataloader, tools):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, pos_neg, False)
+            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, False)
             m=torch.nn.Sigmoid()
             motif_logits = m(motif_logits)
             classification_head = m(classification_head)
