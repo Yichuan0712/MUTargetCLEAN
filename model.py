@@ -270,21 +270,21 @@ class Encoder(nn.Module):
         motif_logits = None
         if not warm_starting:
             motif_logits = self.ParallelLinearDecoders(last_hidden_state)
-            motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1) #[batch, num_class, maxlen-2]
+            motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1)  # [batch, num_class, maxlen-2]
         """
         ParallelLinearDecoders - end
         """
 
         emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
 
-        emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
+        emb_pro = torch.stack(emb_pro_list, dim=0)  # [sample, dim]
 
         """
         Linear - begin
         """
         classification_head = None
         if not warm_starting:
-            classification_head = self.type_head(emb_pro) #[sample, num_class]
+            classification_head = self.type_head(emb_pro)  # [sample, num_class]
         """
         Linear - end
         """
@@ -297,9 +297,6 @@ class Encoder(nn.Module):
             """
             [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
             -> [n_pos, 5, bsz] + [n_neg, 5, bsz]
-
-            We need some complex dimension transformations to achieve modifications with minimal disruption to the old code
-            This code is quite ugly but I would leave them here since there is very low chance for any reuse
             """
             pos_transformed = [[[] for _ in range(5)] for _ in range(self.n_pos)]
             neg_transformed = [[[] for _ in range(5)] for _ in range(self.n_neg)]
