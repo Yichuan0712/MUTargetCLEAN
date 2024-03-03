@@ -257,7 +257,7 @@ class Encoder(nn.Module):
 
         emb_pro = torch.stack(emb_pro_list, dim=0) #[sample, dim]
         print(emb_pro.shape)
-        exit(0)
+        # exit(0)
 
         classification_head = None
         if not warm_starting:
