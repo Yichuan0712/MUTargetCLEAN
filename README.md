@@ -7,7 +7,7 @@
 - `n_neg` - 负样本的数量。
 - `temperature` - 温度参数，用于调整损失函数中的缩放。
 - `hard_neg` - 是否选择较难的negative sample计算loss。
-- `weight` - 暂时使用这个参数来避免NaN。
+- `weight` - 不用了
 - `warm_start` - Warm start结束的epoch。
 
 

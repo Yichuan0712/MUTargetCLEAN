@@ -85,6 +85,7 @@ def train_loop(tools, configs, warm_starting):
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
             classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, pos_neg, warm_starting)
+
             weighted_loss_sum = 0
             if not warm_starting:
                 motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
@@ -93,13 +94,10 @@ def train_loop(tools, configs, warm_starting):
                     torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
 
             if configs.supcon.apply and warm_starting:
-
                 supcon_loss = tools['loss_function_supcon'](projection_head,
                                                                    configs.supcon.temperature,
                                                                    configs.supcon.n_pos)
-
                 weighted_loss_sum += configs.supcon.weight * supcon_loss
-
 
             train_loss += weighted_loss_sum.item()  # do these losses need to be weighted sum?
         # Backpropagation

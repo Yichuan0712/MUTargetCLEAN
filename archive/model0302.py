@@ -82,11 +82,11 @@ def prepare_tokenizer(configs, curdir_path):
     if configs.encoder.composition=="esm_v2":
         tokenizer = AutoTokenizer.from_pretrained(configs.encoder.model_name)
     elif configs.encoder.composition=="promprot":
-        model, dictionary = openprotein_promptprotein(os.path.join(curdir_path, "PromptProtein", "PromptProtein.pt"))
+        model, dictionary = openprotein_promptprotein(os.path.join(curdir_path, "../PromptProtein", "PromptProtein.pt"))
         tokenizer = PromptConverter(dictionary)
     elif configs.encoder.composition=="both":
         tokenizer_esm = AutoTokenizer.from_pretrained(configs.encoder.model_name)
-        model, dictionary = openprotein_promptprotein(os.path.join(curdir_path, "PromptProtein", "PromptProtein.pt"))
+        model, dictionary = openprotein_promptprotein(os.path.join(curdir_path, "../PromptProtein", "PromptProtein.pt"))
         tokenizer_promprot = PromptConverter(dictionary)
         tokenizer={"tokenizer_esm":tokenizer_esm, "tokenizer_promprot":tokenizer_promprot}
     return tokenizer
@@ -302,9 +302,9 @@ def prepare_models(configs, logfilepath, curdir_path):
                       configs=configs
                       )
     elif configs.encoder.composition=="promprot":
-        encoder=CustomPromptModel(configs=configs, pretrain_loc=os.path.join(curdir_path, "PromptProtein", "PromptProtein.pt"), trainable_layers=["layers.32", "emb_layer_norm_after"])
+        encoder=CustomPromptModel(configs=configs, pretrain_loc=os.path.join(curdir_path, "../PromptProtein", "PromptProtein.pt"), trainable_layers=["layers.32", "emb_layer_norm_after"])
     elif configs.encoder.composition=="both":
-        encoder=Bothmodels(configs=configs, pretrain_loc=os.path.join(curdir_path, "PromptProtein", "PromptProtein.pt"), 
+        encoder=Bothmodels(configs=configs, pretrain_loc=os.path.join(curdir_path, "../PromptProtein", "PromptProtein.pt"),
                            trainable_layers=[], model_name=configs.encoder.model_name, model_type=configs.encoder.model_type)
     if not logfilepath == "":
         print_trainable_parameters(encoder, logfilepath)
