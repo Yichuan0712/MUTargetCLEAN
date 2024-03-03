@@ -63,7 +63,7 @@ supcon:
   device: cuda
   drop_out: 0.1
   n_pos: 9
-  n_neg: 30
+  n_neg: 10
   temperature: 0.1
   hard_neg: True
   weight: 1
