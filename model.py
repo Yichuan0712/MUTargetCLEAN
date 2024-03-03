@@ -265,6 +265,8 @@ class Encoder(nn.Module):
 
         if self.apply_supcon and warm_starting:
             projection_head = self.projection_head(emb_pro)
+            print(projection_head.shape)
+            exit(0)
             return classification_head, motif_logits, projection_head
 
         return classification_head, motif_logits, None
