@@ -75,7 +75,6 @@ class LocalizationDataset(Dataset):
             pos_samples = random.sample(pos_samples, self.n_pos)
         # print(len(pos_samples))
         # print(self.n_pos)
-        # exit(0)
         return pos_samples
 
     def get_neg_samples(self, anchor_idx):
