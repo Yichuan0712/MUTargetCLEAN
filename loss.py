@@ -38,4 +38,5 @@ def SupConHardLoss(model_emb, temp, n_pos):
     pos_logits_sum = logits[:, 1:n_pos + 1].sum(1)  # sum over all (anchor dot pos)
     log_prob = (pos_logits_sum - exp_logits_sum) / n_pos
     loss = - log_prob.mean()
+    print(loss)
     return loss
