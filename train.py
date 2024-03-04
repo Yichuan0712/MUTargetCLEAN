@@ -84,14 +84,14 @@ def train_loop(tools, configs, warm_starting):
                     encoded_seq[k]=encoded_seq[k].to(tools['train_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
-            if batch == 154:
-                with open('output.txt', 'w') as file:
-                    # 将变量的内容格式化成字符串并写入文件
-                    file.write(f"encoded_seq: {encoded_seq}\n")
-                    file.write(f"id_tuple: {id_tuple}\n")
-                    file.write(f"id_frags_list: {id_frags_list}\n")
-                    file.write(f"seq_frag_tuple: {seq_frag_tuple}\n")
-                    file.write(f"pos_neg: {pos_neg}\n")
+            # # debug
+            # if batch == 154:
+            #     with open('output.txt', 'w') as file:
+            #         file.write(f"encoded_seq: {encoded_seq}\n")
+            #         file.write(f"id_tuple: {id_tuple}\n")
+            #         file.write(f"id_frags_list: {id_frags_list}\n")
+            #         file.write(f"seq_frag_tuple: {seq_frag_tuple}\n")
+            #         file.write(f"pos_neg: {pos_neg}\n")
             classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, pos_neg, warm_starting)
             weighted_loss_sum = 0
             if not warm_starting:
