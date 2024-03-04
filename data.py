@@ -89,7 +89,13 @@ class LocalizationDataset(Dataset):
             neg_samples = [sample for sample in filtered_samples if
                            not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
         if len(neg_samples) < self.n_neg:
-            raise ValueError(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
+            # raise ValueError(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
+            print(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
+            print('The rest of negative samples are randomly selected.')
+            neg_samples_2 = [sample for sample in filtered_samples if
+                           not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
+            neg_samples_2 = random.sample(neg_samples_2, self.n_neg-len(neg_samples))
+            neg_samples.extend(neg_samples_2)
         if len(neg_samples) > self.n_neg:
             neg_samples = random.sample(neg_samples, self.n_neg)
         return neg_samples
