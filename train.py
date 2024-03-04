@@ -107,7 +107,7 @@ def train_loop(tools, configs, warm_starting):
         scaler.step(tools['optimizer'])
         scaler.update()
         tools['scheduler'].step()
-        # print(batch, weighted_loss_sum.item())
+        print(batch, weighted_loss_sum.item())
         if batch % 30 == 0:
             loss, current = weighted_loss_sum.item(), (batch + 1) * len(id_tuple)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
