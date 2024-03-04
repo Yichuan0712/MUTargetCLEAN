@@ -104,8 +104,8 @@ def train_loop(tools, configs, warm_starting):
                                                                    configs.supcon.temperature,
                                                                    configs.supcon.n_pos)
                 weighted_loss_sum += configs.supcon.weight * supcon_loss
-            else:
-                raise ValueError("Check configs.supcon.apply")
+            if configs.supcon.apply is False and warm_starting:
+                raise ValueError("Check configs.supcon.apply and configs.supcon.warm_start")
 
             train_loss += weighted_loss_sum.item()
 
