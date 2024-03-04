@@ -58,7 +58,7 @@ class LocalizationDataset(Dataset):
         type_protein = torch.from_numpy(type_protein)
         pos_neg = None
         if self.apply_supcon:
-            # Even when not warm starting, the following code is still executed, although its results are not utilized.
+            # Even when not in warm starting, the following code is still executed, although its results are not used
             pos_samples = self.get_pos_samples(idx)
             neg_samples = self.get_neg_samples(idx)
             pos_neg = [pos_samples, neg_samples]
