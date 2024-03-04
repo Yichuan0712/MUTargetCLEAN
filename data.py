@@ -58,6 +58,7 @@ class LocalizationDataset(Dataset):
         type_protein = torch.from_numpy(type_protein)
         pos_neg = None
         if self.apply_supcon:
+            # Even when not warm starting, the following code is still executed, although its results are not utilized.
             pos_samples = self.get_pos_samples(idx)
             neg_samples = self.get_neg_samples(idx)
             pos_neg = [pos_samples, neg_samples]
@@ -70,7 +71,10 @@ class LocalizationDataset(Dataset):
         pos_samples = [sample for sample in filtered_samples if
                        np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
         if len(pos_samples) < self.n_pos:
-            raise ValueError(f"Not enough positive samples for {anchor_type_protein} found: {len(pos_samples)}. Required: {self.n_pos}.")
+            # raise ValueError(f"Not enough positive samples for {anchor_type_protein} found: {len(pos_samples)}. Required: {self.n_pos}.")
+            samples_to_add = self.n_pos - len(pos_samples)
+            for _ in range(samples_to_add):
+                pos_samples.append(random.choice(pos_samples))
         if len(pos_samples) > self.n_pos:
             pos_samples = random.sample(pos_samples, self.n_pos)
         # print(len(pos_samples))
@@ -90,8 +94,8 @@ class LocalizationDataset(Dataset):
                            not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
         if len(neg_samples) < self.n_neg:
             # raise ValueError(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
-            print(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
-            print('The rest of negative samples are randomly selected.')
+            # print(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
+            # print('The rest of negative samples are randomly selected.')
             neg_samples_2 = [sample for sample in filtered_samples if
                            not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
             neg_samples_2 = random.sample(neg_samples_2, self.n_neg-len(neg_samples))
