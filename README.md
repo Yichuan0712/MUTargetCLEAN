@@ -30,7 +30,7 @@ Below are the descriptions for various configuration parameters, specifically re
 
 - **`get_neg_samples` Method**: Finds the negative samples for a specified anchor index. The categories of negative samples must not overlap with the anchor. For example, an anchor `[0100 0000]` and a negative `[0011 0000]`.
 
-- **`hard_mining` Function**: If `get_neg_samples` opts for hard mining mode, this function is called to select negative sample template. For each category, it selects the hardest negative template based on a distance map file, ensures there's no overlap among hardest negative template with the anchor, and excludes any overlapping items in the negative template. If exclusion results in `[0000 0000]`, it abandons hard mining for a standard negative sample selection.
+- **`hard_mining` Method**: If `get_neg_samples` opts for hard mining mode, this function is called to select negative sample template. For each category, it selects the hardest negative template based on a distance map file, ensures there's no overlap among hardest negative template with the anchor, and excludes any overlapping items in the negative template. If exclusion results in `[0000 0000]`, it abandons hard mining for a standard negative sample selection.
 
 - **`prepare_samples` Method**: Fixed a bug that caused failures when reading datasets containing dual data.
 
@@ -40,7 +40,7 @@ Below are the descriptions for various configuration parameters, specifically re
 
 ## Changes in `model.py`
 
-- **`Encoder` Class**: Depending on the use of SupCon and warm_starting status, it chooses between connecting `ParallelLinearDecoders and Linear` or only `LayerNormNet`. `LayerNormNet` is from CLEAN. When connecting `LayerNormNet`, `pos_neg` is processed and input as `[bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)] -> [n_pos, 5, bsz] + [n_neg, 5, bsz]`. For each positive and negative sample, embeddings are obtained and concatenated into `[bcz, (1+npos+nneg), len(embedding)]`. The projection head is then fetched, formatting the concatenation as `[bcz, (1+npos+nneg), len(projection)]`.
+- **`Encoder` Class**: Depending on the use of SupCon and warm_starting status, it chooses between connecting (`ParallelLinearDecoders` and `Linear`) or only `LayerNormNet`. `LayerNormNet` is from CLEAN. When connecting `LayerNormNet`, `pos_neg` is processed and input as `[bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)] -> [n_pos, 5, bsz] + [n_neg, 5, bsz]`. For each positive and negative sample, embeddings are obtained and concatenated into `[bcz, (1+npos+nneg), len(embedding)]`. The projection head is then fetched, formatting the concatenation as `[bcz, (1+npos+nneg), len(projection)]`.
 
 ## Changes in `loss.py`
 
