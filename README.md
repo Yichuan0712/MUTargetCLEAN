@@ -1,43 +1,48 @@
-# MUTarget + CLEAN 240302
+# MUTarget + CLEAN 240304
 
-- `apply` - 是否使用SupCon，选择`False`以不使用。
-- `device` - 指定使用的设备。
-- `drop_out` - Dropout比率。
-- `n_pos` - 正样本的数量。
-- `n_neg` - 负样本的数量。
-- `temperature` - 温度参数，用于调整损失函数中的缩放。
-- `hard_neg` - 是否选择较难的negative sample计算loss。
-- `weight` - 不用了
-- `warm_start` - Warm start结束的epoch。
+The primary objective of this branch is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.
 
+## Configuration Parameters Description
 
-~~The primary objective of this branch is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.~~
+Below are the descriptions for various configuration parameters, specifically regarding the use of SupCon and other related settings:
 
-~~## Modifications~~
+- **`apply`**: This parameter determines whether to use SupCon in the model training process. Setting it to `False` disables the use of SupCon.
 
-~~Here's a summary of the changes made:~~
+- **`n_pos`**: Represents the number of positive samples to be used for each anchor in the contrastive learning setup. 
 
-~~1. Added new configurations related to SupCon in configs.yaml.~~
-~~2. Updated data.py: LocalizationDataset can now fetch both positive and negative samples from the dataset.~~
-~~3. Introduced LayerNormNet from the CLEAN methodology into model.py as the projection head for SupCon.~~
-~~4. Implemented the projection head after the ESM layer. This is activated when configs.supcon.apply is set to True; otherwise, the standard MUTarget process is followed.~~
-~~5. Introduced a new loss.py incorporating SupConHardLoss from the CLEAN method.~~
-~~6. Fixed a minor bug in prepare_samples that prevented handling datasets including the deprecated label 'dual'.~~
+- **`n_neg`**: Indicates the number of negative samples for each anchor. 
 
-~~## To-Do List~~
+- **`temperature`**: A scaling parameter used in the loss function of contrastive learning models. 
 
-~~1. **Combining Losses**: Is it feasible to simply aggregate three different losses?~~
-   
-   ~~- Recommendation: Avoid direct aggregation. Temporarily apply a small weight to the SupCon loss to prevent gradient explosion issues.~~
+- **`hard_neg`**: A boolean parameter that, when set to `True`, indicates the model should select harder negative samples for computing the loss. Hard negative samples are those that are more challenging for the model to correctly distinguish.
 
-~~2. **Distance Map Efficiency**: How can we enhance the efficiency of the distance map calculation?~~
-   
-   ~~- Current challenge: The hard-mine function will significantly slow down, making inference times unacceptable due to the updating ESM2.~~
+- **`weight`**: Set it as 1. This parameter was previously used but is no longer necessary.
 
-~~3. **Evaluation & Testing for SupCon**: MaxSep and Pvalue, I will do this later.~~
+- **`warm_start`**: Specifies the epoch at which warm starting ends. 
 
 
-~~## To-Do 0226~~
-~~two step 热启动~~
-~~lr调节~~
-~~distance map~~
+## Changes in `data.py` 
+
+### `LocalizationDataset` Class
+- **`__getitem__` Method Enhancement**: A new return value `pos_neg` is added. When using SupCon, this return value contains a list `[pos_samples, neg_samples]`, where `pos_samples` and `neg_samples` are lists of samples used for contrastive learning. The code to get `pos_neg` is executed even when not in warm starting, although its results are not utilized.
+
+- **`get_pos_samples` Method**: Identifies the positive samples for a given anchor index. A sample qualifies as positive if it matches at least one category with the anchor. For instance, an anchor `[0100 0000]` and a positive `[1100 0000]`. If the selected number of positive samples is less than `n_pos`, it is randomly multiplied to match `n_pos`.
+
+- **`get_neg_samples` Method**: Finds the negative samples for a specified anchor index. The categories of negative samples must not overlap with the anchor. For example, an anchor `[0100 0000]` and a negative `[0011 0000]`.
+
+- **`hard_mining` Function**: If `get_neg_samples` opts for hard mining mode, this function is called to select negative sample template. For each category, it selects the hardest negative template based on a distance map file, ensures there's no overlap among hardest negative template with the anchor, and excludes any overlapping items in the negative template. If exclusion results in `[0000 0000]`, it abandons hard mining for a standard negative sample selection.
+
+- **`prepare_samples` Method**: Fixed a bug that caused failures when reading datasets containing dual data.
+
+## Changes in `train.py`
+
+- **`train_loop` Function**: Added conditions to check for SupCon usage and warm_starting status. If in warm starting and using SupCon, `loss_function` and `loss_function_pro` are not computed, and their corresponding networks are not engaged. Only `loss_function_supcon` is calculated.
+
+## Changes in `model.py`
+
+- **`Encoder` Class**: Depending on the use of SupCon and warm_starting status, it chooses between connecting `ParallelLinearDecoders and Linear` or only `LayerNormNet`. `LayerNormNet` is from CLEAN. When connecting `LayerNormNet`, `pos_neg` is processed and input as `[bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)] -> [n_pos, 5, bsz] + [n_neg, 5, bsz]`. For each positive and negative sample, embeddings are obtained and concatenated into `[bcz, (1+npos+nneg), len(embedding)]`. The projection head is then fetched, formatting the concatenation as `[bcz, (1+npos+nneg), len(projection)]`.
+
+## Changes in `loss.py`
+
+- **`SupConHardLoss` Function**: Originates from CLEAN.
+
