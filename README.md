@@ -2,9 +2,9 @@
 
 The primary objective of this branch is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.
 
-## Configuration Parameters Description
+## New Configuration Parameters Description
 
-Below are the descriptions for various configuration parameters, specifically regarding the use of SupCon and other related settings:
+Below are the descriptions for some important new configuration parameters, specifically regarding the use of SupCon and other related settings:
 
 - **`apply`**: This parameter determines whether to use SupCon in the model training process. Setting it to `False` disables the use of SupCon.
 
