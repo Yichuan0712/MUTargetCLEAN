@@ -23,8 +23,8 @@ class LayerNormNet(nn.Module):
         self.drop_out = configs.supcon.drop_out
         self.device = configs.supcon.device
         self.dtype = torch.float32
-
-        self.fc1 = nn.Linear(320, hidden_dim, dtype=self.dtype, device=self.device)
+        feature_dim={"facebook/esm2_t6_8M_UR50D":320,"facebook/esm2_t33_650M_UR50D":1280}
+        self.fc1 = nn.Linear(feature_dim[configs.encoder.model_name], hidden_dim, dtype=self.dtype, device=self.device)
         self.ln1 = nn.LayerNorm(hidden_dim, dtype=self.dtype, device=self.device)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim,
                              dtype=self.dtype, device=self.device)
@@ -214,12 +214,14 @@ class Encoder(nn.Module):
 
         # SupCon
         self.apply_supcon = configs.supcon.apply
-        self.projection_head = LayerNormNet(configs)
-        self.n_pos = configs.supcon.n_pos
-        self.n_neg = configs.supcon.n_neg
-        self.batch_size = configs.train_settings.batch_size
+        if self.apply_supcon:
+           self.projection_head = LayerNormNet(configs)
+           self.n_pos = configs.supcon.n_pos
+           self.n_neg = configs.supcon.n_neg
+           self.batch_size = configs.train_settings.batch_size
+        
         # mini tools for supcon
-        curdir_path, _, _, _ = prepare_saving_dir(configs)
+        curdir_path = os.getcwd()
         tokenizer = prepare_tokenizer(configs, curdir_path)
         self.tools = {
         'composition': configs.encoder.composition,

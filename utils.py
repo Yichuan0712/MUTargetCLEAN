@@ -39,7 +39,7 @@ def load_configs(config):
     tree_config.optimizer.eps = float(tree_config.optimizer.eps)
     return tree_config
 
-def prepare_saving_dir(configs):
+def prepare_saving_dir(configs,config_file_path):
     """
     Prepare a directory for saving a training results.
     Args:
@@ -62,7 +62,7 @@ def prepare_saving_dir(configs):
     Path(result_path).mkdir(parents=True, exist_ok=True)
     Path(checkpoint_path).mkdir(parents=True, exist_ok=True)
     # Copy the config file to the result directory.
-    shutil.copy(configs.config_path, result_path)
+    shutil.copy(config_file_path, result_path)
     # Return the path to the result directory.
     return curdir_path, result_path, checkpoint_path, logfilepath
 

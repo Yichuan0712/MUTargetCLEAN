@@ -1,7 +1,7 @@
 fix_seed: 0
 checkpoints_every: 16
-result_path: ./results_test
-config_path: ./config.yaml
+result_path: ./results_650M_lst2lr_PFT_datav2_frag1022_ovlap200_w35_gausfil
+config_path: ./config_1.yaml
 
 resume:
   resume: False
@@ -17,7 +17,7 @@ encoder:
   prm4prmpro: ppi
   frag_overlap: 200
 
-PEFT: PFT #lora # FT, PFT, frozen, lora, PromT
+PEFT: PFT # FT, PFT, frozen, lora, PromT
 
 train_settings:
   num_epochs: 20
@@ -38,12 +38,12 @@ valid_settings:
 
 predict_settings:
   batch_size: 16
-  device: cuda
+  device: cpu
   cutoffs: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
 optimizer:
   name: adam
-  lr: 1e-4 #-4
+  lr: 1e-4
   weight_decouple: True
   weight_decay: 1e-3
   eps: 1e-16
@@ -57,14 +57,3 @@ optimizer:
     gamma: 0.2
     num_restarts: 1
   mode: cosine #skip, cosine
-
-supcon:
-  apply: False
-  device: cuda
-  drop_out: 0.1
-  n_pos: 9
-  n_neg: 30
-  temperature: 0.1
-  hard_neg: True
-  weight: 1
-  warm_start: 0
