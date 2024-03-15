@@ -160,7 +160,7 @@ def train_loop(tools, configs, warm_starting):
 
 
 
-def test_loop(tools, dataloader,configs,warm_starting):
+def test_loop(tools, dataloader):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
@@ -169,7 +169,7 @@ def test_loop(tools, dataloader,configs,warm_starting):
     test_loss=0
     # Evaluating the model with torch.no_grad() ensures that no gradients are computed during test mode
     # also serves to reduce unnecessary gradient computations and memory usage for tensors with requires_grad=True
-    print("in test loop")
+    #print("in test loop")
     with torch.no_grad():
         for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(dataloader):
             id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
@@ -179,12 +179,12 @@ def test_loop(tools, dataloader,configs,warm_starting):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            print("ok1")
+            #print("ok1")
             classification_head, motif_logits, projection_head = tools['net'](
                        encoded_seq,
                        id_tuple,id_frags_list,seq_frag_tuple, 
-                       None, False)
-            print("ok2")
+                       None, False) #for test_loop always used None and False!
+            #print("ok2")
             weighted_loss_sum = 0
             #if not warm_starting:
             motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
@@ -530,7 +530,7 @@ def main(config_dict, config_file_path,valid_batch_number, test_batch_number):
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
             dataloader = tools["valid_loader"]
-            valid_loss = test_loop(tools, dataloader,configs,warm_starting)
+            valid_loss = test_loop(tools, dataloader) #In test loop, never test supcon loss
             end_time = time()
         
 
