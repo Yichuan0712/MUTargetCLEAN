@@ -381,6 +381,9 @@ class Encoder(nn.Module):
                 # print(projection_head.shape)
 
         else:
+            print(encoded_sequence['input_ids'])
+            print(encoded_sequence['input_ids'].shape)
+            exit(0)
             features = self.model(input_ids=encoded_sequence['input_ids'],
                                   attention_mask=encoded_sequence['attention_mask'])
             last_hidden_state = remove_s_e_token(features.last_hidden_state,
