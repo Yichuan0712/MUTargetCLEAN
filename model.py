@@ -342,6 +342,7 @@ class Encoder(nn.Module):
                     tuple(neg_transformed[i][2]),
                     tuple(neg_transformed[i][3]),
                     tuple(torch.from_numpy(arr) for arr in neg_transformed[i][4]))
+                
                 encoded_seqN = tokenize(self.tools, seq_frag_tupleN)
                 if type(encoded_seqN) == dict:
                     for k in encoded_seqN.keys():

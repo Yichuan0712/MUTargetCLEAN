@@ -92,17 +92,26 @@ def train_loop(tools, configs, warm_starting):
             #         file.write(f"id_frags_list: {id_frags_list}\n")
             #         file.write(f"seq_frag_tuple: {seq_frag_tuple}\n")
             #         file.write(f"pos_neg: {pos_neg}\n")
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, pos_neg, warm_starting)
+            classification_head, motif_logits, projection_head = tools['net'](
+                                 encoded_seq, 
+                                 id_tuple, 
+                                 id_frags_list, 
+                                 seq_frag_tuple, 
+                                 pos_neg, 
+                                 warm_starting)
             weighted_loss_sum = 0
             if not warm_starting:
                 motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
                 sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
-                weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['train_device']))+\
+                weighted_loss_sum = tools['loss_function'](
+                                motif_logits, 
+                                target_frag.to(tools['train_device']))+\
                     torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
             if configs.supcon.apply and warm_starting:
-                supcon_loss = tools['loss_function_supcon'](projection_head,
-                                                                   configs.supcon.temperature,
-                                                                   configs.supcon.n_pos)
+                supcon_loss = tools['loss_function_supcon'](
+                                projection_head,
+                                configs.supcon.temperature,
+                                configs.supcon.n_pos)
                 weighted_loss_sum += configs.supcon.weight * supcon_loss
             if configs.supcon.apply is False and warm_starting:
                 raise ValueError("Check configs.supcon.apply and configs.supcon.warm_start")
@@ -156,18 +165,11 @@ def test_loop(tools, dataloader,configs,warm_starting):
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
     tools['net'].eval().to(tools["valid_device"])
-    # accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=tools['num_classes'], average=None)
-    # macro_f1_score = torchmetrics.F1Score(num_classes=tools['num_classes'], average='macro', task="multiclass")
-    # f1_score = torchmetrics.F1Score(num_classes=tools['num_classes'], average=None, task="multiclass")
-    # accuracy.to(tools["valid_device"])
-    # macro_f1_score.to(tools["valid_device"])
-    # f1_score.to(tools['valid_device'])
     num_batches = len(dataloader)
     test_loss=0
-    # cs_num=0
-    # cs_correct=0
     # Evaluating the model with torch.no_grad() ensures that no gradients are computed during test mode
     # also serves to reduce unnecessary gradient computations and memory usage for tensors with requires_grad=True
+    print("in test loop")
     with torch.no_grad():
         for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(dataloader):
             id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
@@ -177,20 +179,27 @@ def test_loop(tools, dataloader,configs,warm_starting):
                     encoded_seq[k]=encoded_seq[k].to(tools['valid_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
-            classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, pos_neg, warm_starting)
+            print("ok1")
+            classification_head, motif_logits, projection_head = tools['net'](
+                       encoded_seq,
+                       id_tuple,id_frags_list,seq_frag_tuple, 
+                       None, False)
+            print("ok2")
             weighted_loss_sum = 0
-            if not warm_starting:
-               motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
-               sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
-               weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
+            #if not warm_starting:
+            motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
+            sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
+            weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
                                 torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
             
+            """
             if configs.supcon.apply and warm_starting:
-                supcon_loss = tools['loss_function_supcon'](projection_head,
-                                                                   configs.supcon.temperature,
-                                                                   configs.supcon.n_pos)
+                supcon_loss = tools['loss_function_supcon'](
+                                    projection_head,
+                                    configs.supcon.temperature,
+                                    configs.supcon.n_pos)
                 weighted_loss_sum += configs.supcon.weight * supcon_loss
-            
+            """
             test_loss += weighted_loss_sum.item()
             # label = torch.argmax(label_1hot, dim=1)
             # type_pred = torch.argmax(type_probab, dim=1)
@@ -204,6 +213,8 @@ def test_loop(tools, dataloader,configs,warm_starting):
         # epoch_f1 = np.array(f1_score.compute().cpu())
         # acc_cs = cs_correct / cs_num
         customlog(tools["logfilepath"], f" loss: {test_loss:>5f}\n")
+        print(f" loss: {test_loss:>5f}\n")
+
         # customlog(tools["logfilepath"], f" accuracy: "+str(epoch_acc)+"\n")
         # customlog(tools["logfilepath"], f" f1: "+str(epoch_f1)+"\n")
         # customlog(tools["logfilepath"], f" f1_macro: {epoch_macro_f1:>5f}\n")
@@ -515,6 +526,7 @@ def main(config_dict, config_file_path,valid_batch_number, test_batch_number):
 
 
         if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
+            print(f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
             start_time = time()
             dataloader = tools["valid_loader"]
