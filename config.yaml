@@ -17,7 +17,7 @@ encoder:
   prm4prmpro: ppi
   frag_overlap: 200
 
-PEFT: PFT #lora # FT, PFT, frozen, lora, PromT
+PEFT: frozen #lora # FT, PFT, frozen, lora, PromT
 
 train_settings:
   num_epochs: 20
