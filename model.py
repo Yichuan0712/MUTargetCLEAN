@@ -381,6 +381,7 @@ class Encoder(nn.Module):
                 # print(projection_head.shape)
 
         else:
+            print(encoded_sequence)
             print(encoded_sequence['input_ids'])
             print(encoded_sequence['input_ids'].shape)
             exit(0)
