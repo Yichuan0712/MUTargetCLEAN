@@ -77,22 +77,25 @@ def train_loop(tools, configs, warm_starting):
     for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(tools['train_loader']):
         if configs.supcon.apply and not warm_starting and pos_neg is not None:
             print(len(id_tuple))
-            for i in range(len(pos_neg[0])):
-                id_tuple += tuple(pos_neg[0][i][0])
-                id_frag_list_tuple += tuple(pos_neg[0][i][1])
-                seq_frag_list_tuple += tuple(pos_neg[0][i][2])
-                target_frag_nplist_tuple += tuple(pos_neg[0][i][3])
-                type_protein_pt_tuple += tuple(pos_neg[0][i][4])
-                sample_weight_tuple += tuple(pos_neg[0][i][5])
-            print(len(id_tuple))
-            for i in range(len(pos_neg[1])):
-                id_tuple += tuple(pos_neg[1][i][0])
-                id_frag_list_tuple += tuple(pos_neg[1][i][1])
-                seq_frag_list_tuple += tuple(pos_neg[1][i][2])
-                target_frag_nplist_tuple += tuple(pos_neg[1][i][3])
-                type_protein_pt_tuple += tuple(pos_neg[1][i][4])
-                sample_weight_tuple += tuple(pos_neg[1][i][5])
-            print(len(id_tuple))
+            print(len(id_frag_list_tuple))
+            print(len(pos_neg[0]))
+            print(len(pos_neg[0][0]))
+            # for i in range(len(pos_neg[0])):
+            #     id_tuple += tuple(pos_neg[0][i][0])
+            #     id_frag_list_tuple += tuple(pos_neg[0][i][1])
+            #     seq_frag_list_tuple += tuple(pos_neg[0][i][2])
+            #     target_frag_nplist_tuple += tuple(pos_neg[0][i][3])
+            #     type_protein_pt_tuple += tuple(pos_neg[0][i][4])
+            #     sample_weight_tuple += tuple(pos_neg[0][i][5])
+            # print(len(id_tuple))
+            # for i in range(len(pos_neg[1])):
+            #     id_tuple += tuple(pos_neg[1][i][0])
+            #     id_frag_list_tuple += tuple(pos_neg[1][i][1])
+            #     seq_frag_list_tuple += tuple(pos_neg[1][i][2])
+            #     target_frag_nplist_tuple += tuple(pos_neg[1][i][3])
+            #     type_protein_pt_tuple += tuple(pos_neg[1][i][4])
+            #     sample_weight_tuple += tuple(pos_neg[1][i][5])
+            # print(len(id_tuple))
             exit(0)
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
         with autocast():
