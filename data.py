@@ -74,7 +74,7 @@ class LocalizationDataset(Dataset):
         for sample in filtered_samples:
             if np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1)):
                 labels = np.where(sample[4] == 1)[0]
-                weights = self.class_weights[labels]
+                weights = [self.class_weights[label] for label in labels]
                 sample_weight = np.max(weights)
                 sample_with_weight = list(sample) + [sample_weight]
                 pos_samples.append(sample_with_weight)
