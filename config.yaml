@@ -23,7 +23,7 @@ train_settings:
   num_epochs: 20
   shuffle: True
   device: cuda
-  batch_size: 16
+  batch_size: 4
   grad_accumulation: 1
   loss_pos_weight: 35
   dataset: v2 # v2, v3
