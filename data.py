@@ -68,8 +68,16 @@ class LocalizationDataset(Dataset):
     def get_pos_samples(self, anchor_idx):
         filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
         anchor_type_protein = self.samples[anchor_idx][4]
-        pos_samples = [sample for sample in filtered_samples if
-                       np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
+        # pos_samples = [sample for sample in filtered_samples if
+        #                np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
+        pos_samples = []
+        for sample in filtered_samples:
+            if np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1)):
+                labels = np.where(sample[4] == 1)[0]
+                weights = self.class_weights[labels]
+                sample_weight = np.max(weights)
+                sample_with_weight = list(sample) + [sample_weight]
+                pos_samples.append(sample_with_weight)
         if len(pos_samples) < self.n_pos:
             # raise ValueError(f"Not enough positive samples for {anchor_type_protein} found: {len(pos_samples)}. Required: {self.n_pos}.")
             samples_to_add = self.n_pos - len(pos_samples)
