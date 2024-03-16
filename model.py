@@ -270,16 +270,20 @@ class Encoder(nn.Module):
 
         if apply supcon:
             if not warming starting:
-                if pos_neg is None: ------------------> batch should be built as anchor in train_loop()
+                if pos_neg is None: ------------------> batch should be built as (anchor) in train_loop()
+                    "CASE A"
                     get motif_logits from batch
                     get classification_head from batch
                 else: --------------------------------> batch should be built as (anchor+pos+neg) in train_loop()
+                    "CASE B"
                     get motif_logits from batch
                     get classification_head from batch
                     get projection_head from batch
             else: ------------------------------------> batch should be built as (anchor+pos+neg) in train_loop()
+                "CASE C"
                 get projection_head from batch
-        else: ----------------------------------------> batch should be built as anchor in train_loop()
+        else: ----------------------------------------> batch should be built as (anchor) in train_loop()
+            "CASE D"
             get motif_logits from batch
             get classification_head from batch
         """
@@ -298,12 +302,15 @@ class Encoder(nn.Module):
                 motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1)  # [batch, num_class, maxlen-2]
                 classification_head = self.type_head(emb_pro)  # [sample, num_class]
                 if pos_neg is not None:
+                    """CASE B, when this if is skipped, CASE A"""
                     emb_pro_ = emb_pro.view((self.batch_size, 1 + self.n_pos + self.n_neg, -1))
                     projection_head = self.projection_head(emb_pro_)
             else:
+                """CASE C"""
                 emb_pro_ = emb_pro.view((self.batch_size, 1 + self.n_pos + self.n_neg, -1))
                 projection_head = self.projection_head(emb_pro_)
         else:
+            """CASE D"""
             motif_logits = self.ParallelLinearDecoders(last_hidden_state)
             motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1)  # [batch, num_class, maxlen-2]
             classification_head = self.type_head(emb_pro)  # [sample, num_class]

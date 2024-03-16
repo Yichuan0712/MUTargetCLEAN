@@ -78,7 +78,7 @@ def train_loop(tools, configs, warm_starting):
         if (configs.supcon.apply and not warm_starting and pos_neg is not None) or \
                 (configs.supcon.apply and warm_starting):
             """
-            For two scenarios where the batch needs to be enlarged, 
+            For two scenarios (CASE B & C, see Encoder::forward()) where the batch needs to be enlarged, 
             extend the 6 tuples with pos_neg.
             id_tuple, id_frag_list_tuple, seq_frag_list_tuple, 
             target_frag_nplist_tuple, type_protein_pt_tuple, and sample_weight_tuple
