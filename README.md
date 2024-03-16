@@ -1,8 +1,13 @@
-# MUTarget + CLEAN 240304
+# MUTarget + CLEAN 240315
 
 The primary objective of this branch is to integrate MUTarget with contrastive learning while ensuring minimal modifications to the original MUTarget codebase.
 
-## New Configuration Parameters Description
+## New Warm Starting Strategies 240315
+
+In the train.train_loop, determine in advance whether there is a need to extend the batch; if so, carry out the extend operation on the batched data. Afterwards, in model.Encoder::forward(), input the batched data through the corresponding conditional branches based on different scenarios to obtain the various classification_head, motif_logits, and projection_head.
+Changes in train.train_loop, model.Encoder::forward(), data.LocalizationDataset::get_pos_samples & get_neg_samples (sample_with_weight)
+
+## New Configuration Parameters Description 240304
 
 Below are the descriptions for some important new configuration parameters, specifically regarding the use of SupCon and other related settings:
 
@@ -21,7 +26,7 @@ Below are the descriptions for some important new configuration parameters, spec
 - **`warm_start`**: Specifies the epoch at which warm starting ends. 
 
 
-## Changes in `data.py` 
+## Changes in `data.py` 240304
 
 ### `LocalizationDataset` Class
 - **`__getitem__` Method Enhancement**: A new return value `pos_neg` is added. When using SupCon, this return value contains a list `[pos_samples, neg_samples]`, where `pos_samples` and `neg_samples` are lists of samples used for contrastive learning. The code to get `pos_neg` is executed even when not in warm starting, although its results are not utilized.
@@ -34,15 +39,15 @@ Below are the descriptions for some important new configuration parameters, spec
 
 - **`prepare_samples` Method**: Fixed a bug that caused failures when reading datasets containing dual data.
 
-## Changes in `train.py`
+## Changes in `train.py` 240304
 
 - **`train_loop` Function**: Added conditions to check for SupCon usage and warm_starting status. If in warm starting and using SupCon, `loss_function` and `loss_function_pro` are not computed, and their corresponding networks are not engaged. Only `loss_function_supcon` is calculated.
 
-## Changes in `model.py`
+## Changes in `model.py` 240304
 
 - **`Encoder` Class**: Depending on the use of SupCon and warm_starting status, it chooses between connecting (`ParallelLinearDecoders` and `Linear`) or only `LayerNormNet`. `LayerNormNet` is from CLEAN. When connecting `LayerNormNet`, `pos_neg` is processed and input as `[bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)] -> [n_pos, 5, bsz] + [n_neg, 5, bsz]`. For each positive and negative sample, embeddings are obtained and concatenated into `[bcz, (1+npos+nneg), len(embedding)]`. The projection head is then fetched, formatting the concatenation as `[bcz, (1+npos+nneg), len(projection)]`.
 
-## Changes in `loss.py`
+## Changes in `loss.py` 240304
 
 - **`SupConHardLoss` Function**: Originates from CLEAN.
 
