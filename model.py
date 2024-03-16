@@ -306,9 +306,15 @@ class Encoder(nn.Module):
                     last_hidden_state = remove_s_e_token(features.last_hidden_state,
                                                          encoded_sequence['attention_mask'])  # [batch, maxlen-2, dim]
 
-                    emb_pro_list_ = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
+                    motif_logits = self.ParallelLinearDecoders(last_hidden_state)
+                    motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1)  # [batch, num_class, maxlen-2]
 
-                    emb_pro = torch.stack(emb_pro_list_, dim=0)  # [sample, dim]
+                    emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
+
+                    emb_pro = torch.stack(emb_pro_list, dim=0)  # [sample, dim]
+
+                    classification_head = self.type_head(emb_pro)  # [sample, num_class]
+
                     """
                     [bsz, 2(0:pos, 1:neg), n_pos(or n_neg), 5(variables)]
                     -> [n_pos, 5, bsz] + [n_neg, 5, bsz]
@@ -318,9 +324,6 @@ class Encoder(nn.Module):
 
                     emb_pro_list = []
                     emb_pro_list.append(emb_pro)
-
-                    last_hidden_state_list = []
-                    last_hidden_state_list.append(last_hidden_state)
 
                     for i in range(self.batch_size):
                         for j in range(self.n_pos):
@@ -341,14 +344,14 @@ class Encoder(nn.Module):
                         featuresP = self.model(input_ids=encoded_seqP['input_ids'],
                                                attention_mask=encoded_seqP['attention_mask'])
                         last_hidden_stateP = remove_s_e_token(featuresP.last_hidden_state,
-                                                              encoded_seqP['attention_mask'])  # [batch, maxlen-2, dim]
+                                                              encoded_seqP[
+                                                                  'attention_mask'])  # [batch, maxlen-2, dim]
                         emb_pro_listP = self.get_pro_emb(pos_transformed[i][0], id_frags_listP, seq_frag_tupleP,
                                                          last_hidden_stateP, self.overlap)
 
                         emb_proP = torch.stack(emb_pro_listP, dim=0)  # [sample, dim]
 
                         emb_pro_list.append(emb_proP)
-                        last_hidden_state_list.append(last_hidden_stateP)
 
                     for i in range(self.batch_size):
                         for j in range(self.n_neg):
@@ -370,24 +373,18 @@ class Encoder(nn.Module):
                         featuresN = self.model(input_ids=encoded_seqN['input_ids'],
                                                attention_mask=encoded_seqN['attention_mask'])
                         last_hidden_stateN = remove_s_e_token(featuresN.last_hidden_state,
-                                                              encoded_seqN['attention_mask'])  # [batch, maxlen-2, dim]
+                                                              encoded_seqN[
+                                                                  'attention_mask'])  # [batch, maxlen-2, dim]
                         emb_pro_listN = self.get_pro_emb(neg_transformed[i][0], id_frags_listN, seq_frag_tupleN,
                                                          last_hidden_stateN, self.overlap)
 
                         emb_proN = torch.stack(emb_pro_listN, dim=0)  # [sample, dim]
 
                         emb_pro_list.append(emb_proN)
-                        last_hidden_state_list.append(last_hidden_stateN)
 
                     emb_pro_list_tensor = torch.stack(emb_pro_list, dim=1)  # [bcz, (1+npos+nneg), L1]
-                    emb_pro_list_tensor_1 = torch.cat(emb_pro_list, dim=0)  # [sample, dim]
-                    last_hidden_state_list_tensor = torch.cat(last_hidden_state_list, dim=0)  # [sample, dim]
-
-                    motif_logits = self.ParallelLinearDecoders(last_hidden_state_list_tensor)
-                    motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1)  # [batch, num_class, maxlen-2]
-                    classification_head = self.type_head(emb_pro_list_tensor_1)
                     projection_head = self.projection_head(emb_pro_list_tensor)  # [bcz, (1+npos+nneg), L2]
-                    # print(projection_head.shape)
+
 
             else:
                 features = self.model(input_ids=encoded_sequence['input_ids'],
