@@ -17,13 +17,13 @@ encoder:
   prm4prmpro: ppi
   frag_overlap: 200
 
-PEFT: frozen #lora # FT, PFT, frozen, lora, PromT
+PEFT: PFT #lora # FT, PFT, frozen, lora, PromT
 
 train_settings:
   num_epochs: 20
   shuffle: True
   device: cuda
-  batch_size: 4
+  batch_size: 16
   grad_accumulation: 1
   loss_pos_weight: 35
   dataset: v2 # v2, v3
@@ -62,9 +62,9 @@ supcon:
   apply: True
   device: cuda
   drop_out: 0.1
-  n_pos: 1
-  n_neg: 2
+  n_pos: 9
+  n_neg: 30
   temperature: 0.1
   hard_neg: True
   weight: 1
-  warm_start: 2
+  warm_start: 0
