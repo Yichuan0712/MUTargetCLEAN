@@ -68,16 +68,8 @@ class LocalizationDataset(Dataset):
     def get_pos_samples(self, anchor_idx):
         filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
         anchor_type_protein = self.samples[anchor_idx][4]
-        # pos_samples = [sample for sample in filtered_samples if
-        #                np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
-        pos_samples = []
-        for sample in filtered_samples:
-            if np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1)):
-                labels = np.where(sample[4] == 1)[0]
-                weights = [self.class_weights[label] for label in labels]
-                sample_weight = np.max(weights)
-                sample_with_weight = list(sample) + [sample_weight]
-                pos_samples.append(sample_with_weight)
+        pos_samples = [sample for sample in filtered_samples if
+                       np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
         if len(pos_samples) < self.n_pos:
             # raise ValueError(f"Not enough positive samples for {anchor_type_protein} found: {len(pos_samples)}. Required: {self.n_pos}.")
             samples_to_add = self.n_pos - len(pos_samples)
@@ -85,35 +77,27 @@ class LocalizationDataset(Dataset):
                 pos_samples.append(random.choice(pos_samples))
         if len(pos_samples) > self.n_pos:
             pos_samples = random.sample(pos_samples, self.n_pos)
-        return pos_samples
+
+        pos_samples_with_weight = []
+        for sample in pos_samples:
+            labels = np.where(sample[4] == 1)[0]
+            weights = [self.class_weights[label] for label in labels]
+            sample_weight = np.max(weights)
+            sample_with_weight = list(sample) + [sample_weight]
+            pos_samples_with_weight.append(sample_with_weight)
+
+        return pos_samples_with_weight  # pos_samples
 
     def get_neg_samples(self, anchor_idx):
         filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
         anchor_type_protein = self.samples[anchor_idx][4]
         if self.hard_neg:
             hneg = self.hard_mining(anchor_type_protein)
-            # neg_samples = [sample for sample in filtered_samples if
-            #                np.any(np.logical_and(hneg == 1, sample[4] == 1))]
-            neg_samples = []
-            for sample in filtered_samples:
-                if np.any(np.logical_and(hneg == 1, sample[4] == 1)):
-                    labels = np.where(sample[4] == 1)[0]
-                    weights = [self.class_weights[label] for label in labels]
-                    sample_weight = np.max(weights)
-                    sample_with_weight = list(sample) + [sample_weight]
-                    neg_samples.append(sample_with_weight)
-
+            neg_samples = [sample for sample in filtered_samples if
+                           np.any(np.logical_and(hneg == 1, sample[4] == 1))]
         else:
-            # neg_samples = [sample for sample in filtered_samples if
-            #                not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
-            neg_samples = []
-            for sample in filtered_samples:
-                if not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1)):
-                    labels = np.where(sample[4] == 1)[0]
-                    weights = [self.class_weights[label] for label in labels]
-                    sample_weight = np.max(weights)
-                    sample_with_weight = list(sample) + [sample_weight]
-                    neg_samples.append(sample_with_weight)
+            neg_samples = [sample for sample in filtered_samples if
+                           not np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
         if len(neg_samples) < self.n_neg:
             # raise ValueError(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
             # print(f"Not enough negative samples ({hneg}) for {anchor_type_protein} found: {len(neg_samples)}. Required: {self.n_neg}.")
@@ -124,7 +108,16 @@ class LocalizationDataset(Dataset):
             neg_samples.extend(neg_samples_2)
         if len(neg_samples) > self.n_neg:
             neg_samples = random.sample(neg_samples, self.n_neg)
-        return neg_samples
+
+        neg_samples_with_weight = []
+        for sample in neg_samples:
+            labels = np.where(sample[4] == 1)[0]
+            weights = [self.class_weights[label] for label in labels]
+            sample_weight = np.max(weights)
+            sample_with_weight = list(sample) + [sample_weight]
+            neg_samples_with_weight.append(sample_with_weight)
+
+        return neg_samples_with_weight  # neg_samples
 
     @staticmethod
     def hard_mining(anchor_type_protein, file_path='distance_map.txt'):
