@@ -325,7 +325,6 @@ class Encoder(nn.Module):
                                                      encoded_sequence['attention_mask'])  # [batch, maxlen-2, dim]
 
                 emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
-
                 emb_pro = torch.stack(emb_pro_list, dim=0)  # [sample, dim]
 
                 emb_pro_ = emb_pro.view((self.batch_size, 1 + self.n_pos + self.n_neg, -1))
