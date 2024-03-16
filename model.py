@@ -283,6 +283,9 @@ class Encoder(nn.Module):
             get motif_logits from batch
             get classification_head from batch
         """
+        classification_head = None
+        motif_logits = None
+        projection_head = None
         if self.apply_supcon:
             if not warm_starting:
                 if pos_neg is None:
@@ -299,7 +302,7 @@ class Encoder(nn.Module):
 
                     classification_head = self.type_head(emb_pro)  # [sample, num_class]
 
-                    projection_head = None
+
                 else:
                     features = self.model(input_ids=encoded_sequence['input_ids'],
                                           attention_mask=encoded_sequence['attention_mask'])
@@ -334,7 +337,7 @@ class Encoder(nn.Module):
 
             classification_head = self.type_head(emb_pro)  # [sample, num_class]
 
-            projection_head = None
+
 
 
 
