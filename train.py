@@ -75,6 +75,7 @@ def train_loop(tools, configs, warm_starting):
     # model.train().cuda()
     tools['net'].train().to(tools['train_device'])
     for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(tools['train_loader']):
+        flag_batch_extension = False
         if (configs.supcon.apply and not warm_starting and pos_neg is not None) or \
                 (configs.supcon.apply and warm_starting):
             """
@@ -89,6 +90,7 @@ def train_loop(tools, configs, warm_starting):
             without the extending, each len(tuple) == batch_size
             after extending, len(tuple) == batch_size * (1 + n_pos + n_neg)
             """
+            flag_batch_extension = True
             pos_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_pos)]
             neg_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_neg)]
             for i in range(configs.train_settings.batch_size):
@@ -161,6 +163,8 @@ def train_loop(tools, configs, warm_starting):
         print(batch, weighted_loss_sum.item())
         if batch % 30 == 0:
             loss, current = weighted_loss_sum.item(), (batch + 1) * len(id_tuple)
+            if flag_batch_extension:
+                current /= (1+configs.supcon.n_pos+configs.supcon.n_neg)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
             customlog(tools["logfilepath"], f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]\n")
     # epoch_acc = accuracy.compute().cpu().item()
