@@ -265,8 +265,8 @@ class Encoder(nn.Module):
 
     def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
         """
-        batch is built outside, in train_loop(), before forward()
-        either anchor or (anchor+pos+neg)
+        Batch is built before forward(), in train_loop()
+        Batch is either (anchor) or (anchor+pos+neg)
 
         if apply supcon:
             if not warming starting:
