@@ -263,7 +263,7 @@ class Encoder(nn.Module):
             emb_pro_list.append(emb_pro)
         return emb_pro_list
 
-    def forward_old1(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
+    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
         """
         if apply supcon:
             if not warming starting:
@@ -315,10 +315,10 @@ class Encoder(nn.Module):
 
                     classification_head = self.type_head(emb_pro)  # [sample, num_class]
 
-
+                    print(emb_pro.shape)
             else:
                 pass
-            
+
 
         else:
             features = self.model(input_ids=encoded_sequence['input_ids'],
@@ -340,7 +340,7 @@ class Encoder(nn.Module):
 
         return classification_head, motif_logits, projection_head
 
-    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
+    def forward_old(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
 
         features = self.model(input_ids=encoded_sequence['input_ids'],
                               attention_mask=encoded_sequence['attention_mask'])
