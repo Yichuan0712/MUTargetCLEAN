@@ -76,18 +76,20 @@ def train_loop(tools, configs, warm_starting):
     tools['net'].train().to(tools['train_device'])
     for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(tools['train_loader']):
         if configs.supcon.apply and not warm_starting and pos_neg is not None:
-            print(id_tuple[0].shape)
-            print(id_frag_list_tuple[0].shape)
-            pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
-            neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
+            pos_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_pos)]
+            neg_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_neg)]
             for i in range(configs.train_settings.batch_size):
                 for j in range(configs.supcon.n_pos):
-                    for k in range(5):
+                    for k in range(6):
                         pos_transformed[j][k].append(pos_neg[i][0][j][k])
+            for j in range(configs.supcon.n_pos):
+                print(len(pos_transformed[j][0]))
+                id_tuple += tuple(pos_transformed[j][0])
+
             for i in range(configs.train_settings.batch_size):
                 for j in range(configs.supcon.n_neg):
-                    for k in range(5):
-                        pos_transformed[j][k].append(pos_neg[i][1][j][k])
+                    for k in range(6):
+                        neg_transformed[j][k].append(pos_neg[i][1][j][k])
             exit(0)
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
         with autocast():
