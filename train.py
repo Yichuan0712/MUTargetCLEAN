@@ -82,6 +82,7 @@ def train_loop(tools, configs, warm_starting):
                 for j in range(configs.supcon.n_pos):
                     for k in range(6):
                         pos_transformed[j][k].append(pos_neg[i][0][j][k])
+            print(len(id_tuple))
             for j in range(configs.supcon.n_pos):
                 id_tuple += tuple(pos_transformed[j][0])
                 id_frag_list_tuple += tuple(pos_transformed[j][1])
@@ -89,6 +90,7 @@ def train_loop(tools, configs, warm_starting):
                 target_frag_nplist_tuple += tuple(pos_transformed[j][3])
                 type_protein_pt_tuple += tuple(torch.from_numpy(arr) for arr in pos_transformed[j][4])
                 sample_weight_tuple += tuple(pos_transformed[j][5])
+            print(len(id_tuple))
             for i in range(configs.train_settings.batch_size):
                 for j in range(configs.supcon.n_neg):
                     for k in range(6):
@@ -100,6 +102,8 @@ def train_loop(tools, configs, warm_starting):
                 target_frag_nplist_tuple += tuple(neg_transformed[j][3])
                 type_protein_pt_tuple += tuple(torch.from_numpy(arr) for arr in neg_transformed[j][4])
                 sample_weight_tuple += tuple(neg_transformed[j][5])
+            print(len(id_tuple))
+            exit(0)
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
         with autocast():
             # Compute prediction and loss
