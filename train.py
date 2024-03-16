@@ -75,7 +75,8 @@ def train_loop(tools, configs, warm_starting):
     # model.train().cuda()
     tools['net'].train().to(tools['train_device'])
     for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(tools['train_loader']):
-        if (configs.supcon.apply and not warm_starting and pos_neg is not None) or (configs.supcon.apply and warm_starting):
+        if (configs.supcon.apply and not warm_starting and pos_neg is not None) or \
+                (configs.supcon.apply and warm_starting):
             pos_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_pos)]
             neg_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_neg)]
             for i in range(configs.train_settings.batch_size):
