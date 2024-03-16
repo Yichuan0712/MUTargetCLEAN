@@ -83,14 +83,23 @@ def train_loop(tools, configs, warm_starting):
                     for k in range(6):
                         pos_transformed[j][k].append(pos_neg[i][0][j][k])
             for j in range(configs.supcon.n_pos):
-                print(len(pos_transformed[j][0]))
                 id_tuple += tuple(pos_transformed[j][0])
-
+                id_frag_list_tuple += tuple(pos_transformed[j][1])
+                seq_frag_list_tuple += tuple(pos_transformed[j][2])
+                target_frag_nplist_tuple += tuple(pos_transformed[j][3])
+                type_protein_pt_tuple += tuple(pos_transformed[j][4])
+                sample_weight_tuple += tuple(pos_transformed[j][5])
             for i in range(configs.train_settings.batch_size):
                 for j in range(configs.supcon.n_neg):
                     for k in range(6):
                         neg_transformed[j][k].append(pos_neg[i][1][j][k])
-            exit(0)
+            for j in range(configs.supcon.n_neg):
+                id_tuple += tuple(neg_transformed[j][0])
+                id_frag_list_tuple += tuple(neg_transformed[j][1])
+                seq_frag_list_tuple += tuple(neg_transformed[j][2])
+                target_frag_nplist_tuple += tuple(neg_transformed[j][3])
+                type_protein_pt_tuple += tuple(neg_transformed[j][4])
+                sample_weight_tuple += tuple(neg_transformed[j][5])
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
         with autocast():
             # Compute prediction and loss
