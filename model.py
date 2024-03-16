@@ -263,7 +263,7 @@ class Encoder(nn.Module):
             emb_pro_list.append(emb_pro)
         return emb_pro_list
 
-    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
+    def forward_(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
         """
         if apply supcon:
             if not warming starting:
@@ -318,7 +318,9 @@ class Encoder(nn.Module):
 
                     classification_head = self.type_head(emb_pro)  # [sample, num_class]
 
-                    print(emb_pro.shape)
+                    new_shape = (self.batch_size, 1 + self.n_pos + self.n_neg, -1)
+                    reshaped_tensor = emb_pro.view(new_shape)
+
             else:
                 pass
 
@@ -343,7 +345,7 @@ class Encoder(nn.Module):
 
         return classification_head, motif_logits, projection_head
 
-    def forward_old(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
+    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
 
         features = self.model(input_ids=encoded_sequence['input_ids'],
                               attention_mask=encoded_sequence['attention_mask'])
@@ -446,9 +448,9 @@ class Encoder(nn.Module):
                 emb_pro_list.append(emb_proN)
 
             emb_pro_list_tensor = torch.stack(emb_pro_list, dim=1)  # [bcz, (1+npos+nneg), L1]
-            # print(emb_pro_list_tensor.shape)
+            print(emb_pro_list_tensor.shape)
             projection_head = self.projection_head(emb_pro_list_tensor)  # [bcz, (1+npos+nneg), L2]
-            # print(projection_head.shape)
+            print(projection_head.shape)
         """
         Supcon - end
         """
