@@ -290,19 +290,21 @@ class Encoder(nn.Module):
         classification_head = None
         motif_logits = None
         projection_head = None
+
         features = self.model(input_ids=encoded_sequence['input_ids'],
                               attention_mask=encoded_sequence['attention_mask'])
         last_hidden_state = remove_s_e_token(features.last_hidden_state,
                                              encoded_sequence['attention_mask'])  # [batch, maxlen-2, dim]
         emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
         emb_pro = torch.stack(emb_pro_list, dim=0)  # [sample, dim]
+
         if self.apply_supcon:
             if not warm_starting:
                 motif_logits = self.ParallelLinearDecoders(last_hidden_state)
                 motif_logits = torch.stack(motif_logits, dim=1).squeeze(-1)  # [batch, num_class, maxlen-2]
                 classification_head = self.type_head(emb_pro)  # [sample, num_class]
                 if pos_neg is not None:
-                    """CASE B, when this if is skipped, CASE A"""
+                    """CASE B, when this if condition is skipped, CASE A"""
                     emb_pro_ = emb_pro.view((self.batch_size, 1 + self.n_pos + self.n_neg, -1))
                     projection_head = self.projection_head(emb_pro_)
             else:
