@@ -78,9 +78,9 @@ def train_loop(tools, configs, warm_starting):
         if configs.supcon.apply and not warm_starting and pos_neg is not None:
             print(len(id_tuple))
             print(len(id_frag_list_tuple))
-            print(len(pos_neg[0]))
-            print(len(pos_neg[1]))
-            print((pos_neg))
+            print(len(pos_neg))
+            # print(len(pos_neg))
+            # print((pos_neg))
             # for i in range(len(pos_neg[0])):
             #     id_tuple += tuple(pos_neg[0][i][0])
             #     id_frag_list_tuple += tuple(pos_neg[0][i][1])
