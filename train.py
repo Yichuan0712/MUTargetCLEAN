@@ -76,8 +76,8 @@ def train_loop(tools, configs, warm_starting):
     tools['net'].train().to(tools['train_device'])
     for batch, (id_tuple, id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple, sample_weight_tuple, pos_neg) in enumerate(tools['train_loader']):
         if configs.supcon.apply and not warm_starting and pos_neg is not None:
-            print(id_tuple.shape)
-            print(id_frag_list_tuple.shape)
+            print(id_tuple[0].shape)
+            print(id_frag_list_tuple[0].shape)
             pos_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_pos)]
             neg_transformed = [[[] for _ in range(5)] for _ in range(configs.supcon.n_neg)]
             for i in range(configs.train_settings.batch_size):
