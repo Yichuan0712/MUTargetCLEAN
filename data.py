@@ -77,7 +77,9 @@ class LocalizationDataset(Dataset):
                 pos_samples.append(random.choice(pos_samples))
         if len(pos_samples) > self.n_pos:
             pos_samples = random.sample(pos_samples, self.n_pos)
-        # print(len(pos_samples))
+        print(len(pos_samples))
+        print(len(pos_samples[0]))
+        exit(0)
         # print(self.n_pos)
         return pos_samples
 
@@ -335,6 +337,7 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     valid_dataloader = DataLoader(valid_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
     test_dataloader = DataLoader(test_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
     return {'train': train_dataloader, 'test': test_dataloader, 'valid': valid_dataloader}
+
 
 if __name__ == '__main__':
     config_path = './config.yaml'
