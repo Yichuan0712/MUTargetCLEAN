@@ -124,10 +124,6 @@ class LocalizationDataset(Dataset):
             neg_samples.extend(neg_samples_2)
         if len(neg_samples) > self.n_neg:
             neg_samples = random.sample(neg_samples, self.n_neg)
-        print(len(neg_samples))
-        print(len(neg_samples[0]))
-        exit(0)
-        # print(self.n_pos)
         return neg_samples
 
     @staticmethod
