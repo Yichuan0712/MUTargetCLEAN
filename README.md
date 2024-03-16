@@ -4,7 +4,9 @@ The primary objective of this branch is to integrate MUTarget with contrastive l
 
 ## New Warm Starting Strategies 240315
 
-In the train.train_loop, determine in advance whether there is a need to extend the batch; if so, carry out the extend operation on the batched data. Afterwards, in model.Encoder::forward(), input the batched data through the corresponding conditional branches based on different scenarios to obtain the various classification_head, motif_logits, and projection_head.
+In the train.train_loop, determine in advance whether there is a need to extend the batch; if so, do the extension on the batched data. 
+Afterwards, in model.Encoder::forward(), process batched data through the corresponding conditional branches based on different scenarios to obtain the various classification_head, motif_logits, and projection_head.
+
 Changes in train.train_loop, model.Encoder::forward(), data.LocalizationDataset::get_pos_samples & get_neg_samples (sample_with_weight)
 
 ## New Configuration Parameters Description 240304
