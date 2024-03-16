@@ -263,7 +263,7 @@ class Encoder(nn.Module):
             emb_pro_list.append(emb_pro)
         return emb_pro_list
 
-    def forward_(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
+    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
         """
         if apply supcon:
             if not warming starting:
@@ -301,8 +301,6 @@ class Encoder(nn.Module):
                     emb_pro = torch.stack(emb_pro_list, dim=0)  # [sample, dim]
 
                     classification_head = self.type_head(emb_pro)  # [sample, num_class]
-
-
                 else:
                     features = self.model(input_ids=encoded_sequence['input_ids'],
                                           attention_mask=encoded_sequence['attention_mask'])
@@ -318,11 +316,20 @@ class Encoder(nn.Module):
 
                     classification_head = self.type_head(emb_pro)  # [sample, num_class]
 
-                    new_shape = (self.batch_size, 1 + self.n_pos + self.n_neg, -1)
-                    reshaped_tensor = emb_pro.view(new_shape)
-
+                    emb_pro_ = emb_pro.view((self.batch_size, 1 + self.n_pos + self.n_neg, -1))
+                    projection_head = self.projection_head(emb_pro_)
             else:
-                pass
+                features = self.model(input_ids=encoded_sequence['input_ids'],
+                                      attention_mask=encoded_sequence['attention_mask'])
+                last_hidden_state = remove_s_e_token(features.last_hidden_state,
+                                                     encoded_sequence['attention_mask'])  # [batch, maxlen-2, dim]
+
+                emb_pro_list = self.get_pro_emb(id, id_frags_list, seq_frag_tuple, last_hidden_state, self.overlap)
+
+                emb_pro = torch.stack(emb_pro_list, dim=0)  # [sample, dim]
+
+                emb_pro_ = emb_pro.view((self.batch_size, 1 + self.n_pos + self.n_neg, -1))
+                projection_head = self.projection_head(emb_pro_)
 
 
         else:
@@ -345,7 +352,7 @@ class Encoder(nn.Module):
 
         return classification_head, motif_logits, projection_head
 
-    def forward(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
+    def forward_old(self, encoded_sequence, id, id_frags_list, seq_frag_tuple, pos_neg, warm_starting):
 
         features = self.model(input_ids=encoded_sequence['input_ids'],
                               attention_mask=encoded_sequence['attention_mask'])
@@ -448,9 +455,9 @@ class Encoder(nn.Module):
                 emb_pro_list.append(emb_proN)
 
             emb_pro_list_tensor = torch.stack(emb_pro_list, dim=1)  # [bcz, (1+npos+nneg), L1]
-            print(emb_pro_list_tensor.shape)
+            # print(emb_pro_list_tensor.shape)
             projection_head = self.projection_head(emb_pro_list_tensor)  # [bcz, (1+npos+nneg), L2]
-            print(projection_head.shape)
+            # print(projection_head.shape)
         """
         Supcon - end
         """
