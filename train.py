@@ -476,7 +476,7 @@ def get_scores(tools, cutoff, n, data_dict):
     return scores
 
 def main(config_dict, args,valid_batch_number, test_batch_number):
-    configs = load_configs(config_dict)
+    configs = load_configs(config_dict,args)
     if type(configs.fix_seed) == int:
         torch.manual_seed(configs.fix_seed)
         torch.random.manual_seed(configs.fix_seed)
@@ -607,6 +607,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='PyTorch CPM')
     parser.add_argument("--config_path", help="The location of config file", default='./config.yaml')
     parser.add_argument("--predict", type=int, help="predict:1 no training, call evaluate_protein; predict:0 call training loop", default=0)
+    parser.add_argument("--result_path", default=None,
+                        help="result_path, if setted by command line, overwrite the one in config.yaml, "
+                             "by default is None")
+    parser.add_argument("--resume_path", default=None,
+                        help="if set, overwrite the one in config.yaml, by default is None")
     
     args = parser.parse_args()
 

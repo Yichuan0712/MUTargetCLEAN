@@ -1,6 +1,6 @@
 fix_seed: 0
 checkpoints_every: 16
-result_path: ./results_supcon_pft1
+result_path: ./results_supcon_hardfalse_pft2
 config_path: ./config.yaml
 
 resume:
@@ -12,7 +12,7 @@ encoder:
   composition: esm_v2 # esm_v2, promprot, both
   model_type: esm_v2 # esm_v2, t5
   model_name:  facebook/esm2_t33_650M_UR50D # facebook/esm2_t33_650M_UR50D, facebook/esm2_t30_150M_UR50D, facebook/esm2_t12_35M_UR50D, facebook/esm2_t6_8M_UR50D, Rostlab/prot_t5_base_mt_uniref50
-  max_len: 1024
+  max_len: 1000
   num_classes: 8
   prm4prmpro: ppi
   frag_overlap: 200
@@ -27,7 +27,7 @@ train_settings:
   grad_accumulation: 1
   loss_pos_weight: 35
   dataset: v2 # v2, v3
-  fine_tune_lr: -1 # -1, -2, -3
+  fine_tune_lr: -2 # -1, -2, -3
 
 
 valid_settings:
@@ -43,7 +43,7 @@ predict_settings:
 
 optimizer:
   name: adam
-  lr: 1e-5 #-4
+  lr: 1e-4 #-4
   weight_decouple: True
   weight_decay: 1e-3
   eps: 1e-16
@@ -63,7 +63,7 @@ supcon:
   device: cuda
   drop_out: 0.1
   n_pos: 2 #9
-  n_neg: 6 #30
+  n_neg: 4 #30
   temperature: 0.1
   hard_neg: True
   weight: 1
