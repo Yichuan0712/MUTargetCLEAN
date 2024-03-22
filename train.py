@@ -302,9 +302,6 @@ def evaluate_protein(dataloader, tools):
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
-    model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
-    model_checkpoint = torch.load(model_path, map_location='cpu')
-    tools['net'].load_state_dict(model_checkpoint['model_state_dict'])
     tools['net'].eval().to(tools["valid_device"])
     n=tools['num_classes']
 
@@ -478,15 +475,15 @@ def get_scores(tools, cutoff, n, data_dict):
             "cs_acc": cs_acc} #[n]
     return scores
 
-def main(config_dict, config_file_path,valid_batch_number, test_batch_number):
-    configs = load_configs(config_dict)
+def main(config_dict, args,valid_batch_number, test_batch_number):
+    configs = load_configs(config_dict,args)
     if type(configs.fix_seed) == int:
         torch.manual_seed(configs.fix_seed)
         torch.random.manual_seed(configs.fix_seed)
         np.random.seed(configs.fix_seed)
 
     torch.cuda.empty_cache()
-    curdir_path, result_path, checkpoint_path, logfilepath = prepare_saving_dir(configs,config_file_path)
+    curdir_path, result_path, checkpoint_path, logfilepath = prepare_saving_dir(configs,args.config_path)
 
     npz_file = os.path.join(curdir_path, "targetp_data.npz")
     seq_file = os.path.join(curdir_path, "idmapping_2023_08_25.tsv")
@@ -506,8 +503,8 @@ def main(config_dict, config_file_path,valid_batch_number, test_batch_number):
     if configs.optimizer.mode == 'skip':
         scheduler = optimizer
     customlog(logfilepath, 'preparing optimizer is done\n')
-
-    encoder, start_epoch = load_checkpoints(configs, optimizer, scheduler, logfilepath, encoder)
+    if args.predict !=1:
+       encoder, start_epoch = load_checkpoints(configs, optimizer, scheduler, logfilepath, encoder)
 
     # w=(torch.ones([9,1,1])*5).to(configs.train_settings.device)
     w = torch.tensor(configs.train_settings.loss_pos_weight, dtype=torch.float32).to(configs.train_settings.device)
@@ -541,53 +538,62 @@ def main(config_dict, config_file_path,valid_batch_number, test_batch_number):
         'num_classes': configs.encoder.num_classes
     }
 
-    customlog(logfilepath, f'number of train steps per epoch: {len(tools["train_loader"])}\n')
-    customlog(logfilepath, "Start training...\n")
-
-    best_valid_loss = np.inf
-    for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
-        warm_starting = False
-        if epoch < configs.supcon.warm_start:
-            warm_starting = True
-            print('== Warm Start Began    ==')
-            customlog(logfilepath,f"== Warm Start Began ==\n")
-
-
-        if epoch == configs.supcon.warm_start:
+    if args.predict !=1:
+        customlog(logfilepath, f'number of train steps per epoch: {len(tools["train_loader"])}\n')
+        customlog(logfilepath, "Start training...\n")
+        
+        best_valid_loss = np.inf
+        for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
             warm_starting = False
-            print('== Warm Start Finished ==')
-            customlog(logfilepath,f"== Warm Start Finished ==\n")
-
-        tools['epoch'] = epoch
-        print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
-
-        customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
-        start_time = time()
-        train_loss = train_loop(tools, configs, warm_starting)
-        end_time = time()
-
-
-        if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
-            print(f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
-            customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
+            if epoch < configs.supcon.warm_start:
+                warm_starting = True
+                print('== Warm Start Began    ==')
+                customlog(logfilepath,f"== Warm Start Began ==\n")
+        
+        
+            if epoch == configs.supcon.warm_start:
+                warm_starting = False
+                print('== Warm Start Finished ==')
+                customlog(logfilepath,f"== Warm Start Finished ==\n")
+        
+            tools['epoch'] = epoch
+            print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
+        
+            customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
             start_time = time()
-            dataloader = tools["valid_loader"]
-            valid_loss = test_loop(tools, dataloader) #In test loop, never test supcon loss
+            train_loss = train_loop(tools, configs, warm_starting)
             end_time = time()
         
-
-            if valid_loss < best_valid_loss:
-                best_valid_loss = valid_loss
-                # best_valid_macro_f1 = valid_macro_f1
-                # best_valid_f1 = valid_f1
-                # Set the path to save the model checkpoint.
-                model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
-                save_checkpoint(epoch, model_path, tools)
-
+        
+            if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
+                print(f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
+                customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
+                start_time = time()
+                dataloader = tools["valid_loader"]
+                valid_loss = test_loop(tools, dataloader) #In test loop, never test supcon loss
+                end_time = time()
+            
+        
+                if valid_loss < best_valid_loss:
+                    best_valid_loss = valid_loss
+                    # best_valid_macro_f1 = valid_macro_f1
+                    # best_valid_f1 = valid_f1
+                    # Set the path to save the model checkpoint.
+                    model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
+                    save_checkpoint(epoch, model_path, tools)
+    
+    if args.predict==1:
+       if configs.resume.resume:
+          model_path = configs.resume.resume_path
+       else:
+          model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
+    
+    customlog(logfilepath, f"Loading checkpoint from {model_path}\n")
+    model_checkpoint = torch.load(model_path, map_location='cpu')
+    tools['net'].load_state_dict(model_checkpoint['model_state_dict'])
     customlog(logfilepath, f"Fold {valid_batch_number} test\n-------------------------------\n")
     start_time = time()
     dataloader = tools["test_loader"]
-    # evaluate(tools, dataloader)
     evaluate_protein(dataloader, tools)
     end_time = time()
 
@@ -600,6 +606,13 @@ def main(config_dict, config_file_path,valid_batch_number, test_batch_number):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='PyTorch CPM')
     parser.add_argument("--config_path", help="The location of config file", default='./config.yaml')
+    parser.add_argument("--predict", type=int, help="predict:1 no training, call evaluate_protein; predict:0 call training loop", default=0)
+    parser.add_argument("--result_path", default=None,
+                        help="result_path, if setted by command line, overwrite the one in config.yaml, "
+                             "by default is None")
+    parser.add_argument("--resume_path", default=None,
+                        help="if set, overwrite the one in config.yaml, by default is None")
+    
     args = parser.parse_args()
 
     config_path = args.config_path
@@ -612,7 +625,7 @@ if __name__ == "__main__":
             test_num = 0
         else:
             test_num = valid_num+1
-        main(config_dict, config_path,valid_num, test_num)
+        main(config_dict, args,valid_num, test_num)
         break
 
 

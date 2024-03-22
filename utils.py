@@ -22,7 +22,7 @@ def calculate_class_weights(class_counts):
         weights_dict[i] = min_samples / class_counts[i]
     return weights_dict
 
-def load_configs(config):
+def load_configs(config,args=None):
     """
         Load the configuration file and convert the necessary values to floats.
         Args:
@@ -37,6 +37,14 @@ def load_configs(config):
     tree_config.optimizer.decay.min_lr = float(tree_config.optimizer.decay.min_lr)
     tree_config.optimizer.weight_decay = float(tree_config.optimizer.weight_decay)
     tree_config.optimizer.eps = float(tree_config.optimizer.eps)
+    # overwrite parameters if set through commandline
+    if args is not None:
+        if args.result_path:
+            tree_config.result_path = args.result_path
+        
+        if args.resume_path:
+            tree_config.resume.resume_path = args.resume_path
+    
     return tree_config
 
 def prepare_saving_dir(configs,config_file_path):
