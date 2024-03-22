@@ -1,11 +1,11 @@
 fix_seed: 0
 checkpoints_every: 16
-result_path: ./results_supcon
+result_path: ./results_supcon_pft1
 config_path: ./config.yaml
 
 resume:
   resume: False
-  resume_path: path/to/checkpoints.pth
+  resume_path: /data/duolin/MUTargetCLEAN/results_supcon/2024-03-21__15-02-10/checkpoints/best_model.pth #epoch only 5
   restart_optimizer: True
 
 encoder:
@@ -20,14 +20,14 @@ encoder:
 PEFT: PFT #lora # FT, PFT, frozen, lora, PromT
 
 train_settings:
-  num_epochs: 30
+  num_epochs: 15
   shuffle: True
   device: cuda
   batch_size: 3 #16
   grad_accumulation: 1
   loss_pos_weight: 35
   dataset: v2 # v2, v3
-  fine_tune_lr: -2 # -1, -2, -3
+  fine_tune_lr: -1 # -1, -2, -3
 
 
 valid_settings:
@@ -43,7 +43,7 @@ predict_settings:
 
 optimizer:
   name: adam
-  lr: 1e-4 #-4
+  lr: 1e-5 #-4
   weight_decouple: True
   weight_decay: 1e-3
   eps: 1e-16
@@ -53,7 +53,7 @@ optimizer:
   grad_clip_norm: 1
   decay:
     warmup: 1024
-    min_lr: 1e-5
+    min_lr: 1e-7
     gamma: 0.2
     num_restarts: 1
   mode: cosine #skip, cosine
@@ -62,9 +62,9 @@ supcon:
   apply: True
   device: cuda
   drop_out: 0.1
-  n_pos: 3 #9
+  n_pos: 2 #9
   n_neg: 6 #30
   temperature: 0.1
   hard_neg: True
   weight: 1
-  warm_start: 20
+  warm_start: 0
