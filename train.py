@@ -94,7 +94,7 @@ def train_loop(tools, configs, warm_starting):
             flag_batch_extension = True
             pos_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_pos)]
             neg_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_neg)]
-            for i in range(configs.train_settings.batch_size):
+            for i in range(b_size):
                 for j in range(configs.supcon.n_pos):
                     for k in range(6):
                         pos_transformed[j][k].append(pos_neg[i][0][j][k])
@@ -107,7 +107,7 @@ def train_loop(tools, configs, warm_starting):
                 type_protein_pt_tuple += tuple(torch.from_numpy(arr) for arr in pos_transformed[j][4])
                 sample_weight_tuple += tuple(pos_transformed[j][5])
             # print(len(id_tuple))
-            for i in range(configs.train_settings.batch_size):
+            for i in range(b_size):
                 for j in range(configs.supcon.n_neg):
                     for k in range(6):
                         neg_transformed[j][k].append(pos_neg[i][1][j][k])
