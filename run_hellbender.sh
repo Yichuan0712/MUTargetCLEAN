@@ -46,5 +46,5 @@ python train.py --config_path ./configs/config_supcon_hardtrue.yaml \
 --result_path ./results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9/predict 
 
 python train.py --config_path ./configs/config_supcon_hardtrue_esmfix.yaml \
---result_path ./config_supcon_hardtrue_esmfix/cleanloader/b8_p4_n12
+--result_path ./config_supcon_hardtrue_esmfix/cleanloader/
 
