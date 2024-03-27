@@ -12,7 +12,7 @@ from utils import *
 
 
 class LocalizationDataset(Dataset):
-    def __init__(self, samples, configs):
+    def __init__(self, samples, configs,mode="train"):
         # self.label_to_index = {"Other": 0, "SP": 1, "MT": 2, "CH": 3, "TH": 4}
         # self.index_to_label = {0: "Other", 1: "SP", 2: "MT", 3: "CH", 4: "TH"}
         # self.transform = transform
@@ -23,11 +23,15 @@ class LocalizationDataset(Dataset):
         print(self.count_samples_by_class(self.n, self.samples))
         self.class_weights = calculate_class_weights(self.count_samples_by_class(self.n, self.samples))
         print(self.class_weights)
-
         self.apply_supcon = configs.supcon.apply
-        self.n_pos = configs.supcon.n_pos
-        self.n_neg = configs.supcon.n_neg
-        self.hard_neg = configs.supcon.hard_neg
+        self.mode = mode
+        if self.apply_supcon:
+           self.class_id = get_class_id_dict(self.samples)
+           self.n_pos = configs.supcon.n_pos
+           self.n_neg = configs.supcon.n_neg
+           self.hard_neg = configs.supcon.hard_neg
+           self.full_list = list(self.class_id.keys())
+    
     @staticmethod
     def count_samples_by_class(n, samples):
         """Count the number of samples for each class."""
@@ -38,9 +42,20 @@ class LocalizationDataset(Dataset):
             class_counts += type_protein
         return class_counts
     def __len__(self):
-        return len(self.samples)
+        if self.apply_supcon and self.mode=="train":
+           return self.n 
+           #one epoch = totol_number of classes, set epoch number to at least epoch_n x len(self.samples)/self.n
+        else:
+           return len(self.samples)
+        
     def __getitem__(self, idx):
-        id, id_frag_list, seq_frag_list, target_frag_list, type_protein = self.samples[idx]
+        if self.apply_supcon and self.mode=="train":
+            anchor_type = self.full_list[idx]
+            anchor = random.choice(self.class_id[anchor_type])
+            id, id_frag_list, seq_frag_list, target_frag_list, type_protein = self.samples[anchor]
+        else:
+            id, id_frag_list, seq_frag_list, target_frag_list, type_protein = self.samples[idx]
+        
         labels = np.where(type_protein == 1)[0]
         weights = []
         for label in labels:
@@ -57,7 +72,7 @@ class LocalizationDataset(Dataset):
         # target_frags = torch.from_numpy(np.stack(target_frags, axis=0))
         type_protein = torch.from_numpy(type_protein)
         pos_neg = None
-        if self.apply_supcon:
+        if self.apply_supcon and self.mode=="train":
             # Even when not in warm starting, the following code is still executed, although its results are not used
             pos_samples = self.get_pos_samples(idx)
             neg_samples = self.get_neg_samples(idx)
@@ -66,7 +81,7 @@ class LocalizationDataset(Dataset):
         # return id, type_protein
 
     def get_pos_samples(self, anchor_idx):
-        filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx]
+        filtered_samples = [sample for idx, sample in enumerate(self.samples) if idx != anchor_idx] #all candidate exlude itself.
         anchor_type_protein = self.samples[anchor_idx][4] #class 0000 0001
         pos_samples = [sample for sample in filtered_samples if
                        np.any(np.logical_and(anchor_type_protein == 1, sample[4] == 1))]
@@ -343,12 +358,12 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
 
 
     # print(train_dataset)
-    train_dataset = LocalizationDataset(train_sample, configs=configs)
-    valid_dataset = LocalizationDataset(valid_sample, configs=configs)
-    test_dataset = LocalizationDataset(test_sample, configs=configs)
-    train_dataloader = DataLoader(train_dataset, batch_size=configs.train_settings.batch_size, shuffle=True, collate_fn=custom_collate)
-    valid_dataloader = DataLoader(valid_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
-    test_dataloader = DataLoader(test_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
+    train_dataset = LocalizationDataset(train_sample, configs=configs,mode="train")
+    valid_dataset = LocalizationDataset(valid_sample, configs=configs,mode="valid")
+    test_dataset = LocalizationDataset(test_sample, configs=configs,mode="test")
+    train_dataloader = DataLoader(train_dataset, batch_size=configs.train_settings.batch_size, shuffle=True, collate_fn=custom_collate,drop_last=True)
+    valid_dataloader = DataLoader(valid_dataset, batch_size=configs.valid_settings.batch_size, shuffle=False, collate_fn=custom_collate)
+    test_dataloader = DataLoader(test_dataset, batch_size=configs.valid_settings.batch_size, shuffle=False, collate_fn=custom_collate)
     return {'train': train_dataloader, 'test': test_dataloader, 'valid': valid_dataloader}
 
 
