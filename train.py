@@ -17,6 +17,7 @@ pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 
 from loss import SupConHardLoss
+from utils import prepare_tensorboard
 
 def loss_fix(id_frag, motif_logits, target_frag, tools):
     #id_frag [batch]
@@ -55,16 +56,18 @@ def make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tupl
     return id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt
 
 
-def train_loop(tools, configs, warm_starting):
+def train_loop(tools, configs, warm_starting,train_writer):
     # accuracy = torchmetrics.Accuracy(task="multiclass", num_classes=tools['num_classes'], average='macro')
     # f1_score = torchmetrics.F1Score(num_classes=tools['num_classes'], average='macro', task="multiclass")
     # accuracy.to(tools['train_device'])
     # f1_score.to(tools["train_device"])
+    global global_step
     tools["optimizer"].zero_grad()
     scaler = GradScaler()
     size = len(tools['train_loader'].dataset)
     num_batches = len(tools['train_loader'])
     train_loss = 0
+    num_train_samples = len(tools['train_loader']) #steps per epoch
     # cs_num=np.zeros(9)
     # cs_correct=np.zeros(9)
     # type_num=np.zeros(10)
@@ -91,10 +94,16 @@ def train_loop(tools, configs, warm_starting):
             without the extending, each len(tuple) == batch_size
             after extending, len(tuple) == batch_size * (1 + n_pos + n_neg)
             """
+            #print("len of pos_neg = "+str(len(pos_neg)))
             flag_batch_extension = True
             pos_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_pos)]
             neg_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_neg)]
             for i in range(b_size):
+<<<<<<< HEAD
+                #print("pos_neg pos")
+                #print(len(pos_neg[i][0]))
+=======
+>>>>>>> 05730e3b61e8b3f8d71762c0ff657eb7388e1e4f
                 for j in range(configs.supcon.n_pos):
                     for k in range(6):
                         pos_transformed[j][k].append(pos_neg[i][0][j][k])
@@ -108,6 +117,11 @@ def train_loop(tools, configs, warm_starting):
                 sample_weight_tuple += tuple(pos_transformed[j][5])
             # print(len(id_tuple))
             for i in range(b_size):
+<<<<<<< HEAD
+                #print("pos_neg neg")
+                #print(len(pos_neg[i][1]))
+=======
+>>>>>>> 05730e3b61e8b3f8d71762c0ff657eb7388e1e4f
                 for j in range(configs.supcon.n_neg):
                     for k in range(6):
                         neg_transformed[j][k].append(pos_neg[i][1][j][k])
@@ -138,49 +152,58 @@ def train_loop(tools, configs, warm_starting):
                                  pos_neg, 
                                  warm_starting)
             weighted_loss_sum = 0
+            weighted_supcon_loss = -1
+            class_loss = -1
+            position_loss=-1
             if not warm_starting:
                 motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
                 sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
-                weighted_loss_sum = tools['loss_function'](
+                class_loss = tools['loss_function'](
                                 motif_logits, 
-                                target_frag.to(tools['train_device']))+\
-                    torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
-            if configs.supcon.apply and warm_starting:
+                                target_frag.to(tools['train_device']))
+                position_loss =  torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
+                train_writer.add_scalar('step class_loss', class_loss.item(), global_step=global_step)
+                train_writer.add_scalar('step position_loss', position_loss.item(), global_step=global_step)
+                print(f"{global_step} class_loss:{class_loss.item()}  position_loss:{position_loss.item()}")
+                weighted_loss_sum=class_loss+position_loss
+            
+            if configs.supcon.apply and configs.supcon.apply_supcon_loss: #configs.supcon.apply: # and warm_starting: calculate supcon loss no matter whether warm_starting or not.
                 supcon_loss = tools['loss_function_supcon'](
                                 projection_head,
                                 configs.supcon.temperature,
                                 configs.supcon.n_pos)
-                weighted_loss_sum += configs.supcon.weight * supcon_loss
+                weighted_supcon_loss = configs.supcon.weight * supcon_loss
+                print(f"{global_step} supcon_loss:{weighted_supcon_loss.item()}")
+                train_writer.add_scalar('step supcon_loss', weighted_supcon_loss.item(), global_step=global_step)
+                weighted_loss_sum += weighted_supcon_loss
             if configs.supcon.apply is False and warm_starting:
                 raise ValueError("Check configs.supcon.apply and configs.supcon.warm_start")
 
             train_loss += weighted_loss_sum.item()
-
+        
         # Backpropagation
         scaler.scale(weighted_loss_sum).backward()
         scaler.step(tools['optimizer'])
         scaler.update()
         tools['scheduler'].step()
-        print(batch, weighted_loss_sum.item())
-        if batch % 30 == 0:
+        print(f"{global_step} loss:{weighted_loss_sum.item()}\n")
+        train_writer.add_scalar('step loss', weighted_loss_sum.item(), global_step=global_step)
+        train_writer.add_scalar('learning_rate', tools['scheduler'].get_lr()[0], global_step=global_step)
+        if global_step % 100 == 0: #30 before changed into 0
             loss, current = weighted_loss_sum.item(), (batch + 1) * b_size  # len(id_tuple)
             if flag_batch_extension:
-                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]  ->  " +
+                customlog(tools["logfilepath"], f"{global_step} loss: {loss:>7f}  [{current:>5d}/{size:>5d}]  ->  " +
                       f"[{(batch + 1) * len(id_tuple):>5d}/{size*(1+configs.supcon.n_pos+configs.supcon.n_neg):>5d}]")
             else:
-                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-            customlog(tools["logfilepath"], f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]\n")
-    # epoch_acc = accuracy.compute().cpu().item()
-    # epoch_f1 = f1_score.compute().cpu().item()
+                customlog(tools["logfilepath"], f"{global_step} loss: {loss:>7f}  [{current:>5d}/{size:>5d}]\n")
+            if class_loss !=-1:
+               customlog(tools["logfilepath"], f"{global_step} class loss: {class_loss.item()+position_loss.item():>7f}\n")
+            
+            if weighted_supcon_loss !=-1:
+               customlog(tools["logfilepath"], f"{global_step} supcon loss: {weighted_supcon_loss.item():>7f}\n")
+    
+    global_step+=1
     epoch_loss = train_loss/num_batches
-    # acc_cs = cs_correct / cs_num
-    customlog(tools["logfilepath"], f" loss: {epoch_loss:>5f}\n")
-    # customlog(tools["logfilepath"], f" accuracy_macro: {epoch_acc:>5f}\n")
-    # customlog(tools["logfilepath"], f" f1_macro: {epoch_f1:>5f}\n")
-    # customlog(tools["logfilepath"], f" acc_cs: {acc_cs:>5f}\n")
-    # Reset metrics at the end of epoch
-    # accuracy.reset()
-    # f1_score.reset()
     return epoch_loss
 
 
@@ -202,7 +225,8 @@ def train_loop(tools, configs, warm_starting):
 
 
 
-def test_loop(tools, dataloader):
+def test_loop(tools, dataloader,train_writer,valid_writer):
+    customlog(tools["logfilepath"], f'number of test steps per epoch: {len(dataloader)}\n')
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
     # model.eval().cuda()
@@ -254,17 +278,6 @@ def test_loop(tools, dataloader):
         # epoch_macro_f1 = macro_f1_score.compute().cpu().item()
         # epoch_f1 = np.array(f1_score.compute().cpu())
         # acc_cs = cs_correct / cs_num
-        customlog(tools["logfilepath"], f" loss: {test_loss:>5f}\n")
-        print(f" loss: {test_loss:>5f}\n")
-
-        # customlog(tools["logfilepath"], f" accuracy: "+str(epoch_acc)+"\n")
-        # customlog(tools["logfilepath"], f" f1: "+str(epoch_f1)+"\n")
-        # customlog(tools["logfilepath"], f" f1_macro: {epoch_macro_f1:>5f}\n")
-        # customlog(tools["logfilepath"], f" acc_cs: {acc_cs:>5f}\n")
-        # Reset metrics at the end of epoch
-        # accuracy.reset()
-        # macro_f1_score.reset()
-        # f1_score.reset()
     return test_loss
 
 
@@ -304,7 +317,8 @@ def evaluate_protein(dataloader, tools):
     # model.eval().cuda()
     tools['net'].eval().to(tools["valid_device"])
     n=tools['num_classes']
-
+    customlog(tools["logfilepath"], f'number of evaluateion steps: {len(dataloader)}\n')
+    print(f'number of evaluateion steps: {len(dataloader)}\n')
     # cutoff = tools['cutoff']
     data_dict={}
     with torch.no_grad():
@@ -361,48 +375,21 @@ def evaluate_protein(dataloader, tools):
         cut_dim=0
         for cutoff in cutoffs:
             scores=get_scores(tools, cutoff, n, data_dict)
-            # IoU_difcut[:,cut_dim]=scores['IoU']
-            # IoU_difcut[:,cut_dim]=np.array([float("{:.3f}".format(i)) for i in scores['IoU']])
-            # FDR_frag_difcut[:,cut_dim]=scores['FDR_frag']
-            # FDR_frag_difcut[:,cut_dim]=float("{:.3f}".format(scores['FDR_frag']))
             IoU_pro_difcut[:,cut_dim]=scores['IoU_pro']
-            # IoU_pro_difcut[:,cut_dim]=np.array([float("{:.3f}".format(i)) for i in scores['IoU_pro']])
-            # FDR_pro_difcut[:,cut_dim]=scores['FDR_pro']
-            # FDR_pro_difcut[:,cut_dim]=float("{:.3f}".format(scores['FDR_pro']))
             result_pro_difcut[:,:,cut_dim]=scores['result_pro']
-            # result_pro_difcut[:,:,cut_dim]=np.array([float("{:.3f}".format(i)) for i in scores['result_pro'].reshape(-1)]).reshape(scores['result_pro'].shape)
             cs_acc_difcut[:,cut_dim]=scores['cs_acc']
             cut_dim+=1
 
         customlog(tools["logfilepath"], f"===========================================\n")
-        # classname=["Nucleus", "ER", "Peroxisome", "Mitochondrion", "Nucleus_export",
-        #          "dual", "SIGNAL", "chloroplast", "Thylakoid"]
-
-        # customlog(tools["logfilepath"], f" Jaccard Index (fragment): \n")
-        # IoU_difcut=pd.DataFrame(IoU_difcut,columns=cutoffs,index=classname)
-        # customlog(tools["logfilepath"], IoU_difcut.__repr__())
-        # # IoU_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t")
-        # customlog(tools["logfilepath"], f"===========================================\n")
-        # customlog(tools["logfilepath"], f" FDR (fragment): \n")
-        # FDR_frag_difcut=pd.DataFrame(FDR_frag_difcut,columns=cutoffs)
-        # customlog(tools["logfilepath"], FDR_frag_difcut.__repr__())
-        # # FDR_frag_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t")
-        # customlog(tools["logfilepath"], f"===========================================\n")
         customlog(tools["logfilepath"], f" Jaccard Index (protein): \n")
         IoU_pro_difcut=pd.DataFrame(IoU_pro_difcut,columns=cutoffs,index=classname)
         customlog(tools["logfilepath"], IoU_pro_difcut.__repr__())
         # IoU_pro_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t")
         customlog(tools["logfilepath"], f"===========================================\n")
-        # customlog(tools["logfilepath"], f" FDR (protein): \n")
-        # FDR_pro_difcut=pd.DataFrame(FDR_pro_difcut,columns=cutoffs)
-        # customlog(tools["logfilepath"], FDR_pro_difcut.__repr__())
-
         # customlog(tools["logfilepath"], f"===========================================\n")
         customlog(tools["logfilepath"], f" cs acc: \n")
         cs_acc_difcut=pd.DataFrame(cs_acc_difcut,columns=cutoffs,index=classname)
         customlog(tools["logfilepath"], cs_acc_difcut.__repr__())
-
-        # FDR_pro_difcut.to_csv(tools["logfilepath"],mode='a',sep="\t")
         customlog(tools["logfilepath"], f"===========================================\n")
         for i in range(len(classname)):
             customlog(tools["logfilepath"], f" Class prediction performance ({classname[i]}): \n")
@@ -484,7 +471,8 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
 
     torch.cuda.empty_cache()
     curdir_path, result_path, checkpoint_path, logfilepath = prepare_saving_dir(configs,args.config_path)
-
+    
+    train_writer, valid_writer = prepare_tensorboard(result_path)
     npz_file = os.path.join(curdir_path, "targetp_data.npz")
     seq_file = os.path.join(curdir_path, "idmapping_2023_08_25.tsv")
 
@@ -492,7 +480,12 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
     # dataloaders_dict = prepare_dataloaders(valid_batch_number, test_batch_number, npz_file, seq_file, configs)
     dataloaders_dict = prepare_dataloaders(configs, valid_batch_number, test_batch_number)
     customlog(logfilepath, "Done Loading data\n")
-
+    customlog(logfilepath, f'number of training data: {len(dataloaders_dict["train"])}\n')
+    customlog(logfilepath, f'number of valid data: {len(dataloaders_dict["valid"])}\n')
+    customlog(logfilepath, f'number of test data: {len(dataloaders_dict["test"])}\n')
+    print(f'number of training data: {len(dataloaders_dict["train"])}\n')
+    print(f'number of valid data: {len(dataloaders_dict["valid"])}\n')
+    print(f'number of test data: {len(dataloaders_dict["test"])}\n')
     tokenizer = prepare_tokenizer(configs, curdir_path)
     customlog(logfilepath, "Done initialize tokenizer\n")
 
@@ -543,6 +536,8 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
         customlog(logfilepath, "Start training...\n")
         
         best_valid_loss = np.inf
+        global global_step
+        global_step=0
         for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
             warm_starting = False
             if epoch < configs.supcon.warm_start:
@@ -557,33 +552,45 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
                 customlog(logfilepath,f"== Warm Start Finished ==\n")
         
             tools['epoch'] = epoch
-            print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
-        
-            customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
+            if global_step % 100 == 0:
+               print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
+               customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
+            
             start_time = time()
-            train_loss = train_loop(tools, configs, warm_starting)
+            
+            train_loss = train_loop(tools, configs, warm_starting,train_writer)
+            train_writer.add_scalar('epoch loss',train_loss,global_step=epoch)
             end_time = time()
         
         
             if epoch % configs.valid_settings.do_every == 0 and epoch != 0:
+                customlog(logfilepath, f'Epoch {epoch}: train loss: {train_loss:>5f}\n')
+                print(f'Epoch {epoch}: train loss: {train_loss:>5f}\n')
                 print(f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
                 customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} validation...\n-------------------------------\n")
                 start_time = time()
                 dataloader = tools["valid_loader"]
-                valid_loss = test_loop(tools, dataloader) #In test loop, never test supcon loss
+                
+                valid_loss = test_loop(tools, dataloader,train_writer,valid_writer) #In test loop, never test supcon loss
+                
+                valid_writer.add_scalar('epoch loss',valid_loss,global_step=epoch)
+                customlog(logfilepath,f'Epoch {epoch}: valid loss:{valid_loss:>5f}\n')
+                print(f'Epoch {epoch}: valid loss:{valid_loss:>5f}\n')
                 end_time = time()
             
         
-                if valid_loss < best_valid_loss:
-                    best_valid_loss = valid_loss
+                if train_loss < best_valid_loss:
+                    customlog(logfilepath, f"Epoch {epoch}: valid loss {train_loss} smaller than best loss {best_valid_loss}\n-------------------------------\n")
+                    best_valid_loss = train_loss
                     # best_valid_macro_f1 = valid_macro_f1
                     # best_valid_f1 = valid_f1
                     # Set the path to save the model checkpoint.
                     model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
+                    customlog(logfilepath, f"Epoch {epoch}: A better checkpoint is saved into {model_path} \n-------------------------------\n")
                     save_checkpoint(epoch, model_path, tools)
     
     if args.predict==1:
-       if configs.resume.resume:
+       if os.path.exists(configs.resume.resume_path):
           model_path = configs.resume.resume_path
        else:
           model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
@@ -595,8 +602,10 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
     start_time = time()
     dataloader = tools["test_loader"]
     evaluate_protein(dataloader, tools)
+    train_writer.close()
+    valid_writer.close()
     end_time = time()
-
+    
     del tools, encoder, dataloaders_dict, optimizer, scheduler
     torch.cuda.empty_cache()
 

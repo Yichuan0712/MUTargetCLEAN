@@ -8,7 +8,35 @@ from cosine_annealing_warmup import CosineAnnealingWarmupRestarts
 import shutil
 from pathlib import Path
 import datetime
+from torch.utils.tensorboard import SummaryWriter
+def get_class_id_dict(samples) -> dict:
+    class_id = {} #key is class id is sample id
+    protein_index=0
+    for id, id_frag_list, seq_frag_list, target_frag_list, type_protein in samples:
+        for label,item in enumerate(type_protein):
+              if item == 1:
+                 if label not in class_id:
+                     class_id[label]=[protein_index]
+                 else:
+                     class_id[label].append(protein_index)
+        
+        protein_index+=1
+    
+    return class_id
 
+def prepare_tensorboard(result_path):
+    train_path = os.path.join(result_path, 'train')
+    val_path = os.path.join(result_path, 'val')
+    Path(train_path).mkdir(parents=True, exist_ok=True)
+    Path(val_path).mkdir(parents=True, exist_ok=True)
+
+    train_log_path = os.path.join(train_path, 'tensorboard')
+    train_writer = SummaryWriter(train_log_path)
+
+    val_log_path = os.path.join(val_path, 'tensorboard')
+    val_writer = SummaryWriter(val_log_path)
+
+    return train_writer, val_writer
 
 def calculate_class_weights(class_counts):
     """
@@ -80,10 +108,15 @@ def prepare_optimizer(net, configs, num_train_samples, logfilepath):
         scheduler = None
     else:
         if scheduler is None:
-            scheduler = CosineAnnealingWarmupRestarts(
-                optimizer,
+            if configs.optimizer.decay.first_cycle_steps:
+                first_cycle_steps = configs.optimizer.decay.first_cycle_steps
+            else:
                 first_cycle_steps=np.ceil(
                     num_train_samples / configs.train_settings.grad_accumulation) * configs.train_settings.num_epochs / configs.optimizer.decay.num_restarts,
+            
+            scheduler = CosineAnnealingWarmupRestarts(
+                optimizer,
+                first_cycle_steps=first_cycle_steps,
                 cycle_mult=1.0,
                 max_lr=configs.optimizer.lr,
                 min_lr=configs.optimizer.decay.min_lr,
@@ -103,6 +136,11 @@ def load_opt(model, config):
         weight_decay=float(config.optimizer.weight_decay),
         eps=float(config.optimizer.eps)
         )
+    elif config.optimizer.name.lower() == 'sgd':
+        opt = torch.optim.SGD(model.parameters(), lr=float(config.optimizer.lr),
+                              momentum=0.9, dampening=0,
+                              weight_decay=float(config.optimizer.weight_decay))
+    
     else:
         raise ValueError('wrong optimizer')
     return opt, scheduler
