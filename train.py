@@ -99,8 +99,11 @@ def train_loop(tools, configs, warm_starting,train_writer):
             pos_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_pos)]
             neg_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_neg)]
             for i in range(b_size):
+<<<<<<< HEAD
                 #print("pos_neg pos")
                 #print(len(pos_neg[i][0]))
+=======
+>>>>>>> 05730e3b61e8b3f8d71762c0ff657eb7388e1e4f
                 for j in range(configs.supcon.n_pos):
                     for k in range(6):
                         pos_transformed[j][k].append(pos_neg[i][0][j][k])
@@ -114,8 +117,11 @@ def train_loop(tools, configs, warm_starting,train_writer):
                 sample_weight_tuple += tuple(pos_transformed[j][5])
             # print(len(id_tuple))
             for i in range(b_size):
+<<<<<<< HEAD
                 #print("pos_neg neg")
                 #print(len(pos_neg[i][1]))
+=======
+>>>>>>> 05730e3b61e8b3f8d71762c0ff657eb7388e1e4f
                 for j in range(configs.supcon.n_neg):
                     for k in range(6):
                         neg_transformed[j][k].append(pos_neg[i][1][j][k])
