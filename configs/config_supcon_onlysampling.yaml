@@ -36,12 +36,12 @@ train_settings:
 valid_settings:
   do_every: 1
   batch_size: 16
-  device: cuda:1
+  device: cuda
 
 
 predict_settings:
   batch_size: 16
-  device: cuda:1
+  device: cuda
   cutoffs: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
 optimizer:

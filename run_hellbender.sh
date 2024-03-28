@@ -45,11 +45,12 @@ export HF_HOME=/cluster/pixstor/xudong-lab/duolin/transformers_cache/
 #--resume_path /cluster/pixstor/xudong-lab/duolin/MUTargetCLEAN/results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9/2024-03-27__00-26-05/checkpoints/best_model.pth \
 #--result_path ./results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9/predict 
 
-python train.py --config_path ./configs/config_supcon_hardtrue_esmfix.yaml \
---result_path ./config_supcon_hardtrue_esmfix/cleanloader/
-#1565611 lr small
-#1565887 lr bigger
+#python train.py --config_path ./configs/config_supcon_hardtrue_esmfix.yaml \
+#--result_path ./config_supcon_hardtrue_esmfix/cleanloader/
+#1565611 lr small  not work!
+#1565887 lr bigger not work!
 
 #using batchsample dataloader not clean but clean's pos and neg, try original codes.
-#python train.py --config_path ./configs/config_supcon_onlysampling.yaml --result_path ./results_supcon_hardTrue_onlysampling/b10_p2_n4
-#1565886
+python train.py --config_path ./configs/config_supcon_onlysampling.yaml --result_path ./results_supcon_hardTrue_onlysampling/b10_p2_n4
+#1565886 stopped by error
+#1566832 modified train.py
