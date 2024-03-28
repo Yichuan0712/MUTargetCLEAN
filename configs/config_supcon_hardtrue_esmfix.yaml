@@ -12,22 +12,24 @@ encoder:
   composition: esm_v2 # esm_v2, promprot, both
   model_type: esm_v2 # esm_v2, t5
   model_name:  facebook/esm2_t33_650M_UR50D # facebook/esm2_t33_650M_UR50D, facebook/esm2_t30_150M_UR50D, facebook/esm2_t12_35M_UR50D, facebook/esm2_t6_8M_UR50D, Rostlab/prot_t5_base_mt_uniref50
-  max_len: 1024
+  max_len: 600
   num_classes: 8
   prm4prmpro: ppi
-  frag_overlap: 200
+  frag_overlap: 120
 
-PEFT: PFT #lora # FT, PFT, frozen, lora, PromT
+PEFT: frozen #lora # FT, PFT, frozen, lora, PromT
 
 train_settings:
-  num_epochs: 8000
+  dataloader: "clean" #"batchsample","clean"
+  num_epochs: 10000
   shuffle: True
   device: cuda
   batch_size: 8 #16
   grad_accumulation: 1
   loss_pos_weight: 35
   dataset: v2 # v2, v3
-  fine_tune_lr: 0 # -1, -2, -3
+  fine_tune_lr: -2 # -1, -2, -3
+  log_every: 100
 
 
 valid_settings:
@@ -43,7 +45,7 @@ predict_settings:
 
 optimizer:
   name: sgd
-  lr: 1e-4
+  lr: 1e-2
   weight_decouple: True
   weight_decay: 0.0005
   eps: 1e-16
@@ -56,16 +58,16 @@ optimizer:
     min_lr: 0
     gamma: 1
     num_restarts: 1
-    first_cycle_steps: 500  #null before
+    first_cycle_steps: 1000  #null before
   mode: cosine #skip, cosine
 
 supcon:
   apply: True
   drop_out: 0.1
   n_pos: 8 #9
-  n_neg: 24 #30
+  n_neg: 25 #30
   temperature: 0.1
   hard_neg: True
   weight: 1
-  warm_start: 0
+  warm_start: 10000
   apply_supcon_loss: True #if False can still apply supcon sampling method, but no supcon loss!

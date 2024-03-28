@@ -29,22 +29,27 @@ export HF_HOME=/cluster/pixstor/xudong-lab/duolin/transformers_cache/
 
 #python train.py --config_path ./configs/config_supcon_hardtrue.yaml --result_path ./results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9
 #1556043
-python train.py --config_path ./configs/config_supcon_hardtrue_esm8.yaml --result_path ./results_supcon_hardTrue_pft2_esm8/cleanloader/b8_p4_n12
+#python train.py --config_path ./configs/config_supcon_hardtrue_esm8.yaml --result_path ./results_supcon_hardTrue_pft2_esm8/cleanloader/b8_p4_n12
 #1556054
 
 
-python train.py --config_path ./configs/config_supcon_hardtrue_esm8.yaml \
---predict 1 \
---resume_path /cluster/pixstor/xudong-lab/duolin/MUTargetCLEAN/results_supcon_hardTrue_pft2_esm8/cleanloader/b8_p4_n12/2024-03-27__00-32-00/checkpoints/best_model.pth \
---result_path ./results_supcon_hardTrue_pft2_esm8/cleanloader/b8_p4_n12/predict 
+#python train.py --config_path ./configs/config_supcon_hardtrue_esm8.yaml \
+#--predict 1 \
+#--resume_path /cluster/pixstor/xudong-lab/duolin/MUTargetCLEAN/results_supcon_hardTrue_pft2_esm8/cleanloader/b8_p4_n12/2024-03-27__00-32-00/checkpoints/best_model.pth \
+#--result_path ./results_supcon_hardTrue_pft2_esm8/cleanloader/b8_p4_n12/predict 
 
 
 
-python train.py --config_path ./configs/config_supcon_hardtrue.yaml \
---predict 1 \
---resume_path /cluster/pixstor/xudong-lab/duolin/MUTargetCLEAN/results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9/2024-03-27__00-26-05/checkpoints/best_model.pth \
---result_path ./results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9/predict 
+#python train.py --config_path ./configs/config_supcon_hardtrue.yaml \
+#--predict 1 \
+#--resume_path /cluster/pixstor/xudong-lab/duolin/MUTargetCLEAN/results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9/2024-03-27__00-26-05/checkpoints/best_model.pth \
+#--result_path ./results_supcon_hardTrue_pft2/cleanloader/b8_p3_n9/predict 
 
 python train.py --config_path ./configs/config_supcon_hardtrue_esmfix.yaml \
 --result_path ./config_supcon_hardtrue_esmfix/cleanloader/
+#1565611 lr small
+#1565887 lr bigger
 
+#using batchsample dataloader not clean but clean's pos and neg, try original codes.
+#python train.py --config_path ./configs/config_supcon_onlysampling.yaml --result_path ./results_supcon_hardTrue_onlysampling/b10_p2_n4
+#1565886

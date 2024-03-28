@@ -20,6 +20,7 @@ encoder:
 PEFT: PFT #lora # FT, PFT, frozen, lora, PromT
 
 train_settings:
+  dataloader: "batchsample"
   num_epochs: 8000
   shuffle: True
   device: cuda

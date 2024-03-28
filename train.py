@@ -7,7 +7,6 @@ import yaml
 import numpy as np
 # import torchmetrics
 from time import time
-from data import *
 from model import *
 from utils import *
 from sklearn.metrics import roc_auc_score,average_precision_score,matthews_corrcoef,recall_score,precision_score,f1_score
@@ -18,6 +17,8 @@ pd.set_option('display.max_columns', None)
 
 from loss import SupConHardLoss
 from utils import prepare_tensorboard
+from data_clean import prepare_dataloaders as prepare_dataloader_clean 
+from data_batchsample import prepare_dataloaders as prepare_dataloader_batchsample
 
 def loss_fix(id_frag, motif_logits, target_frag, tools):
     #id_frag [batch]
@@ -183,7 +184,7 @@ def train_loop(tools, configs, warm_starting,train_writer):
         print(f"{global_step} loss:{weighted_loss_sum.item()}\n")
         train_writer.add_scalar('step loss', weighted_loss_sum.item(), global_step=global_step)
         train_writer.add_scalar('learning_rate', tools['scheduler'].get_lr()[0], global_step=global_step)
-        if global_step % 100 == 0: #30 before changed into 0
+        if global_step % configs.train_settings.log_every == 0: #30 before changed into 0
             loss, current = weighted_loss_sum.item(), (batch + 1) * b_size  # len(id_tuple)
             if flag_batch_extension:
                 customlog(tools["logfilepath"], f"{global_step} loss: {loss:>7f}  [{current:>5d}/{size:>5d}]  ->  " +
@@ -191,7 +192,7 @@ def train_loop(tools, configs, warm_starting,train_writer):
             else:
                 customlog(tools["logfilepath"], f"{global_step} loss: {loss:>7f}  [{current:>5d}/{size:>5d}]\n")
             if class_loss !=-1:
-               customlog(tools["logfilepath"], f"{global_step} class loss: {class_loss.item()+position_loss.item():>7f}\n")
+               customlog(tools["logfilepath"], f"{global_step} class loss: {class_loss.item():>7f} position_loss:{position_loss.item():>7f}\n")
             
             if weighted_supcon_loss !=-1:
                customlog(tools["logfilepath"], f"{global_step} supcon loss: {weighted_supcon_loss.item():>7f}\n")
@@ -199,23 +200,6 @@ def train_loop(tools, configs, warm_starting,train_writer):
     global_step+=1
     epoch_loss = train_loss/num_batches
     return epoch_loss
-
-
-# def train_on_batch(model, seq, label, cs):
-#     with autocast():
-#         # Compute prediction and loss
-#         type_probab, cs_probab = model(seq)
-#         if cs_probab.size()[1]<200:
-#           zero_pad=200-cs_probab.size()[1]
-#           additional_elements = torch.zeros([cs_probab.size()[0],zero_pad]).to(device)
-#           cs_probab = torch.cat((cs_probab, additional_elements), dim=1)
-#         # loss1 = loss_fn(type_probab, label.cuda())
-#         loss1 = loss_fn(type_probab, label.to(device))
-#         mask =  cs[:, 0] != 1
-#         # loss2 = loss_fn(cs_probab[mask], cs[mask].cuda())
-#         loss2 = loss_fn(cs_probab[mask], cs[mask].to(device))
-#         loss = loss1 + loss2
-#         return loss
 
 
 
@@ -472,7 +456,11 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
 
     customlog(logfilepath, f'use k-fold index: {valid_batch_number}\n')
     # dataloaders_dict = prepare_dataloaders(valid_batch_number, test_batch_number, npz_file, seq_file, configs)
-    dataloaders_dict = prepare_dataloaders(configs, valid_batch_number, test_batch_number)
+    if configs.train_settings.dataloader=="batchsample":
+        dataloaders_dict = prepare_dataloader_batchsample(configs, valid_batch_number, test_batch_number)
+    elif configs.train_settings.dataloader=="clean":
+            dataloaders_dict = prepare_dataloader_clean(configs, valid_batch_number, test_batch_number)
+    
     customlog(logfilepath, "Done Loading data\n")
     customlog(logfilepath, f'number of training data: {len(dataloaders_dict["train"])}\n')
     customlog(logfilepath, f'number of valid data: {len(dataloaders_dict["valid"])}\n')
@@ -536,11 +524,13 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
             warm_starting = False
             if epoch < configs.supcon.warm_start:
                 warm_starting = True
-                print('== Warm Start Began    ==')
-                customlog(logfilepath,f"== Warm Start Began ==\n")
+                if epoch ==0:
+                   print('== Warm Start Began    ==')
+                   customlog(logfilepath,f"== Warm Start Began ==\n")
         
         
             if epoch == configs.supcon.warm_start:
+                best_valid_loss = np.inf #reset best_valid_loss when warmend ends
                 warm_starting = False
                 print('== Warm Start Finished ==')
                 customlog(logfilepath,f"== Warm Start Finished ==\n")
@@ -573,12 +563,17 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
                 end_time = time()
             
         
-                if train_loss < best_valid_loss:
-                    customlog(logfilepath, f"Epoch {epoch}: valid loss {train_loss} smaller than best loss {best_valid_loss}\n-------------------------------\n")
+                if warm_starting: #in warm_starting only supcon loss, and train_loss
+                  if train_loss < best_valid_loss:
+                    customlog(logfilepath, f"Epoch {epoch}: train loss {train_loss} smaller than best loss {best_valid_loss}\n-------------------------------\n")
                     best_valid_loss = train_loss
-                    # best_valid_macro_f1 = valid_macro_f1
-                    # best_valid_f1 = valid_f1
-                    # Set the path to save the model checkpoint.
+                    model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
+                    customlog(logfilepath, f"Epoch {epoch}: A better checkpoint is saved into {model_path} \n-------------------------------\n")
+                    save_checkpoint(epoch, model_path, tools)
+                else:
+                  if valid_loss < best_valid_loss:
+                    customlog(logfilepath, f"Epoch {epoch}: valid loss {valid_loss} smaller than best loss {best_valid_loss}\n-------------------------------\n")
+                    best_valid_loss = valid_loss
                     model_path = os.path.join(tools['checkpoint_path'], f'best_model.pth')
                     customlog(logfilepath, f"Epoch {epoch}: A better checkpoint is saved into {model_path} \n-------------------------------\n")
                     save_checkpoint(epoch, model_path, tools)

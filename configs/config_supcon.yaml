@@ -20,6 +20,7 @@ encoder:
 PEFT: frozen #lora # FT, PFT, frozen, lora, PromT
 
 train_settings:
+  dataloader: "clean" #"batchsample":old sampling,"clean": clean sampling, each batch contain anchors from different classes
   num_epochs: 8000
   shuffle: True
   device: cuda:1
@@ -28,6 +29,7 @@ train_settings:
   loss_pos_weight: 35
   dataset: v2 # v2, v3
   fine_tune_lr: 0 # -1, -2, -3
+  log_every: 100
 
 
 valid_settings:

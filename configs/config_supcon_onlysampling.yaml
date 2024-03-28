@@ -20,24 +20,27 @@ encoder:
 PEFT: PFT #lora # FT, PFT, frozen, lora, PromT
 
 train_settings:
-  num_epochs: 30
+  dataloader: "batchsample" #"batchsample","clean"
+  num_epochs: 40
   shuffle: True
-  device: cuda:1
-  batch_size: 3 #16
+  device: cuda
+  batch_size: 10 #16
   grad_accumulation: 1
   loss_pos_weight: 35
   dataset: v2 # v2, v3
   fine_tune_lr: -2 # -1, -2, -3
+  log_every: 30
+  
 
 
 valid_settings:
   do_every: 1
-  batch_size: 3
+  batch_size: 16
   device: cuda:1
 
 
 predict_settings:
-  batch_size: 3
+  batch_size: 16
   device: cuda:1
   cutoffs: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
 
