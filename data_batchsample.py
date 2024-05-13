@@ -9,25 +9,80 @@ import pandas as pd
 import random
 import yaml
 from utils import *
+from Bio.Seq import Seq
 
 
 class LocalizationDataset(Dataset):
-    def __init__(self, samples, configs):
+    def __init__(self, samples, configs,mode="train"):
         # self.label_to_index = {"Other": 0, "SP": 1, "MT": 2, "CH": 3, "TH": 4}
         # self.index_to_label = {0: "Other", 1: "SP", 2: "MT", 3: "CH", 4: "TH"}
         # self.transform = transform
         # self.target_transform = target_transform
         # self.cs_transform = cs_transform
-        self.samples = samples
+        self.original_samples = samples
         self.n = configs.encoder.num_classes
-        print(self.count_samples_by_class(self.n, self.samples))
-        self.class_weights = calculate_class_weights(self.count_samples_by_class(self.n, self.samples))
+        self.class_weights = calculate_class_weights(self.count_samples_by_class(self.n, self.original_samples))
         print(self.class_weights)
+        if mode == "train" and configs.train_settings.data_aug.enable:
+           self.data_aug = True
+           samples = self.data_aug_train(samples,configs,self.class_weights)
+        
+        self.samples = samples
+        #print(samples[0:2]) #same as original
         self.apply_supcon = configs.supcon.apply
         if self.apply_supcon:
            self.n_pos = configs.supcon.n_pos
            self.n_neg = configs.supcon.n_neg
            self.hard_neg = configs.supcon.hard_neg
+    
+    #"""
+    def random_mutation(self,sequence,target,mutation_rate):
+        amino_acids = "ACDEFGHIKLMNPQRSTVWY"  # List of standard amino acids
+        seq = Seq(sequence)
+        seq_list = list(seq)
+        # Get the mutable positions
+        #print(target)
+        mutable_positions = [i for i, label in enumerate(target) if label == 0]
+        num_mutations = int(mutation_rate*len(mutable_positions))
+        if num_mutations>0:
+            num_mutations = min(num_mutations, len(mutable_positions))
+            mutation_positions = random.sample(mutable_positions, num_mutations)
+            for pos in mutation_positions:
+                # Ensure the mutated amino acid is different from the original
+                new_aa = random.choice([aa for aa in amino_acids if aa != seq_list[pos]])
+                seq_list[pos] = new_aa
+            
+            # Join the mutated amino acids back into a sequence
+            mutated_sequence = ''.join(seq_list)
+            #print(sequence)
+            #print(mutated_sequence)
+            return mutated_sequence
+        else:
+           return sequence
+    #"""
+    
+    def data_aug_train(self,samples,configs,class_weights):
+        print("data aug on len of "+str(len(samples)))
+        aug_samples=[]
+        
+        for id, id_frag_list, seq_frag_list, target_frag_list, type_protein in samples:
+            if configs.train_settings.data_aug.add_original:
+               aug_samples.append((id, id_frag_list, seq_frag_list, target_frag_list, type_protein)) #add original 
+            
+            class_positions = np.where(type_protein == 1)[0]
+            #print(class_weights)
+            #print(type_protein)
+            #print(np.max([class_weights[x] for x in class_positions]))
+            per_times = np.max([2,int(np.ceil(configs.train_settings.data_aug.per_times*np.max([class_weights[x] for x in class_positions])))])
+            for aug_i in range(per_times):
+                aug_id = id+"_"+str(aug_i)
+                aug_id_frag_list = [aug_id+"@"+id_frag.split("@")[1] for id_frag in id_frag_list]
+                aug_seq_frag_list = [self.random_mutation(sequence,[int(max(set(column))) for column in zip(*target)][:len(sequence)],configs.train_settings.data_aug.mutation_rate) for sequence,target in zip(seq_frag_list,target_frag_list)]
+                aug_target_frag_list = target_frag_list
+                aug_type_protein = type_protein
+                aug_samples.append((aug_id, aug_id_frag_list, aug_seq_frag_list, aug_target_frag_list, aug_type_protein))
+        
+        return aug_samples
     
     @staticmethod
     def count_samples_by_class(n, samples):
@@ -38,10 +93,12 @@ class LocalizationDataset(Dataset):
         for id, id_frag_list, seq_frag_list, target_frag_list, type_protein in samples:
             class_counts += type_protein
         return class_counts
+    
     def __len__(self):
            return len(self.samples)
         
     def __getitem__(self, idx):
+        #print(idx)
         id, id_frag_list, seq_frag_list, target_frag_list, type_protein = self.samples[idx]
         labels = np.where(type_protein == 1)[0]
         weights = []
@@ -316,7 +373,6 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     train_sample = []
     valid_sample = []
     test_sample = []
-
     for i in samples:
         # id=i[0].split("@")[0]
         id = i[0]
@@ -331,6 +387,8 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
     # train_samples = prepare_samples(exclude=True, fold_num_list=[valid_batch_number, test_batch_number], id2seq_dic=id_to_seq, npz_file=npz_file)
     # valid_samples = prepare_samples(exclude=False, fold_num_list=[valid_batch_number], id2seq_dic=id_to_seq, npz_file=npz_file)
     # test_samples = prepare_samples(exclude=False, fold_num_list=[test_batch_number], id2seq_dic=id_to_seq, npz_file=npz_file)
+    #print("first train[0]") #same!
+    #print(train_sample[0])
     random.seed(configs.fix_seed)
     # Shuffle the list
     random.shuffle(samples)
@@ -345,51 +403,59 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
 
 
     # print(train_dataset)
-    train_dataset = LocalizationDataset(train_sample, configs=configs)
-    valid_dataset = LocalizationDataset(valid_sample, configs=configs)
-    test_dataset = LocalizationDataset(test_sample, configs=configs)
+    #print(train_sample[0])
+    train_dataset = LocalizationDataset(train_sample, configs=configs,mode = "train")
+    valid_dataset = LocalizationDataset(valid_sample, configs=configs,mode = "valid")
+    test_dataset = LocalizationDataset(test_sample, configs=configs,mode = "test")
     train_dataloader = DataLoader(train_dataset, batch_size=configs.train_settings.batch_size, shuffle=True, collate_fn=custom_collate,drop_last=True)
-    valid_dataloader = DataLoader(valid_dataset, batch_size=configs.valid_settings.batch_size, shuffle=False, collate_fn=custom_collate)
+    valid_dataloader = DataLoader(valid_dataset, batch_size=configs.valid_settings.batch_size, shuffle=True, collate_fn=custom_collate)
     test_dataloader = DataLoader(test_dataset, batch_size=configs.valid_settings.batch_size, shuffle=False, collate_fn=custom_collate)
     return {'train': train_dataloader, 'test': test_dataloader, 'valid': valid_dataloader}
 
 
 if __name__ == '__main__':
-    config_path = './config.yaml'
+    config_path = '././configs/config_nosupcon.yaml'
     with open(config_path) as file:
         configs_dict = yaml.full_load(file)
 
     configs_file = load_configs(configs_dict)
 
     dataloaders_dict = prepare_dataloaders(configs_file, 0, 1)
-
-    for batch in dataloaders_dict['train']:
+    train_loader=dataloaders_dict["train"]
+    for batch in train_loader:
         # id_batch, fragments_batch, target_frags_batch, weights_batch = batch
-        (prot_id, id_frag_list, seq_frag_list, target_frag_nplist, type_protein_pt, sample_weight) = batch
+        (prot_id, id_frag_list, seq_frag_list, target_frag_nplist, type_protein_pt, sample_weight,pos_neg) = batch
         # id, type_protein = batch
         # print(len(id_batch))
         # print(len(fragments_batch))
         # print(np.array(target_frags_batch).shape)
         # print(len(weights_batch))
         print("==========================")
-        print(type(prot_id))
-        print(prot_id)
-        print(type(id_frag_list))
-        print(id_frag_list)
-        print(type(seq_frag_list))
-        print(seq_frag_list)
-        print(type(target_frag_nplist))
-        print(target_frag_nplist)
-        print(type(type_protein_pt))
-        print(type_protein_pt)
-        print(type(sample_weight))
-        print(sample_weight)
-        # print(next(iter(dataloaders_dict['test'])))
-        # a=np.array(target_frags_batch)
-        # print(np.max(a, axis=2))
-        # print(target_frags_batch.size())
-        # print(target_frags_batch[1])
-        # print(weights_batch)
+        print("==========================")
+        #print(type(prot_id))
+        print("prot_id="+str(prot_id))
+        #print(pos_neg)
+        print("id_frag_list="+str(id_frag_list))
+        print("seq_frag_list="+str(seq_frag_list))
+        #print("target_frag_nplist="+str(target_frag_nplist))
+        print(target_frag_nplist[0])
+        print([len(frag) for frag in id_frag_list])
+        #print(type(id_frag_list))
+        #print(id_frag_list)
+        #print(type(seq_frag_list))
+        #print(seq_frag_list)
+        #print(type(target_frag_nplist))
+        #print(target_frag_nplist)
+        #print(type(type_protein_pt))
+        #print(type_protein_pt)
+        #print(type(sample_weight))
+        #print(sample_weight)
+        ## print(next(iter(dataloaders_dict['test'])))
+        ## a=np.array(target_frags_batch)
+        ## print(np.max(a, axis=2))
+        ## print(target_frags_batch.size())
+        ## print(target_frags_batch[1])
+        ## print(weights_batch)
         break
 
     print('done')

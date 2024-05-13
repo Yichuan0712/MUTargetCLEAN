@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+conda activate pytorch1.13.0
 python train.py --config_path ./config.yaml
 python train.py --config_path ./config_supcon.yaml
 
@@ -42,5 +42,31 @@ python train.py --config_path ./configs/config_supcon.yaml --result_path ./resul
 
 
 python train.py --config_path ./configs/config_supcon.yaml --result_path ./debug --predict 1 --resume_path /data/duolin/MUTargetCLEAN/results_supcon_hardTrue_pft2_supconloss/2024-03-27__00-02-01/checkpoints/best_model.pth
->>>>>>> 1ac31f0de6fa5216e9d96db8cfdda3b82be8b9bb
 python train.py --config_path ./configs/config_supcon.yaml --result_path ./debug 
+
+python train.py --config_path ./configs/config_nosupcon2.yaml --result_path ./result_nosupcon/2/ 
+
+python train.py --config_path ./configs/config_nosupcon_dataaug.yaml --result_path ./result_nosupcon/dataaug/time10_0.3_mask0.1
+#cannot use MLM enable
+
+
+python train.py --config_path ./configs/config_nosupcon_dataaug.yaml --result_path ./result_nosupcon/dataaug/time10_0.3_repeat_nooriginal
+python train.py --config_path ./configs/config_nosupcon_dataaug.yaml --result_path ./result_nosupcon/dataaug/time5_0.3_repeat_nooriginal
+
+
+python train.py --config_path ./configs/config_nosupcon_dataaug.yaml \
+--result_path ./result_nosupcon/dataaug_MLM/time5_0.3_repeat_nooriginal
+
+
+python train.py --config_path ./configs/config_nosupcon_dataaug.yaml \
+--result_path ./result_nosupcon/dataaug_MLM/time10smallestclass_0.3_MLM0.2_repeat_nooriginal
+
+
+python train.py --config_path ./configs/config_nosupcon_CNNdecoder.yaml \
+--result_path ./result_nosupcon/cnndecoder/cnn_c8_k14
+
+python train.py --config_path ./configs/config_nosupcon_CNNdecoder.yaml \
+--result_path ./result_nosupcon/cnndecoder/cnn2_c32_k7_drop0.15
+
+python train.py --config_path ./configs/config_nosupcon_CNNdecoder.yaml \
+--result_path ./result_nosupcon/combine_cnnlineardecoder/cnn2linear_c32_k7_drop0.15

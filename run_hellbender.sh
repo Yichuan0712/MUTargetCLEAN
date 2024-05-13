@@ -51,6 +51,37 @@ export HF_HOME=/cluster/pixstor/xudong-lab/duolin/transformers_cache/
 #1565887 lr bigger not work!
 
 #using batchsample dataloader not clean but clean's pos and neg, try original codes.
-python train.py --config_path ./configs/config_supcon_onlysampling.yaml --result_path ./results_supcon_hardTrue_onlysampling/b10_p2_n4
+#python train.py --config_path ./configs/config_supcon_onlysampling.yaml --result_path ./results_supcon_hardTrue_onlysampling/b10_p2_n4
 #1565886 stopped by error
 #1566832 modified train.py
+
+#using batchsample dataloader not clean but clean's pos and neg, try original codes. and original lr schedular
+#python train.py --config_path ./configs/config_supcon_onlysampling.yaml \
+#--result_path ./results_supcon_hardTrue_onlysampling/b16_p2_n2_adam_epoch20
+#epoch 40 1571588
+#epoch 20 1584450
+# run in digbio using pytorch1.13.0 but transformers==4.38.2
+
+#python train.py --config_path ./configs/config_supcon_onlysampling.yaml \
+#--predict 1 \
+#--resume_path /cluster/pixstor/xudong-lab/duolin/MUTargetCLEAN/results_supcon_hardTrue_onlysampling/b10_p2_n4/2024-03-28__11-36-17/checkpoints//best_model.pth \
+#--result_path ./results_supcon_hardTrue_onlysampling/b10_p2_n4/predict
+
+#python train.py --config_path ./configs/config_supcon_onlysampling_hardfalse.yaml \
+#--result_path ./results_supcon_hardFalse_onlysampling/b16_p2_n2
+#1571554
+#original lr hardFalse
+#python train.py --config_path ./configs/config_supcon_onlysampling_hardfalse.yaml \
+#--result_path ./results_supcon_hardFalse_onlysampling/b16_p2_n2_adam
+#1571590
+
+#test the codes!
+#python train.py --config_path ./configs/config_nosupcon.yaml \
+#--result_path ./config_nosupcon/b16_epoch20_adam
+#1584449
+#python train.py --config_path ./config_mutarget.yaml
+
+python train.py --config_path ./configs/config_supcon_onlysampling.yaml \
+--resume_path /cluster/pixstor/xudong-lab/duolin/MUTargetCLEAN/results_supcon_hardTrue_onlysampling/b10_p2_n4/2024-03-28__11-36-17/checkpoints//best_model.pth \
+--result_path ./results_supcon_hardTrue_onlysampling/b10_p2_n4/run2
+#1594176

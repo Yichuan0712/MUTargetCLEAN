@@ -66,6 +66,10 @@ def load_configs(config,args=None):
     tree_config.optimizer.weight_decay = float(tree_config.optimizer.weight_decay)
     tree_config.optimizer.eps = float(tree_config.optimizer.eps)
     # overwrite parameters if set through commandline
+    class defaultObject:
+      def __init__(self):
+        self.enable = False  # Initialize enable attribute to False by default
+   
     if args is not None:
         if args.result_path:
             tree_config.result_path = args.result_path
@@ -73,6 +77,29 @@ def load_configs(config,args=None):
         if args.resume_path:
             tree_config.resume.resume_path = args.resume_path
     
+    #set configs value to default if doesn't have the attr
+    if not hasattr(tree_config.train_settings, "data_aug"):
+        tree_config.train_settings.data_aug = defaultObject()
+        tree_config.train_settings.data_aug.enable = False
+        tree_config.train_settings.data_aug.per_times = 1
+        tree_config.train_settings.data_aug.mutation_rate = 0
+        tree_config.train_settings.data_aug.add_original = True
+    
+    if not hasattr(tree_config.train_settings, "MLM"):
+        tree_config.train_settings.MLM = defaultObject()
+        tree_config.train_settings.MLM.enable = False
+        tree_config.train_settings.MLM.mask_ratio = 0.2
+    
+    if not hasattr(tree_config.supcon,"skip_esm"):
+       tree_config.supcon.skip_esm=False
+    
+    if not hasattr(tree_config,"decoder"):
+           tree_config.decoder = None
+           tree_config.decoder.type = "linear"
+           tree_config.decoder.combine = False
+           
+    
+    tree_config.train_settings.data_aug.mutation_rate = float(tree_config.train_settings.data_aug.mutation_rate)
     return tree_config
 
 def prepare_saving_dir(configs,config_file_path):
@@ -112,8 +139,8 @@ def prepare_optimizer(net, configs, num_train_samples, logfilepath):
                 first_cycle_steps = configs.optimizer.decay.first_cycle_steps
             else:
                 first_cycle_steps=np.ceil(
-                    num_train_samples / configs.train_settings.grad_accumulation) * configs.train_settings.num_epochs / configs.optimizer.decay.num_restarts,
-            
+                    num_train_samples / configs.train_settings.grad_accumulation) * configs.train_settings.num_epochs / configs.optimizer.decay.num_restarts
+            print("first_cycle_steps="+str(first_cycle_steps))
             scheduler = CosineAnnealingWarmupRestarts(
                 optimizer,
                 first_cycle_steps=first_cycle_steps,
@@ -184,6 +211,7 @@ def load_checkpoints(configs, optimizer, scheduler, logfilepath, net):
     # If the 'resume' flag is True, load the saved model checkpoints.
     if configs.resume.resume:
         model_checkpoint = torch.load(configs.resume.resume_path, map_location='cpu')
+        customlog(logfilepath, f"load checkpoint from {configs.resume.resume_path}")
         net.load_state_dict(model_checkpoint['model_state_dict'])
         # If the saved checkpoint contains the optimizer and scheduler states and the epoch number,
         # resume training from the last saved epoch.
@@ -195,7 +223,8 @@ def load_checkpoints(configs, optimizer, scheduler, logfilepath, net):
                 scheduler.load_state_dict(model_checkpoint['scheduler_state_dict'])
                 # logging.info('Scheduler is loaded to resume training!')
                 customlog(logfilepath, "Scheduler is loaded to resume training!\n")
-            start_epoch = model_checkpoint['epoch'] + 1
+                start_epoch = model_checkpoint['epoch'] + 1
+        
         customlog(logfilepath, "Model is loaded to resume training!\n")
     # Return the loaded model and the epoch to start training from.
     return net, start_epoch

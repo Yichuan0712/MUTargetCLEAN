@@ -1,0 +1,3111 @@
+use k-fold index: 0
+
+Done Loading data
+
+number of steps for training data: 989
+
+number of steps for valid data: 67
+
+number of steps for test data: 67
+
+Done initialize tokenizer
+
+trainable params: 39375376 || all params: 652374437 || trainable%: 6.035701855681387
+
+Done initialize model
+
+preparing optimizer is done
+
+number of train steps per epoch: 989
+
+Start training...
+
+Fold 0 Epoch 1 train...
+-------------------------------
+
+0 loss: 0.794679  [   16/15825]
+
+0 class loss: 0.716171 position_loss:0.078508
+
+30 loss: 0.732979  [  496/15825]
+
+30 class loss: 0.681286 position_loss:0.051693
+
+60 loss: 0.674247  [  976/15825]
+
+60 class loss: 0.608317 position_loss:0.065930
+
+90 loss: 0.503701  [ 1456/15825]
+
+90 class loss: 0.466777 position_loss:0.036924
+
+120 loss: 0.374448  [ 1936/15825]
+
+120 class loss: 0.326537 position_loss:0.047911
+
+150 loss: 0.340296  [ 2416/15825]
+
+150 class loss: 0.239982 position_loss:0.100314
+
+180 loss: 0.209084  [ 2896/15825]
+
+180 class loss: 0.164066 position_loss:0.045018
+
+210 loss: 0.141996  [ 3376/15825]
+
+210 class loss: 0.125444 position_loss:0.016551
+
+240 loss: 0.181206  [ 3856/15825]
+
+240 class loss: 0.144729 position_loss:0.036477
+
+270 loss: 0.138451  [ 4336/15825]
+
+270 class loss: 0.088544 position_loss:0.049908
+
+300 loss: 0.133160  [ 4816/15825]
+
+300 class loss: 0.091453 position_loss:0.041707
+
+330 loss: 0.132943  [ 5296/15825]
+
+330 class loss: 0.082848 position_loss:0.050095
+
+360 loss: 0.090328  [ 5776/15825]
+
+360 class loss: 0.053836 position_loss:0.036492
+
+390 loss: 0.079809  [ 6256/15825]
+
+390 class loss: 0.065182 position_loss:0.014628
+
+420 loss: 0.126089  [ 6736/15825]
+
+420 class loss: 0.054465 position_loss:0.071624
+
+450 loss: 0.077003  [ 7216/15825]
+
+450 class loss: 0.052538 position_loss:0.024465
+
+480 loss: 0.095980  [ 7696/15825]
+
+480 class loss: 0.065139 position_loss:0.030841
+
+510 loss: 0.087403  [ 8176/15825]
+
+510 class loss: 0.036227 position_loss:0.051176
+
+540 loss: 0.036579  [ 8656/15825]
+
+540 class loss: 0.026916 position_loss:0.009664
+
+570 loss: 0.063675  [ 9136/15825]
+
+570 class loss: 0.031171 position_loss:0.032504
+
+600 loss: 0.066773  [ 9616/15825]
+
+600 class loss: 0.042923 position_loss:0.023850
+
+630 loss: 0.069232  [10096/15825]
+
+630 class loss: 0.021648 position_loss:0.047583
+
+660 loss: 0.071858  [10576/15825]
+
+660 class loss: 0.035716 position_loss:0.036142
+
+690 loss: 0.083940  [11056/15825]
+
+690 class loss: 0.047190 position_loss:0.036750
+
+720 loss: 0.044681  [11536/15825]
+
+720 class loss: 0.018897 position_loss:0.025784
+
+750 loss: 0.037383  [12016/15825]
+
+750 class loss: 0.018662 position_loss:0.018722
+
+780 loss: 0.050811  [12496/15825]
+
+780 class loss: 0.032537 position_loss:0.018274
+
+810 loss: 0.037904  [12976/15825]
+
+810 class loss: 0.019745 position_loss:0.018159
+
+840 loss: 0.039751  [13456/15825]
+
+840 class loss: 0.025750 position_loss:0.014001
+
+870 loss: 0.056306  [13936/15825]
+
+870 class loss: 0.014963 position_loss:0.041342
+
+900 loss: 0.024177  [14416/15825]
+
+900 class loss: 0.014715 position_loss:0.009462
+
+930 loss: 0.031862  [14896/15825]
+
+930 class loss: 0.016609 position_loss:0.015253
+
+960 loss: 0.050029  [15376/15825]
+
+960 class loss: 0.012281 position_loss:0.037749
+
+Epoch 1: train loss: 0.151717
+
+Fold 0 Epoch 1 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 1: valid loss:0.054556
+
+Epoch 1: valid loss 0.05455555985347529 smaller than best loss inf
+-------------------------------
+
+Epoch 1: A better checkpoint is saved into /data/duolin/MUTargetCLEAN/result_nosupcon/dataaug/time5_0.3_repeat_nooriginal/2024-04-14__21-57-59/checkpoints/best_model.pth 
+-------------------------------
+
+Fold 0 Epoch 2 train...
+-------------------------------
+
+989 loss: 0.031207  [   16/15825]
+
+989 class loss: 0.010314 position_loss:0.020893
+
+1019 loss: 0.024336  [  496/15825]
+
+1019 class loss: 0.014365 position_loss:0.009971
+
+1049 loss: 0.020015  [  976/15825]
+
+1049 class loss: 0.010581 position_loss:0.009434
+
+1079 loss: 0.055561  [ 1456/15825]
+
+1079 class loss: 0.009836 position_loss:0.045725
+
+1109 loss: 0.019828  [ 1936/15825]
+
+1109 class loss: 0.007284 position_loss:0.012544
+
+1139 loss: 0.019511  [ 2416/15825]
+
+1139 class loss: 0.011734 position_loss:0.007777
+
+1169 loss: 0.027535  [ 2896/15825]
+
+1169 class loss: 0.018459 position_loss:0.009075
+
+1199 loss: 0.021135  [ 3376/15825]
+
+1199 class loss: 0.012716 position_loss:0.008419
+
+1229 loss: 0.035514  [ 3856/15825]
+
+1229 class loss: 0.019310 position_loss:0.016204
+
+1259 loss: 0.013889  [ 4336/15825]
+
+1259 class loss: 0.005678 position_loss:0.008211
+
+1289 loss: 0.031833  [ 4816/15825]
+
+1289 class loss: 0.010930 position_loss:0.020903
+
+1319 loss: 0.028703  [ 5296/15825]
+
+1319 class loss: 0.010129 position_loss:0.018574
+
+1349 loss: 0.016288  [ 5776/15825]
+
+1349 class loss: 0.007835 position_loss:0.008453
+
+1379 loss: 0.021829  [ 6256/15825]
+
+1379 class loss: 0.011749 position_loss:0.010080
+
+1409 loss: 0.025592  [ 6736/15825]
+
+1409 class loss: 0.006982 position_loss:0.018610
+
+1439 loss: 0.017787  [ 7216/15825]
+
+1439 class loss: 0.007911 position_loss:0.009877
+
+1469 loss: 0.014071  [ 7696/15825]
+
+1469 class loss: 0.007363 position_loss:0.006708
+
+1499 loss: 0.030784  [ 8176/15825]
+
+1499 class loss: 0.013295 position_loss:0.017489
+
+1529 loss: 0.029707  [ 8656/15825]
+
+1529 class loss: 0.012461 position_loss:0.017246
+
+1559 loss: 0.032617  [ 9136/15825]
+
+1559 class loss: 0.005761 position_loss:0.026855
+
+1589 loss: 0.029679  [ 9616/15825]
+
+1589 class loss: 0.011938 position_loss:0.017741
+
+1619 loss: 0.019228  [10096/15825]
+
+1619 class loss: 0.011874 position_loss:0.007354
+
+1649 loss: 0.017044  [10576/15825]
+
+1649 class loss: 0.007108 position_loss:0.009936
+
+1679 loss: 0.015501  [11056/15825]
+
+1679 class loss: 0.009647 position_loss:0.005854
+
+1709 loss: 0.018566  [11536/15825]
+
+1709 class loss: 0.008284 position_loss:0.010282
+
+1739 loss: 0.014010  [12016/15825]
+
+1739 class loss: 0.007911 position_loss:0.006099
+
+1769 loss: 0.017072  [12496/15825]
+
+1769 class loss: 0.009463 position_loss:0.007609
+
+1799 loss: 0.013565  [12976/15825]
+
+1799 class loss: 0.005514 position_loss:0.008051
+
+1829 loss: 0.022750  [13456/15825]
+
+1829 class loss: 0.006209 position_loss:0.016541
+
+1859 loss: 0.020091  [13936/15825]
+
+1859 class loss: 0.006995 position_loss:0.013095
+
+1889 loss: 0.014845  [14416/15825]
+
+1889 class loss: 0.006286 position_loss:0.008559
+
+1919 loss: 0.012005  [14896/15825]
+
+1919 class loss: 0.005888 position_loss:0.006118
+
+1949 loss: 0.018050  [15376/15825]
+
+1949 class loss: 0.007266 position_loss:0.010784
+
+Epoch 2: train loss: 0.023644
+
+Fold 0 Epoch 2 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 2: valid loss:0.028655
+
+Epoch 2: valid loss 0.028654621448951752 smaller than best loss 0.05455555985347529
+-------------------------------
+
+Epoch 2: A better checkpoint is saved into /data/duolin/MUTargetCLEAN/result_nosupcon/dataaug/time5_0.3_repeat_nooriginal/2024-04-14__21-57-59/checkpoints/best_model.pth 
+-------------------------------
+
+Fold 0 Epoch 3 train...
+-------------------------------
+
+1978 loss: 0.014845  [   16/15825]
+
+1978 class loss: 0.007496 position_loss:0.007349
+
+2008 loss: 0.014457  [  496/15825]
+
+2008 class loss: 0.005720 position_loss:0.008737
+
+2038 loss: 0.023216  [  976/15825]
+
+2038 class loss: 0.005025 position_loss:0.018191
+
+2068 loss: 0.024015  [ 1456/15825]
+
+2068 class loss: 0.005219 position_loss:0.018796
+
+2098 loss: 0.042560  [ 1936/15825]
+
+2098 class loss: 0.008098 position_loss:0.034462
+
+2128 loss: 0.007867  [ 2416/15825]
+
+2128 class loss: 0.003772 position_loss:0.004095
+
+2158 loss: 0.010081  [ 2896/15825]
+
+2158 class loss: 0.006283 position_loss:0.003798
+
+2188 loss: 0.009189  [ 3376/15825]
+
+2188 class loss: 0.004110 position_loss:0.005080
+
+2218 loss: 0.006894  [ 3856/15825]
+
+2218 class loss: 0.003443 position_loss:0.003451
+
+2248 loss: 0.019171  [ 4336/15825]
+
+2248 class loss: 0.008791 position_loss:0.010380
+
+2278 loss: 0.011191  [ 4816/15825]
+
+2278 class loss: 0.003054 position_loss:0.008137
+
+2308 loss: 0.005947  [ 5296/15825]
+
+2308 class loss: 0.003074 position_loss:0.002873
+
+2338 loss: 0.007684  [ 5776/15825]
+
+2338 class loss: 0.003875 position_loss:0.003809
+
+2368 loss: 0.009814  [ 6256/15825]
+
+2368 class loss: 0.002952 position_loss:0.006861
+
+2398 loss: 0.019688  [ 6736/15825]
+
+2398 class loss: 0.008195 position_loss:0.011492
+
+2428 loss: 0.010946  [ 7216/15825]
+
+2428 class loss: 0.004100 position_loss:0.006846
+
+2458 loss: 0.003380  [ 7696/15825]
+
+2458 class loss: 0.002558 position_loss:0.000822
+
+2488 loss: 0.007683  [ 8176/15825]
+
+2488 class loss: 0.003423 position_loss:0.004260
+
+2518 loss: 0.010453  [ 8656/15825]
+
+2518 class loss: 0.007967 position_loss:0.002486
+
+2548 loss: 0.024264  [ 9136/15825]
+
+2548 class loss: 0.010432 position_loss:0.013832
+
+2578 loss: 0.007341  [ 9616/15825]
+
+2578 class loss: 0.003154 position_loss:0.004187
+
+2608 loss: 0.007929  [10096/15825]
+
+2608 class loss: 0.004214 position_loss:0.003715
+
+2638 loss: 0.009897  [10576/15825]
+
+2638 class loss: 0.003681 position_loss:0.006216
+
+2668 loss: 0.007557  [11056/15825]
+
+2668 class loss: 0.002761 position_loss:0.004795
+
+2698 loss: 0.008259  [11536/15825]
+
+2698 class loss: 0.003411 position_loss:0.004848
+
+2728 loss: 0.005837  [12016/15825]
+
+2728 class loss: 0.003702 position_loss:0.002135
+
+2758 loss: 0.016630  [12496/15825]
+
+2758 class loss: 0.006967 position_loss:0.009663
+
+2788 loss: 0.006035  [12976/15825]
+
+2788 class loss: 0.004305 position_loss:0.001730
+
+2818 loss: 0.005092  [13456/15825]
+
+2818 class loss: 0.002296 position_loss:0.002796
+
+2848 loss: 0.006481  [13936/15825]
+
+2848 class loss: 0.003328 position_loss:0.003153
+
+2878 loss: 0.007192  [14416/15825]
+
+2878 class loss: 0.004361 position_loss:0.002831
+
+2908 loss: 0.005694  [14896/15825]
+
+2908 class loss: 0.002506 position_loss:0.003189
+
+2938 loss: 0.012314  [15376/15825]
+
+2938 class loss: 0.006130 position_loss:0.006183
+
+Epoch 3: train loss: 0.012674
+
+Fold 0 Epoch 3 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 3: valid loss:0.027486
+
+Epoch 3: valid loss 0.027485586410766538 smaller than best loss 0.028654621448951752
+-------------------------------
+
+Epoch 3: A better checkpoint is saved into /data/duolin/MUTargetCLEAN/result_nosupcon/dataaug/time5_0.3_repeat_nooriginal/2024-04-14__21-57-59/checkpoints/best_model.pth 
+-------------------------------
+
+Fold 0 Epoch 4 train...
+-------------------------------
+
+2967 loss: 0.005529  [   16/15825]
+
+2967 class loss: 0.003738 position_loss:0.001791
+
+2997 loss: 0.008715  [  496/15825]
+
+2997 class loss: 0.005268 position_loss:0.003446
+
+3027 loss: 0.009876  [  976/15825]
+
+3027 class loss: 0.005135 position_loss:0.004741
+
+3057 loss: 0.013822  [ 1456/15825]
+
+3057 class loss: 0.004017 position_loss:0.009805
+
+3087 loss: 0.011896  [ 1936/15825]
+
+3087 class loss: 0.004368 position_loss:0.007528
+
+3117 loss: 0.005860  [ 2416/15825]
+
+3117 class loss: 0.003107 position_loss:0.002753
+
+3147 loss: 0.008146  [ 2896/15825]
+
+3147 class loss: 0.004637 position_loss:0.003509
+
+3177 loss: 0.019267  [ 3376/15825]
+
+3177 class loss: 0.011755 position_loss:0.007512
+
+3207 loss: 0.009858  [ 3856/15825]
+
+3207 class loss: 0.002727 position_loss:0.007131
+
+3237 loss: 0.016797  [ 4336/15825]
+
+3237 class loss: 0.012326 position_loss:0.004471
+
+3267 loss: 0.006214  [ 4816/15825]
+
+3267 class loss: 0.003862 position_loss:0.002352
+
+3297 loss: 0.007861  [ 5296/15825]
+
+3297 class loss: 0.003950 position_loss:0.003911
+
+3327 loss: 0.008942  [ 5776/15825]
+
+3327 class loss: 0.001922 position_loss:0.007020
+
+3357 loss: 0.004558  [ 6256/15825]
+
+3357 class loss: 0.002945 position_loss:0.001613
+
+3387 loss: 0.008233  [ 6736/15825]
+
+3387 class loss: 0.004125 position_loss:0.004108
+
+3417 loss: 0.003387  [ 7216/15825]
+
+3417 class loss: 0.002509 position_loss:0.000878
+
+3447 loss: 0.004808  [ 7696/15825]
+
+3447 class loss: 0.003218 position_loss:0.001591
+
+3477 loss: 0.005360  [ 8176/15825]
+
+3477 class loss: 0.002874 position_loss:0.002485
+
+3507 loss: 0.002938  [ 8656/15825]
+
+3507 class loss: 0.002083 position_loss:0.000855
+
+3537 loss: 0.012437  [ 9136/15825]
+
+3537 class loss: 0.004875 position_loss:0.007562
+
+3567 loss: 0.010762  [ 9616/15825]
+
+3567 class loss: 0.004297 position_loss:0.006465
+
+3597 loss: 0.002936  [10096/15825]
+
+3597 class loss: 0.001833 position_loss:0.001104
+
+3627 loss: 0.011951  [10576/15825]
+
+3627 class loss: 0.005897 position_loss:0.006053
+
+3657 loss: 0.005098  [11056/15825]
+
+3657 class loss: 0.003644 position_loss:0.001454
+
+3687 loss: 0.010081  [11536/15825]
+
+3687 class loss: 0.005284 position_loss:0.004797
+
+3717 loss: 0.005238  [12016/15825]
+
+3717 class loss: 0.003336 position_loss:0.001902
+
+3747 loss: 0.006105  [12496/15825]
+
+3747 class loss: 0.002724 position_loss:0.003381
+
+3777 loss: 0.004018  [12976/15825]
+
+3777 class loss: 0.002693 position_loss:0.001325
+
+3807 loss: 0.008227  [13456/15825]
+
+3807 class loss: 0.004087 position_loss:0.004140
+
+3837 loss: 0.003945  [13936/15825]
+
+3837 class loss: 0.002802 position_loss:0.001143
+
+3867 loss: 0.002621  [14416/15825]
+
+3867 class loss: 0.001958 position_loss:0.000663
+
+3897 loss: 0.007265  [14896/15825]
+
+3897 class loss: 0.003897 position_loss:0.003368
+
+3927 loss: 0.007073  [15376/15825]
+
+3927 class loss: 0.005585 position_loss:0.001488
+
+Epoch 4: train loss: 0.008576
+
+Fold 0 Epoch 4 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 4: valid loss:0.030760
+
+Fold 0 Epoch 5 train...
+-------------------------------
+
+3956 loss: 0.007275  [   16/15825]
+
+3956 class loss: 0.004266 position_loss:0.003009
+
+3986 loss: 0.002985  [  496/15825]
+
+3986 class loss: 0.002104 position_loss:0.000882
+
+4016 loss: 0.004703  [  976/15825]
+
+4016 class loss: 0.003396 position_loss:0.001307
+
+4046 loss: 0.006840  [ 1456/15825]
+
+4046 class loss: 0.003594 position_loss:0.003246
+
+4076 loss: 0.008991  [ 1936/15825]
+
+4076 class loss: 0.004146 position_loss:0.004846
+
+4106 loss: 0.008687  [ 2416/15825]
+
+4106 class loss: 0.003221 position_loss:0.005467
+
+4136 loss: 0.005112  [ 2896/15825]
+
+4136 class loss: 0.002862 position_loss:0.002251
+
+4166 loss: 0.006255  [ 3376/15825]
+
+4166 class loss: 0.002620 position_loss:0.003635
+
+4196 loss: 0.007104  [ 3856/15825]
+
+4196 class loss: 0.003683 position_loss:0.003421
+
+4226 loss: 0.003819  [ 4336/15825]
+
+4226 class loss: 0.002273 position_loss:0.001546
+
+4256 loss: 0.005730  [ 4816/15825]
+
+4256 class loss: 0.002332 position_loss:0.003398
+
+4286 loss: 0.006476  [ 5296/15825]
+
+4286 class loss: 0.004819 position_loss:0.001656
+
+4316 loss: 0.003445  [ 5776/15825]
+
+4316 class loss: 0.002156 position_loss:0.001289
+
+4346 loss: 0.013698  [ 6256/15825]
+
+4346 class loss: 0.012962 position_loss:0.000735
+
+4376 loss: 0.003216  [ 6736/15825]
+
+4376 class loss: 0.002100 position_loss:0.001115
+
+4406 loss: 0.003602  [ 7216/15825]
+
+4406 class loss: 0.002059 position_loss:0.001543
+
+4436 loss: 0.004693  [ 7696/15825]
+
+4436 class loss: 0.002734 position_loss:0.001959
+
+4466 loss: 0.005525  [ 8176/15825]
+
+4466 class loss: 0.003515 position_loss:0.002010
+
+4496 loss: 0.005770  [ 8656/15825]
+
+4496 class loss: 0.003276 position_loss:0.002493
+
+4526 loss: 0.007495  [ 9136/15825]
+
+4526 class loss: 0.003587 position_loss:0.003908
+
+4556 loss: 0.004026  [ 9616/15825]
+
+4556 class loss: 0.002993 position_loss:0.001032
+
+4586 loss: 0.004118  [10096/15825]
+
+4586 class loss: 0.003203 position_loss:0.000915
+
+4616 loss: 0.003093  [10576/15825]
+
+4616 class loss: 0.002053 position_loss:0.001040
+
+4646 loss: 0.010357  [11056/15825]
+
+4646 class loss: 0.008620 position_loss:0.001737
+
+4676 loss: 0.001532  [11536/15825]
+
+4676 class loss: 0.001097 position_loss:0.000436
+
+4706 loss: 0.004125  [12016/15825]
+
+4706 class loss: 0.002547 position_loss:0.001578
+
+4736 loss: 0.005814  [12496/15825]
+
+4736 class loss: 0.004151 position_loss:0.001664
+
+4766 loss: 0.005112  [12976/15825]
+
+4766 class loss: 0.003254 position_loss:0.001858
+
+4796 loss: 0.005388  [13456/15825]
+
+4796 class loss: 0.001697 position_loss:0.003690
+
+4826 loss: 0.012200  [13936/15825]
+
+4826 class loss: 0.003152 position_loss:0.009048
+
+4856 loss: 0.006125  [14416/15825]
+
+4856 class loss: 0.003540 position_loss:0.002585
+
+4886 loss: 0.004576  [14896/15825]
+
+4886 class loss: 0.002736 position_loss:0.001840
+
+4916 loss: 0.008839  [15376/15825]
+
+4916 class loss: 0.003290 position_loss:0.005549
+
+Epoch 5: train loss: 0.006660
+
+Fold 0 Epoch 5 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 5: valid loss:0.033075
+
+Fold 0 Epoch 6 train...
+-------------------------------
+
+4945 loss: 0.003100  [   16/15825]
+
+4945 class loss: 0.002324 position_loss:0.000775
+
+4975 loss: 0.003197  [  496/15825]
+
+4975 class loss: 0.002288 position_loss:0.000909
+
+5005 loss: 0.008096  [  976/15825]
+
+5005 class loss: 0.005007 position_loss:0.003089
+
+5035 loss: 0.002580  [ 1456/15825]
+
+5035 class loss: 0.001776 position_loss:0.000804
+
+5065 loss: 0.004949  [ 1936/15825]
+
+5065 class loss: 0.003206 position_loss:0.001743
+
+5095 loss: 0.007146  [ 2416/15825]
+
+5095 class loss: 0.004262 position_loss:0.002883
+
+5125 loss: 0.004491  [ 2896/15825]
+
+5125 class loss: 0.003208 position_loss:0.001283
+
+5155 loss: 0.004713  [ 3376/15825]
+
+5155 class loss: 0.002692 position_loss:0.002021
+
+5185 loss: 0.005668  [ 3856/15825]
+
+5185 class loss: 0.004714 position_loss:0.000954
+
+5215 loss: 0.003068  [ 4336/15825]
+
+5215 class loss: 0.001974 position_loss:0.001094
+
+5245 loss: 0.002734  [ 4816/15825]
+
+5245 class loss: 0.001646 position_loss:0.001089
+
+5275 loss: 0.010752  [ 5296/15825]
+
+5275 class loss: 0.002783 position_loss:0.007969
+
+5305 loss: 0.003607  [ 5776/15825]
+
+5305 class loss: 0.002086 position_loss:0.001521
+
+5335 loss: 0.003800  [ 6256/15825]
+
+5335 class loss: 0.002112 position_loss:0.001689
+
+5365 loss: 0.006310  [ 6736/15825]
+
+5365 class loss: 0.002424 position_loss:0.003886
+
+5395 loss: 0.002515  [ 7216/15825]
+
+5395 class loss: 0.001912 position_loss:0.000603
+
+5425 loss: 0.003914  [ 7696/15825]
+
+5425 class loss: 0.002421 position_loss:0.001493
+
+5455 loss: 0.005309  [ 8176/15825]
+
+5455 class loss: 0.003271 position_loss:0.002038
+
+5485 loss: 0.002316  [ 8656/15825]
+
+5485 class loss: 0.001813 position_loss:0.000503
+
+5515 loss: 0.004591  [ 9136/15825]
+
+5515 class loss: 0.001350 position_loss:0.003241
+
+5545 loss: 0.003379  [ 9616/15825]
+
+5545 class loss: 0.002345 position_loss:0.001034
+
+5575 loss: 0.003284  [10096/15825]
+
+5575 class loss: 0.002032 position_loss:0.001252
+
+5605 loss: 0.004981  [10576/15825]
+
+5605 class loss: 0.003737 position_loss:0.001244
+
+5635 loss: 0.005121  [11056/15825]
+
+5635 class loss: 0.002168 position_loss:0.002953
+
+5665 loss: 0.015243  [11536/15825]
+
+5665 class loss: 0.004752 position_loss:0.010491
+
+5695 loss: 0.003174  [12016/15825]
+
+5695 class loss: 0.002436 position_loss:0.000737
+
+5725 loss: 0.027069  [12496/15825]
+
+5725 class loss: 0.010296 position_loss:0.016772
+
+5755 loss: 0.002825  [12976/15825]
+
+5755 class loss: 0.002133 position_loss:0.000693
+
+5785 loss: 0.004643  [13456/15825]
+
+5785 class loss: 0.003296 position_loss:0.001347
+
+5815 loss: 0.006023  [13936/15825]
+
+5815 class loss: 0.002421 position_loss:0.003602
+
+5845 loss: 0.002131  [14416/15825]
+
+5845 class loss: 0.001512 position_loss:0.000620
+
+5875 loss: 0.004509  [14896/15825]
+
+5875 class loss: 0.002990 position_loss:0.001519
+
+5905 loss: 0.008001  [15376/15825]
+
+5905 class loss: 0.002866 position_loss:0.005135
+
+Epoch 6: train loss: 0.005626
+
+Fold 0 Epoch 6 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 6: valid loss:0.037937
+
+Fold 0 Epoch 7 train...
+-------------------------------
+
+5934 loss: 0.003555  [   16/15825]
+
+5934 class loss: 0.002081 position_loss:0.001475
+
+5964 loss: 0.014980  [  496/15825]
+
+5964 class loss: 0.002080 position_loss:0.012899
+
+5994 loss: 0.005575  [  976/15825]
+
+5994 class loss: 0.003956 position_loss:0.001619
+
+6024 loss: 0.005463  [ 1456/15825]
+
+6024 class loss: 0.003250 position_loss:0.002213
+
+6054 loss: 0.003181  [ 1936/15825]
+
+6054 class loss: 0.002298 position_loss:0.000883
+
+6084 loss: 0.003032  [ 2416/15825]
+
+6084 class loss: 0.002165 position_loss:0.000867
+
+6114 loss: 0.009869  [ 2896/15825]
+
+6114 class loss: 0.002228 position_loss:0.007641
+
+6144 loss: 0.002572  [ 3376/15825]
+
+6144 class loss: 0.001919 position_loss:0.000653
+
+6174 loss: 0.005947  [ 3856/15825]
+
+6174 class loss: 0.002670 position_loss:0.003277
+
+6204 loss: 0.002466  [ 4336/15825]
+
+6204 class loss: 0.001420 position_loss:0.001047
+
+6234 loss: 0.004413  [ 4816/15825]
+
+6234 class loss: 0.002239 position_loss:0.002174
+
+6264 loss: 0.004403  [ 5296/15825]
+
+6264 class loss: 0.001945 position_loss:0.002458
+
+6294 loss: 0.004171  [ 5776/15825]
+
+6294 class loss: 0.002145 position_loss:0.002026
+
+6324 loss: 0.002798  [ 6256/15825]
+
+6324 class loss: 0.002270 position_loss:0.000528
+
+6354 loss: 0.005801  [ 6736/15825]
+
+6354 class loss: 0.004451 position_loss:0.001349
+
+6384 loss: 0.002014  [ 7216/15825]
+
+6384 class loss: 0.001568 position_loss:0.000445
+
+6414 loss: 0.002296  [ 7696/15825]
+
+6414 class loss: 0.001233 position_loss:0.001063
+
+6444 loss: 0.001827  [ 8176/15825]
+
+6444 class loss: 0.001294 position_loss:0.000533
+
+6474 loss: 0.001698  [ 8656/15825]
+
+6474 class loss: 0.001473 position_loss:0.000226
+
+6504 loss: 0.002128  [ 9136/15825]
+
+6504 class loss: 0.001503 position_loss:0.000626
+
+6534 loss: 0.001902  [ 9616/15825]
+
+6534 class loss: 0.001246 position_loss:0.000656
+
+6564 loss: 0.005608  [10096/15825]
+
+6564 class loss: 0.003042 position_loss:0.002566
+
+6594 loss: 0.016690  [10576/15825]
+
+6594 class loss: 0.002756 position_loss:0.013934
+
+6624 loss: 0.002565  [11056/15825]
+
+6624 class loss: 0.001722 position_loss:0.000843
+
+6654 loss: 0.004396  [11536/15825]
+
+6654 class loss: 0.002932 position_loss:0.001465
+
+6684 loss: 0.001649  [12016/15825]
+
+6684 class loss: 0.001470 position_loss:0.000179
+
+6714 loss: 0.003065  [12496/15825]
+
+6714 class loss: 0.001882 position_loss:0.001183
+
+6744 loss: 0.009557  [12976/15825]
+
+6744 class loss: 0.002116 position_loss:0.007440
+
+6774 loss: 0.002868  [13456/15825]
+
+6774 class loss: 0.002095 position_loss:0.000773
+
+6804 loss: 0.001355  [13936/15825]
+
+6804 class loss: 0.000963 position_loss:0.000392
+
+6834 loss: 0.002645  [14416/15825]
+
+6834 class loss: 0.001783 position_loss:0.000863
+
+6864 loss: 0.005679  [14896/15825]
+
+6864 class loss: 0.002170 position_loss:0.003509
+
+6894 loss: 0.006788  [15376/15825]
+
+6894 class loss: 0.003776 position_loss:0.003013
+
+Epoch 7: train loss: 0.004668
+
+Fold 0 Epoch 7 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 7: valid loss:0.041295
+
+Fold 0 Epoch 8 train...
+-------------------------------
+
+6923 loss: 0.002683  [   16/15825]
+
+6923 class loss: 0.002265 position_loss:0.000417
+
+6953 loss: 0.003735  [  496/15825]
+
+6953 class loss: 0.001862 position_loss:0.001873
+
+6983 loss: 0.006431  [  976/15825]
+
+6983 class loss: 0.002935 position_loss:0.003496
+
+7013 loss: 0.003579  [ 1456/15825]
+
+7013 class loss: 0.002541 position_loss:0.001037
+
+7043 loss: 0.002081  [ 1936/15825]
+
+7043 class loss: 0.001497 position_loss:0.000584
+
+7073 loss: 0.006885  [ 2416/15825]
+
+7073 class loss: 0.002132 position_loss:0.004754
+
+7103 loss: 0.002926  [ 2896/15825]
+
+7103 class loss: 0.001816 position_loss:0.001109
+
+7133 loss: 0.002441  [ 3376/15825]
+
+7133 class loss: 0.002283 position_loss:0.000158
+
+7163 loss: 0.003098  [ 3856/15825]
+
+7163 class loss: 0.002134 position_loss:0.000964
+
+7193 loss: 0.002693  [ 4336/15825]
+
+7193 class loss: 0.002058 position_loss:0.000635
+
+7223 loss: 0.003675  [ 4816/15825]
+
+7223 class loss: 0.003290 position_loss:0.000385
+
+7253 loss: 0.002003  [ 5296/15825]
+
+7253 class loss: 0.001625 position_loss:0.000378
+
+7283 loss: 0.003882  [ 5776/15825]
+
+7283 class loss: 0.002205 position_loss:0.001676
+
+7313 loss: 0.003480  [ 6256/15825]
+
+7313 class loss: 0.002677 position_loss:0.000803
+
+7343 loss: 0.014394  [ 6736/15825]
+
+7343 class loss: 0.004385 position_loss:0.010009
+
+7373 loss: 0.004908  [ 7216/15825]
+
+7373 class loss: 0.003336 position_loss:0.001572
+
+7403 loss: 0.002373  [ 7696/15825]
+
+7403 class loss: 0.001727 position_loss:0.000646
+
+7433 loss: 0.002495  [ 8176/15825]
+
+7433 class loss: 0.001923 position_loss:0.000572
+
+7463 loss: 0.002265  [ 8656/15825]
+
+7463 class loss: 0.001785 position_loss:0.000480
+
+7493 loss: 0.010671  [ 9136/15825]
+
+7493 class loss: 0.001432 position_loss:0.009239
+
+7523 loss: 0.004294  [ 9616/15825]
+
+7523 class loss: 0.002553 position_loss:0.001741
+
+7553 loss: 0.001775  [10096/15825]
+
+7553 class loss: 0.001628 position_loss:0.000147
+
+7583 loss: 0.008259  [10576/15825]
+
+7583 class loss: 0.002577 position_loss:0.005681
+
+7613 loss: 0.003110  [11056/15825]
+
+7613 class loss: 0.002023 position_loss:0.001088
+
+7643 loss: 0.001420  [11536/15825]
+
+7643 class loss: 0.000851 position_loss:0.000569
+
+7673 loss: 0.004556  [12016/15825]
+
+7673 class loss: 0.001870 position_loss:0.002686
+
+7703 loss: 0.003649  [12496/15825]
+
+7703 class loss: 0.001144 position_loss:0.002505
+
+7733 loss: 0.001755  [12976/15825]
+
+7733 class loss: 0.001430 position_loss:0.000324
+
+7763 loss: 0.001282  [13456/15825]
+
+7763 class loss: 0.000850 position_loss:0.000431
+
+7793 loss: 0.007134  [13936/15825]
+
+7793 class loss: 0.001992 position_loss:0.005142
+
+7823 loss: 0.001413  [14416/15825]
+
+7823 class loss: 0.001052 position_loss:0.000361
+
+7853 loss: 0.002652  [14896/15825]
+
+7853 class loss: 0.002079 position_loss:0.000573
+
+7883 loss: 0.002103  [15376/15825]
+
+7883 class loss: 0.001893 position_loss:0.000210
+
+Epoch 8: train loss: 0.004304
+
+Fold 0 Epoch 8 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 8: valid loss:0.048272
+
+Fold 0 Epoch 9 train...
+-------------------------------
+
+7912 loss: 0.001455  [   16/15825]
+
+7912 class loss: 0.001185 position_loss:0.000269
+
+7942 loss: 0.001390  [  496/15825]
+
+7942 class loss: 0.000894 position_loss:0.000496
+
+7972 loss: 0.004744  [  976/15825]
+
+7972 class loss: 0.000822 position_loss:0.003922
+
+8002 loss: 0.002619  [ 1456/15825]
+
+8002 class loss: 0.001601 position_loss:0.001017
+
+8032 loss: 0.006874  [ 1936/15825]
+
+8032 class loss: 0.002092 position_loss:0.004782
+
+8062 loss: 0.001986  [ 2416/15825]
+
+8062 class loss: 0.001656 position_loss:0.000330
+
+8092 loss: 0.006203  [ 2896/15825]
+
+8092 class loss: 0.002019 position_loss:0.004184
+
+8122 loss: 0.005957  [ 3376/15825]
+
+8122 class loss: 0.005269 position_loss:0.000689
+
+8152 loss: 0.001914  [ 3856/15825]
+
+8152 class loss: 0.001338 position_loss:0.000576
+
+8182 loss: 0.003313  [ 4336/15825]
+
+8182 class loss: 0.001550 position_loss:0.001762
+
+8212 loss: 0.006867  [ 4816/15825]
+
+8212 class loss: 0.001989 position_loss:0.004879
+
+8242 loss: 0.001430  [ 5296/15825]
+
+8242 class loss: 0.000768 position_loss:0.000662
+
+8272 loss: 0.001532  [ 5776/15825]
+
+8272 class loss: 0.001167 position_loss:0.000366
+
+8302 loss: 0.001360  [ 6256/15825]
+
+8302 class loss: 0.000970 position_loss:0.000390
+
+8332 loss: 0.002507  [ 6736/15825]
+
+8332 class loss: 0.001675 position_loss:0.000832
+
+8362 loss: 0.009442  [ 7216/15825]
+
+8362 class loss: 0.001103 position_loss:0.008340
+
+8392 loss: 0.005077  [ 7696/15825]
+
+8392 class loss: 0.002896 position_loss:0.002181
+
+8422 loss: 0.005501  [ 8176/15825]
+
+8422 class loss: 0.002474 position_loss:0.003027
+
+8452 loss: 0.001634  [ 8656/15825]
+
+8452 class loss: 0.001114 position_loss:0.000520
+
+8482 loss: 0.003331  [ 9136/15825]
+
+8482 class loss: 0.001554 position_loss:0.001777
+
+8512 loss: 0.002102  [ 9616/15825]
+
+8512 class loss: 0.001123 position_loss:0.000979
+
+8542 loss: 0.004601  [10096/15825]
+
+8542 class loss: 0.001349 position_loss:0.003252
+
+8572 loss: 0.003295  [10576/15825]
+
+8572 class loss: 0.001861 position_loss:0.001434
+
+8602 loss: 0.001709  [11056/15825]
+
+8602 class loss: 0.001458 position_loss:0.000251
+
+8632 loss: 0.004845  [11536/15825]
+
+8632 class loss: 0.003336 position_loss:0.001509
+
+8662 loss: 0.001122  [12016/15825]
+
+8662 class loss: 0.000985 position_loss:0.000137
+
+8692 loss: 0.002328  [12496/15825]
+
+8692 class loss: 0.002026 position_loss:0.000302
+
+8722 loss: 0.003150  [12976/15825]
+
+8722 class loss: 0.002243 position_loss:0.000908
+
+8752 loss: 0.003932  [13456/15825]
+
+8752 class loss: 0.001805 position_loss:0.002127
+
+8782 loss: 0.001255  [13936/15825]
+
+8782 class loss: 0.001087 position_loss:0.000168
+
+8812 loss: 0.004051  [14416/15825]
+
+8812 class loss: 0.001934 position_loss:0.002118
+
+8842 loss: 0.003569  [14896/15825]
+
+8842 class loss: 0.001374 position_loss:0.002195
+
+8872 loss: 0.003214  [15376/15825]
+
+8872 class loss: 0.002045 position_loss:0.001169
+
+Epoch 9: train loss: 0.003493
+
+Fold 0 Epoch 9 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 9: valid loss:0.044527
+
+Fold 0 Epoch 10 train...
+-------------------------------
+
+8901 loss: 0.003103  [   16/15825]
+
+8901 class loss: 0.002541 position_loss:0.000563
+
+8931 loss: 0.002200  [  496/15825]
+
+8931 class loss: 0.001994 position_loss:0.000206
+
+8961 loss: 0.003507  [  976/15825]
+
+8961 class loss: 0.002805 position_loss:0.000703
+
+8991 loss: 0.001083  [ 1456/15825]
+
+8991 class loss: 0.000854 position_loss:0.000229
+
+9021 loss: 0.004224  [ 1936/15825]
+
+9021 class loss: 0.003549 position_loss:0.000676
+
+9051 loss: 0.001813  [ 2416/15825]
+
+9051 class loss: 0.001031 position_loss:0.000782
+
+9081 loss: 0.002081  [ 2896/15825]
+
+9081 class loss: 0.001727 position_loss:0.000353
+
+9111 loss: 0.003536  [ 3376/15825]
+
+9111 class loss: 0.000762 position_loss:0.002774
+
+9141 loss: 0.001629  [ 3856/15825]
+
+9141 class loss: 0.001128 position_loss:0.000501
+
+9171 loss: 0.001586  [ 4336/15825]
+
+9171 class loss: 0.001389 position_loss:0.000197
+
+9201 loss: 0.003763  [ 4816/15825]
+
+9201 class loss: 0.001882 position_loss:0.001880
+
+9231 loss: 0.002141  [ 5296/15825]
+
+9231 class loss: 0.001632 position_loss:0.000509
+
+9261 loss: 0.002703  [ 5776/15825]
+
+9261 class loss: 0.001915 position_loss:0.000788
+
+9291 loss: 0.003362  [ 6256/15825]
+
+9291 class loss: 0.001639 position_loss:0.001723
+
+9321 loss: 0.004247  [ 6736/15825]
+
+9321 class loss: 0.002451 position_loss:0.001796
+
+9351 loss: 0.003420  [ 7216/15825]
+
+9351 class loss: 0.001479 position_loss:0.001941
+
+9381 loss: 0.003793  [ 7696/15825]
+
+9381 class loss: 0.002556 position_loss:0.001236
+
+9411 loss: 0.001384  [ 8176/15825]
+
+9411 class loss: 0.000655 position_loss:0.000728
+
+9441 loss: 0.001856  [ 8656/15825]
+
+9441 class loss: 0.001557 position_loss:0.000299
+
+9471 loss: 0.006564  [ 9136/15825]
+
+9471 class loss: 0.000846 position_loss:0.005718
+
+9501 loss: 0.001496  [ 9616/15825]
+
+9501 class loss: 0.000903 position_loss:0.000593
+
+9531 loss: 0.002029  [10096/15825]
+
+9531 class loss: 0.000973 position_loss:0.001056
+
+9561 loss: 0.002377  [10576/15825]
+
+9561 class loss: 0.001155 position_loss:0.001222
+
+9591 loss: 0.005109  [11056/15825]
+
+9591 class loss: 0.001639 position_loss:0.003471
+
+9621 loss: 0.001840  [11536/15825]
+
+9621 class loss: 0.001455 position_loss:0.000385
+
+9651 loss: 0.002557  [12016/15825]
+
+9651 class loss: 0.001694 position_loss:0.000863
+
+9681 loss: 0.001333  [12496/15825]
+
+9681 class loss: 0.001086 position_loss:0.000247
+
+9711 loss: 0.009805  [12976/15825]
+
+9711 class loss: 0.001982 position_loss:0.007823
+
+9741 loss: 0.003015  [13456/15825]
+
+9741 class loss: 0.001050 position_loss:0.001965
+
+9771 loss: 0.002473  [13936/15825]
+
+9771 class loss: 0.001108 position_loss:0.001365
+
+9801 loss: 0.001213  [14416/15825]
+
+9801 class loss: 0.000731 position_loss:0.000482
+
+9831 loss: 0.007828  [14896/15825]
+
+9831 class loss: 0.005187 position_loss:0.002640
+
+9861 loss: 0.006058  [15376/15825]
+
+9861 class loss: 0.001687 position_loss:0.004372
+
+Epoch 10: train loss: 0.003277
+
+Fold 0 Epoch 10 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 10: valid loss:0.045496
+
+Fold 0 Epoch 11 train...
+-------------------------------
+
+9890 loss: 0.002644  [   16/15825]
+
+9890 class loss: 0.001194 position_loss:0.001450
+
+9920 loss: 0.001938  [  496/15825]
+
+9920 class loss: 0.001334 position_loss:0.000605
+
+9950 loss: 0.000967  [  976/15825]
+
+9950 class loss: 0.000844 position_loss:0.000123
+
+9980 loss: 0.005965  [ 1456/15825]
+
+9980 class loss: 0.002028 position_loss:0.003937
+
+10010 loss: 0.003536  [ 1936/15825]
+
+10010 class loss: 0.001874 position_loss:0.001662
+
+10040 loss: 0.001249  [ 2416/15825]
+
+10040 class loss: 0.001041 position_loss:0.000207
+
+10070 loss: 0.002813  [ 2896/15825]
+
+10070 class loss: 0.002134 position_loss:0.000679
+
+10100 loss: 0.002857  [ 3376/15825]
+
+10100 class loss: 0.001224 position_loss:0.001633
+
+10130 loss: 0.001226  [ 3856/15825]
+
+10130 class loss: 0.001085 position_loss:0.000142
+
+10160 loss: 0.007417  [ 4336/15825]
+
+10160 class loss: 0.001586 position_loss:0.005832
+
+10190 loss: 0.001657  [ 4816/15825]
+
+10190 class loss: 0.001164 position_loss:0.000493
+
+10220 loss: 0.001104  [ 5296/15825]
+
+10220 class loss: 0.000680 position_loss:0.000424
+
+10250 loss: 0.004053  [ 5776/15825]
+
+10250 class loss: 0.001455 position_loss:0.002598
+
+10280 loss: 0.002853  [ 6256/15825]
+
+10280 class loss: 0.001508 position_loss:0.001345
+
+10310 loss: 0.004200  [ 6736/15825]
+
+10310 class loss: 0.001622 position_loss:0.002578
+
+10340 loss: 0.001389  [ 7216/15825]
+
+10340 class loss: 0.001285 position_loss:0.000104
+
+10370 loss: 0.001968  [ 7696/15825]
+
+10370 class loss: 0.001501 position_loss:0.000467
+
+10400 loss: 0.005525  [ 8176/15825]
+
+10400 class loss: 0.001801 position_loss:0.003724
+
+10430 loss: 0.002293  [ 8656/15825]
+
+10430 class loss: 0.001650 position_loss:0.000643
+
+10460 loss: 0.003410  [ 9136/15825]
+
+10460 class loss: 0.001728 position_loss:0.001682
+
+10490 loss: 0.001305  [ 9616/15825]
+
+10490 class loss: 0.001023 position_loss:0.000283
+
+10520 loss: 0.009168  [10096/15825]
+
+10520 class loss: 0.001501 position_loss:0.007667
+
+10550 loss: 0.002126  [10576/15825]
+
+10550 class loss: 0.001110 position_loss:0.001016
+
+10580 loss: 0.001771  [11056/15825]
+
+10580 class loss: 0.001592 position_loss:0.000179
+
+10610 loss: 0.000877  [11536/15825]
+
+10610 class loss: 0.000519 position_loss:0.000357
+
+10640 loss: 0.002772  [12016/15825]
+
+10640 class loss: 0.001420 position_loss:0.001352
+
+10670 loss: 0.004089  [12496/15825]
+
+10670 class loss: 0.001249 position_loss:0.002840
+
+10700 loss: 0.033651  [12976/15825]
+
+10700 class loss: 0.017305 position_loss:0.016347
+
+10730 loss: 0.004922  [13456/15825]
+
+10730 class loss: 0.003852 position_loss:0.001070
+
+10760 loss: 0.001588  [13936/15825]
+
+10760 class loss: 0.001066 position_loss:0.000521
+
+10790 loss: 0.002838  [14416/15825]
+
+10790 class loss: 0.001361 position_loss:0.001477
+
+10820 loss: 0.002813  [14896/15825]
+
+10820 class loss: 0.001410 position_loss:0.001403
+
+10850 loss: 0.001567  [15376/15825]
+
+10850 class loss: 0.000987 position_loss:0.000580
+
+Epoch 11: train loss: 0.002883
+
+Fold 0 Epoch 11 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 11: valid loss:0.054224
+
+Fold 0 Epoch 12 train...
+-------------------------------
+
+10879 loss: 0.003130  [   16/15825]
+
+10879 class loss: 0.000916 position_loss:0.002214
+
+10909 loss: 0.003535  [  496/15825]
+
+10909 class loss: 0.001183 position_loss:0.002351
+
+10939 loss: 0.001280  [  976/15825]
+
+10939 class loss: 0.001078 position_loss:0.000201
+
+10969 loss: 0.000974  [ 1456/15825]
+
+10969 class loss: 0.000820 position_loss:0.000154
+
+10999 loss: 0.001262  [ 1936/15825]
+
+10999 class loss: 0.001003 position_loss:0.000260
+
+11029 loss: 0.000963  [ 2416/15825]
+
+11029 class loss: 0.000814 position_loss:0.000149
+
+11059 loss: 0.001672  [ 2896/15825]
+
+11059 class loss: 0.001381 position_loss:0.000292
+
+11089 loss: 0.000623  [ 3376/15825]
+
+11089 class loss: 0.000572 position_loss:0.000051
+
+11119 loss: 0.001643  [ 3856/15825]
+
+11119 class loss: 0.001240 position_loss:0.000403
+
+11149 loss: 0.000734  [ 4336/15825]
+
+11149 class loss: 0.000507 position_loss:0.000228
+
+11179 loss: 0.005692  [ 4816/15825]
+
+11179 class loss: 0.001261 position_loss:0.004431
+
+11209 loss: 0.001528  [ 5296/15825]
+
+11209 class loss: 0.001107 position_loss:0.000421
+
+11239 loss: 0.001586  [ 5776/15825]
+
+11239 class loss: 0.001432 position_loss:0.000154
+
+11269 loss: 0.001012  [ 6256/15825]
+
+11269 class loss: 0.000867 position_loss:0.000145
+
+11299 loss: 0.005164  [ 6736/15825]
+
+11299 class loss: 0.002536 position_loss:0.002628
+
+11329 loss: 0.002350  [ 7216/15825]
+
+11329 class loss: 0.000942 position_loss:0.001408
+
+11359 loss: 0.001191  [ 7696/15825]
+
+11359 class loss: 0.000943 position_loss:0.000248
+
+11389 loss: 0.001945  [ 8176/15825]
+
+11389 class loss: 0.001150 position_loss:0.000795
+
+11419 loss: 0.001350  [ 8656/15825]
+
+11419 class loss: 0.000661 position_loss:0.000689
+
+11449 loss: 0.002174  [ 9136/15825]
+
+11449 class loss: 0.001853 position_loss:0.000321
+
+11479 loss: 0.001499  [ 9616/15825]
+
+11479 class loss: 0.000963 position_loss:0.000536
+
+11509 loss: 0.002394  [10096/15825]
+
+11509 class loss: 0.001724 position_loss:0.000670
+
+11539 loss: 0.001909  [10576/15825]
+
+11539 class loss: 0.000840 position_loss:0.001069
+
+11569 loss: 0.004743  [11056/15825]
+
+11569 class loss: 0.000939 position_loss:0.003803
+
+11599 loss: 0.002711  [11536/15825]
+
+11599 class loss: 0.001654 position_loss:0.001056
+
+11629 loss: 0.002646  [12016/15825]
+
+11629 class loss: 0.001532 position_loss:0.001114
+
+11659 loss: 0.000817  [12496/15825]
+
+11659 class loss: 0.000703 position_loss:0.000114
+
+11689 loss: 0.001954  [12976/15825]
+
+11689 class loss: 0.000966 position_loss:0.000989
+
+11719 loss: 0.001493  [13456/15825]
+
+11719 class loss: 0.001083 position_loss:0.000410
+
+11749 loss: 0.002183  [13936/15825]
+
+11749 class loss: 0.001622 position_loss:0.000561
+
+11779 loss: 0.003362  [14416/15825]
+
+11779 class loss: 0.001285 position_loss:0.002077
+
+11809 loss: 0.001240  [14896/15825]
+
+11809 class loss: 0.001062 position_loss:0.000178
+
+11839 loss: 0.003072  [15376/15825]
+
+11839 class loss: 0.001558 position_loss:0.001514
+
+Epoch 12: train loss: 0.002591
+
+Fold 0 Epoch 12 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 12: valid loss:0.055166
+
+Fold 0 Epoch 13 train...
+-------------------------------
+
+11868 loss: 0.001060  [   16/15825]
+
+11868 class loss: 0.000953 position_loss:0.000107
+
+11898 loss: 0.003103  [  496/15825]
+
+11898 class loss: 0.001355 position_loss:0.001748
+
+11928 loss: 0.001248  [  976/15825]
+
+11928 class loss: 0.000844 position_loss:0.000404
+
+11958 loss: 0.029630  [ 1456/15825]
+
+11958 class loss: 0.002179 position_loss:0.027451
+
+11988 loss: 0.001100  [ 1936/15825]
+
+11988 class loss: 0.000886 position_loss:0.000214
+
+12018 loss: 0.001017  [ 2416/15825]
+
+12018 class loss: 0.000818 position_loss:0.000199
+
+12048 loss: 0.000836  [ 2896/15825]
+
+12048 class loss: 0.000665 position_loss:0.000171
+
+12078 loss: 0.003164  [ 3376/15825]
+
+12078 class loss: 0.000441 position_loss:0.002723
+
+12108 loss: 0.000983  [ 3856/15825]
+
+12108 class loss: 0.000652 position_loss:0.000331
+
+12138 loss: 0.001527  [ 4336/15825]
+
+12138 class loss: 0.001043 position_loss:0.000484
+
+12168 loss: 0.002217  [ 4816/15825]
+
+12168 class loss: 0.001734 position_loss:0.000483
+
+12198 loss: 0.005717  [ 5296/15825]
+
+12198 class loss: 0.002135 position_loss:0.003582
+
+12228 loss: 0.002337  [ 5776/15825]
+
+12228 class loss: 0.001150 position_loss:0.001187
+
+12258 loss: 0.001427  [ 6256/15825]
+
+12258 class loss: 0.000868 position_loss:0.000560
+
+12288 loss: 0.001036  [ 6736/15825]
+
+12288 class loss: 0.000749 position_loss:0.000287
+
+12318 loss: 0.001152  [ 7216/15825]
+
+12318 class loss: 0.000741 position_loss:0.000411
+
+12348 loss: 0.001750  [ 7696/15825]
+
+12348 class loss: 0.001224 position_loss:0.000527
+
+12378 loss: 0.001108  [ 8176/15825]
+
+12378 class loss: 0.000803 position_loss:0.000305
+
+12408 loss: 0.009797  [ 8656/15825]
+
+12408 class loss: 0.004395 position_loss:0.005402
+
+12438 loss: 0.000920  [ 9136/15825]
+
+12438 class loss: 0.000703 position_loss:0.000218
+
+12468 loss: 0.001356  [ 9616/15825]
+
+12468 class loss: 0.001306 position_loss:0.000049
+
+12498 loss: 0.002496  [10096/15825]
+
+12498 class loss: 0.001596 position_loss:0.000900
+
+12528 loss: 0.008291  [10576/15825]
+
+12528 class loss: 0.001718 position_loss:0.006572
+
+12558 loss: 0.000892  [11056/15825]
+
+12558 class loss: 0.000764 position_loss:0.000128
+
+12588 loss: 0.002458  [11536/15825]
+
+12588 class loss: 0.001214 position_loss:0.001244
+
+12618 loss: 0.000721  [12016/15825]
+
+12618 class loss: 0.000613 position_loss:0.000109
+
+12648 loss: 0.001254  [12496/15825]
+
+12648 class loss: 0.000929 position_loss:0.000325
+
+12678 loss: 0.000933  [12976/15825]
+
+12678 class loss: 0.000831 position_loss:0.000102
+
+12708 loss: 0.001473  [13456/15825]
+
+12708 class loss: 0.001287 position_loss:0.000185
+
+12738 loss: 0.000967  [13936/15825]
+
+12738 class loss: 0.000856 position_loss:0.000111
+
+12768 loss: 0.001105  [14416/15825]
+
+12768 class loss: 0.001040 position_loss:0.000065
+
+12798 loss: 0.001679  [14896/15825]
+
+12798 class loss: 0.001157 position_loss:0.000522
+
+12828 loss: 0.004319  [15376/15825]
+
+12828 class loss: 0.001218 position_loss:0.003101
+
+Epoch 13: train loss: 0.002590
+
+Fold 0 Epoch 13 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 13: valid loss:0.059715
+
+Fold 0 Epoch 14 train...
+-------------------------------
+
+12857 loss: 0.001612  [   16/15825]
+
+12857 class loss: 0.000937 position_loss:0.000674
+
+12887 loss: 0.006567  [  496/15825]
+
+12887 class loss: 0.001790 position_loss:0.004777
+
+12917 loss: 0.004860  [  976/15825]
+
+12917 class loss: 0.004723 position_loss:0.000138
+
+12947 loss: 0.020828  [ 1456/15825]
+
+12947 class loss: 0.001600 position_loss:0.019228
+
+12977 loss: 0.002387  [ 1936/15825]
+
+12977 class loss: 0.001925 position_loss:0.000462
+
+13007 loss: 0.001444  [ 2416/15825]
+
+13007 class loss: 0.001139 position_loss:0.000305
+
+13037 loss: 0.000560  [ 2896/15825]
+
+13037 class loss: 0.000476 position_loss:0.000084
+
+13067 loss: 0.001518  [ 3376/15825]
+
+13067 class loss: 0.000926 position_loss:0.000592
+
+13097 loss: 0.002913  [ 3856/15825]
+
+13097 class loss: 0.000894 position_loss:0.002018
+
+13127 loss: 0.001889  [ 4336/15825]
+
+13127 class loss: 0.001533 position_loss:0.000356
+
+13157 loss: 0.001213  [ 4816/15825]
+
+13157 class loss: 0.001149 position_loss:0.000064
+
+13187 loss: 0.000967  [ 5296/15825]
+
+13187 class loss: 0.000878 position_loss:0.000090
+
+13217 loss: 0.001178  [ 5776/15825]
+
+13217 class loss: 0.000842 position_loss:0.000335
+
+13247 loss: 0.001087  [ 6256/15825]
+
+13247 class loss: 0.000894 position_loss:0.000194
+
+13277 loss: 0.001767  [ 6736/15825]
+
+13277 class loss: 0.000924 position_loss:0.000843
+
+13307 loss: 0.001832  [ 7216/15825]
+
+13307 class loss: 0.001538 position_loss:0.000294
+
+13337 loss: 0.001415  [ 7696/15825]
+
+13337 class loss: 0.000768 position_loss:0.000647
+
+13367 loss: 0.001375  [ 8176/15825]
+
+13367 class loss: 0.000789 position_loss:0.000586
+
+13397 loss: 0.001036  [ 8656/15825]
+
+13397 class loss: 0.000966 position_loss:0.000070
+
+13427 loss: 0.001122  [ 9136/15825]
+
+13427 class loss: 0.000933 position_loss:0.000190
+
+13457 loss: 0.002496  [ 9616/15825]
+
+13457 class loss: 0.001655 position_loss:0.000841
+
+13487 loss: 0.005443  [10096/15825]
+
+13487 class loss: 0.001762 position_loss:0.003680
+
+13517 loss: 0.000588  [10576/15825]
+
+13517 class loss: 0.000444 position_loss:0.000144
+
+13547 loss: 0.001066  [11056/15825]
+
+13547 class loss: 0.001000 position_loss:0.000066
+
+13577 loss: 0.004705  [11536/15825]
+
+13577 class loss: 0.001093 position_loss:0.003612
+
+13607 loss: 0.001608  [12016/15825]
+
+13607 class loss: 0.001457 position_loss:0.000152
+
+13637 loss: 0.002700  [12496/15825]
+
+13637 class loss: 0.002159 position_loss:0.000541
+
+13667 loss: 0.001063  [12976/15825]
+
+13667 class loss: 0.000756 position_loss:0.000307
+
+13697 loss: 0.005727  [13456/15825]
+
+13697 class loss: 0.001847 position_loss:0.003880
+
+13727 loss: 0.001886  [13936/15825]
+
+13727 class loss: 0.000961 position_loss:0.000925
+
+13757 loss: 0.001732  [14416/15825]
+
+13757 class loss: 0.000713 position_loss:0.001019
+
+13787 loss: 0.002720  [14896/15825]
+
+13787 class loss: 0.001306 position_loss:0.001414
+
+13817 loss: 0.001057  [15376/15825]
+
+13817 class loss: 0.000678 position_loss:0.000378
+
+Epoch 14: train loss: 0.002374
+
+Fold 0 Epoch 14 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 14: valid loss:0.058512
+
+Fold 0 Epoch 15 train...
+-------------------------------
+
+13846 loss: 0.000982  [   16/15825]
+
+13846 class loss: 0.000647 position_loss:0.000335
+
+13876 loss: 0.002309  [  496/15825]
+
+13876 class loss: 0.002157 position_loss:0.000152
+
+13906 loss: 0.001011  [  976/15825]
+
+13906 class loss: 0.000790 position_loss:0.000221
+
+13936 loss: 0.008853  [ 1456/15825]
+
+13936 class loss: 0.001236 position_loss:0.007617
+
+13966 loss: 0.004925  [ 1936/15825]
+
+13966 class loss: 0.002198 position_loss:0.002727
+
+13996 loss: 0.002288  [ 2416/15825]
+
+13996 class loss: 0.000953 position_loss:0.001335
+
+14026 loss: 0.000763  [ 2896/15825]
+
+14026 class loss: 0.000639 position_loss:0.000124
+
+14056 loss: 0.002902  [ 3376/15825]
+
+14056 class loss: 0.001461 position_loss:0.001441
+
+14086 loss: 0.000930  [ 3856/15825]
+
+14086 class loss: 0.000614 position_loss:0.000316
+
+14116 loss: 0.000566  [ 4336/15825]
+
+14116 class loss: 0.000459 position_loss:0.000107
+
+14146 loss: 0.001112  [ 4816/15825]
+
+14146 class loss: 0.000876 position_loss:0.000236
+
+14176 loss: 0.000651  [ 5296/15825]
+
+14176 class loss: 0.000509 position_loss:0.000143
+
+14206 loss: 0.001424  [ 5776/15825]
+
+14206 class loss: 0.000892 position_loss:0.000532
+
+14236 loss: 0.001730  [ 6256/15825]
+
+14236 class loss: 0.000738 position_loss:0.000991
+
+14266 loss: 0.002529  [ 6736/15825]
+
+14266 class loss: 0.001657 position_loss:0.000873
+
+14296 loss: 0.004196  [ 7216/15825]
+
+14296 class loss: 0.001202 position_loss:0.002994
+
+14326 loss: 0.000909  [ 7696/15825]
+
+14326 class loss: 0.000864 position_loss:0.000045
+
+14356 loss: 0.001266  [ 8176/15825]
+
+14356 class loss: 0.001048 position_loss:0.000218
+
+14386 loss: 0.001283  [ 8656/15825]
+
+14386 class loss: 0.001162 position_loss:0.000121
+
+14416 loss: 0.001653  [ 9136/15825]
+
+14416 class loss: 0.001529 position_loss:0.000124
+
+14446 loss: 0.002626  [ 9616/15825]
+
+14446 class loss: 0.001352 position_loss:0.001275
+
+14476 loss: 0.000737  [10096/15825]
+
+14476 class loss: 0.000588 position_loss:0.000149
+
+14506 loss: 0.001733  [10576/15825]
+
+14506 class loss: 0.001551 position_loss:0.000182
+
+14536 loss: 0.001215  [11056/15825]
+
+14536 class loss: 0.000944 position_loss:0.000271
+
+14566 loss: 0.001791  [11536/15825]
+
+14566 class loss: 0.001104 position_loss:0.000687
+
+14596 loss: 0.001995  [12016/15825]
+
+14596 class loss: 0.001251 position_loss:0.000744
+
+14626 loss: 0.000972  [12496/15825]
+
+14626 class loss: 0.000733 position_loss:0.000238
+
+14656 loss: 0.001699  [12976/15825]
+
+14656 class loss: 0.001198 position_loss:0.000501
+
+14686 loss: 0.000850  [13456/15825]
+
+14686 class loss: 0.000718 position_loss:0.000132
+
+14716 loss: 0.001519  [13936/15825]
+
+14716 class loss: 0.001016 position_loss:0.000502
+
+14746 loss: 0.004335  [14416/15825]
+
+14746 class loss: 0.001012 position_loss:0.003323
+
+14776 loss: 0.001731  [14896/15825]
+
+14776 class loss: 0.001397 position_loss:0.000335
+
+14806 loss: 0.000735  [15376/15825]
+
+14806 class loss: 0.000550 position_loss:0.000185
+
+Epoch 15: train loss: 0.001998
+
+Fold 0 Epoch 15 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 15: valid loss:0.062074
+
+Fold 0 Epoch 16 train...
+-------------------------------
+
+14835 loss: 0.000697  [   16/15825]
+
+14835 class loss: 0.000636 position_loss:0.000061
+
+14865 loss: 0.004286  [  496/15825]
+
+14865 class loss: 0.001948 position_loss:0.002338
+
+14895 loss: 0.000901  [  976/15825]
+
+14895 class loss: 0.000683 position_loss:0.000217
+
+14925 loss: 0.002128  [ 1456/15825]
+
+14925 class loss: 0.001021 position_loss:0.001107
+
+14955 loss: 0.005324  [ 1936/15825]
+
+14955 class loss: 0.005136 position_loss:0.000188
+
+14985 loss: 0.004378  [ 2416/15825]
+
+14985 class loss: 0.001145 position_loss:0.003232
+
+15015 loss: 0.001444  [ 2896/15825]
+
+15015 class loss: 0.001394 position_loss:0.000049
+
+15045 loss: 0.001377  [ 3376/15825]
+
+15045 class loss: 0.001068 position_loss:0.000309
+
+15075 loss: 0.001156  [ 3856/15825]
+
+15075 class loss: 0.001103 position_loss:0.000053
+
+15105 loss: 0.001200  [ 4336/15825]
+
+15105 class loss: 0.001130 position_loss:0.000070
+
+15135 loss: 0.002101  [ 4816/15825]
+
+15135 class loss: 0.001812 position_loss:0.000290
+
+15165 loss: 0.005714  [ 5296/15825]
+
+15165 class loss: 0.001385 position_loss:0.004330
+
+15195 loss: 0.001202  [ 5776/15825]
+
+15195 class loss: 0.000873 position_loss:0.000329
+
+15225 loss: 0.000484  [ 6256/15825]
+
+15225 class loss: 0.000458 position_loss:0.000026
+
+15255 loss: 0.001472  [ 6736/15825]
+
+15255 class loss: 0.000899 position_loss:0.000573
+
+15285 loss: 0.001421  [ 7216/15825]
+
+15285 class loss: 0.000759 position_loss:0.000662
+
+15315 loss: 0.002731  [ 7696/15825]
+
+15315 class loss: 0.001805 position_loss:0.000926
+
+15345 loss: 0.004950  [ 8176/15825]
+
+15345 class loss: 0.001228 position_loss:0.003723
+
+15375 loss: 0.002070  [ 8656/15825]
+
+15375 class loss: 0.001463 position_loss:0.000607
+
+15405 loss: 0.001279  [ 9136/15825]
+
+15405 class loss: 0.001177 position_loss:0.000102
+
+15435 loss: 0.001310  [ 9616/15825]
+
+15435 class loss: 0.001145 position_loss:0.000164
+
+15465 loss: 0.001084  [10096/15825]
+
+15465 class loss: 0.000946 position_loss:0.000138
+
+15495 loss: 0.000677  [10576/15825]
+
+15495 class loss: 0.000641 position_loss:0.000036
+
+15525 loss: 0.001129  [11056/15825]
+
+15525 class loss: 0.000719 position_loss:0.000409
+
+15555 loss: 0.001809  [11536/15825]
+
+15555 class loss: 0.000873 position_loss:0.000936
+
+15585 loss: 0.001089  [12016/15825]
+
+15585 class loss: 0.000926 position_loss:0.000163
+
+15615 loss: 0.001345  [12496/15825]
+
+15615 class loss: 0.000942 position_loss:0.000403
+
+15645 loss: 0.002021  [12976/15825]
+
+15645 class loss: 0.001483 position_loss:0.000537
+
+15675 loss: 0.001412  [13456/15825]
+
+15675 class loss: 0.001295 position_loss:0.000117
+
+15705 loss: 0.001089  [13936/15825]
+
+15705 class loss: 0.000800 position_loss:0.000289
+
+15735 loss: 0.002059  [14416/15825]
+
+15735 class loss: 0.001180 position_loss:0.000879
+
+15765 loss: 0.000880  [14896/15825]
+
+15765 class loss: 0.000692 position_loss:0.000189
+
+15795 loss: 0.002769  [15376/15825]
+
+15795 class loss: 0.001728 position_loss:0.001041
+
+Epoch 16: train loss: 0.002034
+
+Fold 0 Epoch 16 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 16: valid loss:0.062334
+
+Fold 0 Epoch 17 train...
+-------------------------------
+
+15824 loss: 0.004526  [   16/15825]
+
+15824 class loss: 0.001059 position_loss:0.003467
+
+15854 loss: 0.002717  [  496/15825]
+
+15854 class loss: 0.001212 position_loss:0.001505
+
+15884 loss: 0.001137  [  976/15825]
+
+15884 class loss: 0.001056 position_loss:0.000081
+
+15914 loss: 0.001430  [ 1456/15825]
+
+15914 class loss: 0.001322 position_loss:0.000109
+
+15944 loss: 0.000946  [ 1936/15825]
+
+15944 class loss: 0.000802 position_loss:0.000144
+
+15974 loss: 0.002792  [ 2416/15825]
+
+15974 class loss: 0.000873 position_loss:0.001918
+
+16004 loss: 0.001263  [ 2896/15825]
+
+16004 class loss: 0.000941 position_loss:0.000323
+
+16034 loss: 0.001346  [ 3376/15825]
+
+16034 class loss: 0.000709 position_loss:0.000637
+
+16064 loss: 0.000695  [ 3856/15825]
+
+16064 class loss: 0.000525 position_loss:0.000171
+
+16094 loss: 0.001319  [ 4336/15825]
+
+16094 class loss: 0.001259 position_loss:0.000061
+
+16124 loss: 0.002103  [ 4816/15825]
+
+16124 class loss: 0.000584 position_loss:0.001519
+
+16154 loss: 0.001950  [ 5296/15825]
+
+16154 class loss: 0.001130 position_loss:0.000821
+
+16184 loss: 0.001991  [ 5776/15825]
+
+16184 class loss: 0.001314 position_loss:0.000677
+
+16214 loss: 0.002234  [ 6256/15825]
+
+16214 class loss: 0.001363 position_loss:0.000871
+
+16244 loss: 0.001739  [ 6736/15825]
+
+16244 class loss: 0.001119 position_loss:0.000619
+
+16274 loss: 0.000651  [ 7216/15825]
+
+16274 class loss: 0.000519 position_loss:0.000132
+
+16304 loss: 0.000979  [ 7696/15825]
+
+16304 class loss: 0.000866 position_loss:0.000114
+
+16334 loss: 0.004666  [ 8176/15825]
+
+16334 class loss: 0.001781 position_loss:0.002886
+
+16364 loss: 0.001379  [ 8656/15825]
+
+16364 class loss: 0.000733 position_loss:0.000645
+
+16394 loss: 0.000736  [ 9136/15825]
+
+16394 class loss: 0.000694 position_loss:0.000043
+
+16424 loss: 0.004208  [ 9616/15825]
+
+16424 class loss: 0.000654 position_loss:0.003554
+
+16454 loss: 0.001617  [10096/15825]
+
+16454 class loss: 0.000921 position_loss:0.000696
+
+16484 loss: 0.001778  [10576/15825]
+
+16484 class loss: 0.001563 position_loss:0.000215
+
+16514 loss: 0.000712  [11056/15825]
+
+16514 class loss: 0.000527 position_loss:0.000185
+
+16544 loss: 0.001075  [11536/15825]
+
+16544 class loss: 0.000863 position_loss:0.000212
+
+16574 loss: 0.001044  [12016/15825]
+
+16574 class loss: 0.000580 position_loss:0.000465
+
+16604 loss: 0.003113  [12496/15825]
+
+16604 class loss: 0.001828 position_loss:0.001284
+
+16634 loss: 0.006742  [12976/15825]
+
+16634 class loss: 0.004415 position_loss:0.002326
+
+16664 loss: 0.000705  [13456/15825]
+
+16664 class loss: 0.000486 position_loss:0.000220
+
+16694 loss: 0.001384  [13936/15825]
+
+16694 class loss: 0.001119 position_loss:0.000264
+
+16724 loss: 0.002567  [14416/15825]
+
+16724 class loss: 0.001565 position_loss:0.001002
+
+16754 loss: 0.000996  [14896/15825]
+
+16754 class loss: 0.000921 position_loss:0.000075
+
+16784 loss: 0.001430  [15376/15825]
+
+16784 class loss: 0.000658 position_loss:0.000771
+
+Epoch 17: train loss: 0.001993
+
+Fold 0 Epoch 17 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 17: valid loss:0.061756
+
+Fold 0 Epoch 18 train...
+-------------------------------
+
+16813 loss: 0.000854  [   16/15825]
+
+16813 class loss: 0.000812 position_loss:0.000042
+
+16843 loss: 0.001463  [  496/15825]
+
+16843 class loss: 0.000783 position_loss:0.000680
+
+16873 loss: 0.005670  [  976/15825]
+
+16873 class loss: 0.001063 position_loss:0.004607
+
+16903 loss: 0.000816  [ 1456/15825]
+
+16903 class loss: 0.000710 position_loss:0.000106
+
+16933 loss: 0.001502  [ 1936/15825]
+
+16933 class loss: 0.001147 position_loss:0.000355
+
+16963 loss: 0.001032  [ 2416/15825]
+
+16963 class loss: 0.000816 position_loss:0.000217
+
+16993 loss: 0.000683  [ 2896/15825]
+
+16993 class loss: 0.000507 position_loss:0.000176
+
+17023 loss: 0.001088  [ 3376/15825]
+
+17023 class loss: 0.000788 position_loss:0.000301
+
+17053 loss: 0.000843  [ 3856/15825]
+
+17053 class loss: 0.000789 position_loss:0.000055
+
+17083 loss: 0.001272  [ 4336/15825]
+
+17083 class loss: 0.000417 position_loss:0.000855
+
+17113 loss: 0.004372  [ 4816/15825]
+
+17113 class loss: 0.001545 position_loss:0.002827
+
+17143 loss: 0.002512  [ 5296/15825]
+
+17143 class loss: 0.001606 position_loss:0.000906
+
+17173 loss: 0.001078  [ 5776/15825]
+
+17173 class loss: 0.000834 position_loss:0.000244
+
+17203 loss: 0.001915  [ 6256/15825]
+
+17203 class loss: 0.001224 position_loss:0.000691
+
+17233 loss: 0.002490  [ 6736/15825]
+
+17233 class loss: 0.001424 position_loss:0.001066
+
+17263 loss: 0.001077  [ 7216/15825]
+
+17263 class loss: 0.000580 position_loss:0.000497
+
+17293 loss: 0.001151  [ 7696/15825]
+
+17293 class loss: 0.001021 position_loss:0.000130
+
+17323 loss: 0.001548  [ 8176/15825]
+
+17323 class loss: 0.001314 position_loss:0.000234
+
+17353 loss: 0.001283  [ 8656/15825]
+
+17353 class loss: 0.001197 position_loss:0.000086
+
+17383 loss: 0.000691  [ 9136/15825]
+
+17383 class loss: 0.000570 position_loss:0.000121
+
+17413 loss: 0.000796  [ 9616/15825]
+
+17413 class loss: 0.000689 position_loss:0.000107
+
+17443 loss: 0.000538  [10096/15825]
+
+17443 class loss: 0.000456 position_loss:0.000082
+
+17473 loss: 0.002357  [10576/15825]
+
+17473 class loss: 0.001693 position_loss:0.000664
+
+17503 loss: 0.000364  [11056/15825]
+
+17503 class loss: 0.000291 position_loss:0.000073
+
+17533 loss: 0.001193  [11536/15825]
+
+17533 class loss: 0.000530 position_loss:0.000663
+
+17563 loss: 0.002443  [12016/15825]
+
+17563 class loss: 0.002397 position_loss:0.000046
+
+17593 loss: 0.000726  [12496/15825]
+
+17593 class loss: 0.000560 position_loss:0.000166
+
+17623 loss: 0.000966  [12976/15825]
+
+17623 class loss: 0.000894 position_loss:0.000072
+
+17653 loss: 0.000819  [13456/15825]
+
+17653 class loss: 0.000628 position_loss:0.000191
+
+17683 loss: 0.001577  [13936/15825]
+
+17683 class loss: 0.000833 position_loss:0.000744
+
+17713 loss: 0.001067  [14416/15825]
+
+17713 class loss: 0.000899 position_loss:0.000168
+
+17743 loss: 0.002501  [14896/15825]
+
+17743 class loss: 0.002120 position_loss:0.000382
+
+17773 loss: 0.002188  [15376/15825]
+
+17773 class loss: 0.001751 position_loss:0.000437
+
+Epoch 18: train loss: 0.001806
+
+Fold 0 Epoch 18 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 18: valid loss:0.064202
+
+Fold 0 Epoch 19 train...
+-------------------------------
+
+17802 loss: 0.001154  [   16/15825]
+
+17802 class loss: 0.001096 position_loss:0.000058
+
+17832 loss: 0.009802  [  496/15825]
+
+17832 class loss: 0.001675 position_loss:0.008128
+
+17862 loss: 0.007994  [  976/15825]
+
+17862 class loss: 0.005099 position_loss:0.002895
+
+17892 loss: 0.022246  [ 1456/15825]
+
+17892 class loss: 0.002501 position_loss:0.019745
+
+17922 loss: 0.000696  [ 1936/15825]
+
+17922 class loss: 0.000626 position_loss:0.000070
+
+17952 loss: 0.002132  [ 2416/15825]
+
+17952 class loss: 0.000888 position_loss:0.001243
+
+17982 loss: 0.002462  [ 2896/15825]
+
+17982 class loss: 0.000790 position_loss:0.001673
+
+18012 loss: 0.001770  [ 3376/15825]
+
+18012 class loss: 0.000951 position_loss:0.000819
+
+18042 loss: 0.001819  [ 3856/15825]
+
+18042 class loss: 0.000805 position_loss:0.001015
+
+18072 loss: 0.001397  [ 4336/15825]
+
+18072 class loss: 0.001058 position_loss:0.000340
+
+18102 loss: 0.001095  [ 4816/15825]
+
+18102 class loss: 0.000669 position_loss:0.000425
+
+18132 loss: 0.001282  [ 5296/15825]
+
+18132 class loss: 0.000420 position_loss:0.000862
+
+18162 loss: 0.000577  [ 5776/15825]
+
+18162 class loss: 0.000459 position_loss:0.000118
+
+18192 loss: 0.001933  [ 6256/15825]
+
+18192 class loss: 0.000929 position_loss:0.001005
+
+18222 loss: 0.001991  [ 6736/15825]
+
+18222 class loss: 0.001706 position_loss:0.000285
+
+18252 loss: 0.001447  [ 7216/15825]
+
+18252 class loss: 0.000923 position_loss:0.000525
+
+18282 loss: 0.001202  [ 7696/15825]
+
+18282 class loss: 0.000688 position_loss:0.000515
+
+18312 loss: 0.005266  [ 8176/15825]
+
+18312 class loss: 0.001876 position_loss:0.003390
+
+18342 loss: 0.001495  [ 8656/15825]
+
+18342 class loss: 0.001173 position_loss:0.000321
+
+18372 loss: 0.000653  [ 9136/15825]
+
+18372 class loss: 0.000586 position_loss:0.000067
+
+18402 loss: 0.001274  [ 9616/15825]
+
+18402 class loss: 0.001014 position_loss:0.000260
+
+18432 loss: 0.001486  [10096/15825]
+
+18432 class loss: 0.001082 position_loss:0.000404
+
+18462 loss: 0.002592  [10576/15825]
+
+18462 class loss: 0.000494 position_loss:0.002098
+
+18492 loss: 0.000727  [11056/15825]
+
+18492 class loss: 0.000645 position_loss:0.000081
+
+18522 loss: 0.001039  [11536/15825]
+
+18522 class loss: 0.000829 position_loss:0.000209
+
+18552 loss: 0.000756  [12016/15825]
+
+18552 class loss: 0.000659 position_loss:0.000097
+
+18582 loss: 0.002186  [12496/15825]
+
+18582 class loss: 0.000679 position_loss:0.001507
+
+18612 loss: 0.001373  [12976/15825]
+
+18612 class loss: 0.000489 position_loss:0.000885
+
+18642 loss: 0.000877  [13456/15825]
+
+18642 class loss: 0.000625 position_loss:0.000253
+
+18672 loss: 0.002991  [13936/15825]
+
+18672 class loss: 0.002907 position_loss:0.000084
+
+18702 loss: 0.001029  [14416/15825]
+
+18702 class loss: 0.000589 position_loss:0.000440
+
+18732 loss: 0.001082  [14896/15825]
+
+18732 class loss: 0.000942 position_loss:0.000140
+
+18762 loss: 0.000862  [15376/15825]
+
+18762 class loss: 0.000768 position_loss:0.000093
+
+Epoch 19: train loss: 0.001833
+
+Fold 0 Epoch 19 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 19: valid loss:0.062545
+
+Fold 0 Epoch 20 train...
+-------------------------------
+
+18791 loss: 0.001101  [   16/15825]
+
+18791 class loss: 0.000896 position_loss:0.000205
+
+18821 loss: 0.001719  [  496/15825]
+
+18821 class loss: 0.000873 position_loss:0.000845
+
+18851 loss: 0.000616  [  976/15825]
+
+18851 class loss: 0.000564 position_loss:0.000052
+
+18881 loss: 0.006287  [ 1456/15825]
+
+18881 class loss: 0.005998 position_loss:0.000289
+
+18911 loss: 0.000684  [ 1936/15825]
+
+18911 class loss: 0.000639 position_loss:0.000045
+
+18941 loss: 0.001110  [ 2416/15825]
+
+18941 class loss: 0.000915 position_loss:0.000195
+
+18971 loss: 0.001111  [ 2896/15825]
+
+18971 class loss: 0.000825 position_loss:0.000285
+
+19001 loss: 0.000580  [ 3376/15825]
+
+19001 class loss: 0.000513 position_loss:0.000067
+
+19031 loss: 0.001284  [ 3856/15825]
+
+19031 class loss: 0.001235 position_loss:0.000049
+
+19061 loss: 0.000941  [ 4336/15825]
+
+19061 class loss: 0.000775 position_loss:0.000166
+
+19091 loss: 0.002166  [ 4816/15825]
+
+19091 class loss: 0.001013 position_loss:0.001153
+
+19121 loss: 0.005241  [ 5296/15825]
+
+19121 class loss: 0.001030 position_loss:0.004211
+
+19151 loss: 0.001336  [ 5776/15825]
+
+19151 class loss: 0.001279 position_loss:0.000056
+
+19181 loss: 0.000943  [ 6256/15825]
+
+19181 class loss: 0.000910 position_loss:0.000033
+
+19211 loss: 0.000489  [ 6736/15825]
+
+19211 class loss: 0.000394 position_loss:0.000095
+
+19241 loss: 0.000972  [ 7216/15825]
+
+19241 class loss: 0.000594 position_loss:0.000379
+
+19271 loss: 0.000554  [ 7696/15825]
+
+19271 class loss: 0.000530 position_loss:0.000025
+
+19301 loss: 0.001336  [ 8176/15825]
+
+19301 class loss: 0.000773 position_loss:0.000563
+
+19331 loss: 0.001279  [ 8656/15825]
+
+19331 class loss: 0.001040 position_loss:0.000239
+
+19361 loss: 0.027481  [ 9136/15825]
+
+19361 class loss: 0.001206 position_loss:0.026275
+
+19391 loss: 0.000615  [ 9616/15825]
+
+19391 class loss: 0.000542 position_loss:0.000073
+
+19421 loss: 0.001705  [10096/15825]
+
+19421 class loss: 0.000522 position_loss:0.001184
+
+19451 loss: 0.000779  [10576/15825]
+
+19451 class loss: 0.000708 position_loss:0.000071
+
+19481 loss: 0.000847  [11056/15825]
+
+19481 class loss: 0.000760 position_loss:0.000087
+
+19511 loss: 0.000809  [11536/15825]
+
+19511 class loss: 0.000759 position_loss:0.000050
+
+19541 loss: 0.002362  [12016/15825]
+
+19541 class loss: 0.001518 position_loss:0.000843
+
+19571 loss: 0.000804  [12496/15825]
+
+19571 class loss: 0.000667 position_loss:0.000138
+
+19601 loss: 0.001733  [12976/15825]
+
+19601 class loss: 0.001305 position_loss:0.000428
+
+19631 loss: 0.001240  [13456/15825]
+
+19631 class loss: 0.000829 position_loss:0.000411
+
+19661 loss: 0.001574  [13936/15825]
+
+19661 class loss: 0.000594 position_loss:0.000980
+
+19691 loss: 0.001431  [14416/15825]
+
+19691 class loss: 0.000705 position_loss:0.000726
+
+19721 loss: 0.000887  [14896/15825]
+
+19721 class loss: 0.000782 position_loss:0.000105
+
+19751 loss: 0.001001  [15376/15825]
+
+19751 class loss: 0.000768 position_loss:0.000233
+
+Epoch 20: train loss: 0.001796
+
+Fold 0 Epoch 20 validation...
+-------------------------------
+
+number of test steps per epoch: 67
+
+Epoch 20: valid loss:0.064748
+
+Loading checkpoint from /data/duolin/MUTargetCLEAN/result_nosupcon/dataaug/time5_0.3_repeat_nooriginal/2024-04-14__21-57-59/checkpoints/best_model.pth
+
+Fold 0 test
+-------------------------------
+
+number of evaluateion steps: 67
+
+===========================================
+
+ Jaccard Index (protein): 
+
+                     0.1       0.2       0.3       0.4       0.5       0.6  \
+Nucleus         0.640114  0.624948  0.607828  0.599307  0.573690  0.549135   
+ER              0.965010  0.965468  0.965468  0.965468  0.965468  0.965468   
+Peroxisome      0.918260  0.921130  0.845267  0.845390  0.691852  0.384573   
+Mitochondrion   0.890944  0.881018  0.817659  0.820632  0.791838  0.743635   
+Nucleus_export  0.151803  0.147092  0.137363  0.137710  0.135840  0.133931   
+SIGNAL          0.959478  0.957124  0.955604  0.953838  0.940702  0.929918   
+chloroplast     0.839404  0.860841  0.783883  0.748837  0.656988  0.631958   
+Thylakoid       0.877346  0.885476  0.776699  0.555276  0.444221  0.111111   
+
+                     0.7       0.8       0.9  
+Nucleus         0.528795  0.493661  0.383865  
+ER              0.930987  0.896506  0.379291  
+Peroxisome      0.384615  0.307692  0.000000  
+Mitochondrion   0.688796  0.583396  0.358268  
+Nucleus_export  0.129857  0.128000  0.114782  
+SIGNAL          0.923385  0.919376  0.899539  
+chloroplast     0.592475  0.525538  0.143755  
+Thylakoid       0.000000  0.000000  0.000000  
+===========================================
+
+ cs acc: 
+
+                     0.1       0.2       0.3       0.4       0.5       0.6  \
+Nucleus         0.057851  0.057851  0.057851  0.057851  0.057851  0.057851   
+ER              0.965517  0.965517  0.965517  0.965517  0.965517  0.965517   
+Peroxisome      0.846154  0.846154  0.846154  0.846154  0.846154  0.846154   
+Mitochondrion   0.553459  0.553459  0.553459  0.553459  0.553459  0.553459   
+Nucleus_export  0.000000  0.000000  0.000000  0.000000  0.000000  0.000000   
+SIGNAL          0.890966  0.890966  0.890966  0.890966  0.890966  0.890966   
+chloroplast     0.424658  0.424658  0.424658  0.424658  0.424658  0.424658   
+Thylakoid       0.777778  0.777778  0.777778  0.777778  0.777778  0.777778   
+
+                     0.7       0.8       0.9  
+Nucleus         0.057851  0.057851  0.057851  
+ER              0.965517  0.965517  0.965517  
+Peroxisome      0.846154  0.846154  0.846154  
+Mitochondrion   0.553459  0.553459  0.553459  
+Nucleus_export  0.000000  0.000000  0.000000  
+SIGNAL          0.890966  0.890966  0.890966  
+chloroplast     0.424658  0.424658  0.424658  
+Thylakoid       0.777778  0.777778  0.777778  
+===========================================
+
+ Class prediction performance (Nucleus): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.992504  0.992504  0.992504  0.992504  0.992504   
+average_precision_score  0.922638  0.922638  0.922638  0.922638  0.922638   
+matthews_corrcoef        0.765591  0.846153  0.884439  0.895259  0.896339   
+recall_score             1.000000  0.991736  0.983471  0.983471  0.966942   
+precision_score          0.633508  0.754717  0.820690  0.838028  0.854015   
+f1_score                 0.775641  0.857143  0.894737  0.904943  0.906977   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.992504  0.992504  0.992504  0.992504  
+average_precision_score  0.922638  0.922638  0.922638  0.922638  
+matthews_corrcoef        0.886207  0.882649  0.867588  0.769462  
+recall_score             0.950413  0.925620  0.867769  0.694215  
+precision_score          0.851852  0.868217  0.897436  0.903226  
+f1_score                 0.898438  0.896000  0.882353  0.785047  
+ Class prediction performance (ER): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.968335  0.968335  0.968335  0.968335  0.968335   
+average_precision_score  0.721801  0.721801  0.721801  0.721801  0.721801   
+matthews_corrcoef        0.589460  0.786301  0.827388  0.888475  0.869007   
+recall_score             0.965517  0.965517  0.965517  0.965517  0.931034   
+precision_score          0.378378  0.651163  0.717949  0.823529  0.818182   
+f1_score                 0.543689  0.777778  0.823529  0.888889  0.870968   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.968335  0.968335  0.968335  0.968335  
+average_precision_score  0.721801  0.721801  0.721801  0.721801  
+matthews_corrcoef        0.882978  0.863284  0.822722  0.506739  
+recall_score             0.931034  0.896552  0.827586  0.344828  
+precision_score          0.843750  0.838710  0.827586  0.769231  
+f1_score                 0.885246  0.866667  0.827586  0.476190  
+ Class prediction performance (Peroxisome): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.968464  0.968464  0.968464  0.968464  0.968464   
+average_precision_score  0.404312  0.404312  0.404312  0.404312  0.404312   
+matthews_corrcoef        0.386424  0.448590  0.448590  0.448590  0.478100   
+recall_score             0.307692  0.307692  0.307692  0.307692  0.230769   
+precision_score          0.500000  0.666667  0.666667  0.666667  1.000000   
+f1_score                 0.380952  0.421053  0.421053  0.421053  0.375000   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.968464  0.968464  0.968464  0.968464  
+average_precision_score  0.404312  0.404312  0.404312  0.404312  
+matthews_corrcoef        0.390182  0.390182  0.275770  0.275770  
+recall_score             0.153846  0.153846  0.076923  0.076923  
+precision_score          1.000000  1.000000  1.000000  1.000000  
+f1_score                 0.266667  0.266667  0.142857  0.142857  
+ Class prediction performance (Mitochondrion): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.993809  0.993809  0.993809  0.993809  0.993809   
+average_precision_score  0.987880  0.987880  0.987880  0.987880  0.987880   
+matthews_corrcoef        0.970388  0.981409  0.973951  0.955163  0.951386   
+recall_score             0.974843  0.974843  0.955975  0.924528  0.918239   
+precision_score          0.974843  0.993590  1.000000  1.000000  1.000000   
+f1_score                 0.974843  0.984127  0.977492  0.960784  0.957377   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.993809  0.993809  0.993809  0.993809  
+average_precision_score  0.987880  0.987880  0.987880  0.987880  
+matthews_corrcoef        0.940014  0.909371  0.874279  0.661473  
+recall_score             0.899371  0.849057  0.792453  0.477987  
+precision_score          1.000000  1.000000  1.000000  1.000000  
+f1_score                 0.947020  0.918367  0.884211  0.646809  
+ Class prediction performance (Nucleus_export): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.968411  0.968411  0.968411  0.968411  0.968411   
+average_precision_score  0.454152  0.454152  0.454152  0.454152  0.454152   
+matthews_corrcoef        0.418066  0.390570  0.491404  0.408522  0.352418   
+recall_score             0.920000  0.680000  0.680000  0.480000  0.360000   
+precision_score          0.211009  0.250000  0.377778  0.375000  0.375000   
+f1_score                 0.343284  0.365591  0.485714  0.421053  0.367347   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.968411  0.968411  0.968411  0.968411  
+average_precision_score  0.454152  0.454152  0.454152  0.454152  
+matthews_corrcoef        0.400670  0.378036  0.242037  0.273745  
+recall_score             0.360000  0.280000  0.160000  0.160000  
+precision_score          0.473684  0.538462  0.400000  0.500000  
+f1_score                 0.409091  0.368421  0.228571  0.242424  
+ Class prediction performance (SIGNAL): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.999655  0.999655  0.999655  0.999655  0.999655   
+average_precision_score  0.999776  0.999776  0.999776  0.999776  0.999776   
+matthews_corrcoef        0.966590  0.980183  0.980228  0.962971  0.950228   
+recall_score             1.000000  0.996885  0.989097  0.973520  0.959502   
+precision_score          0.974203  0.987654  0.995298  0.996810  1.000000   
+f1_score                 0.986933  0.992248  0.992188  0.985028  0.979332   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.999655  0.999655  0.999655  0.999655  
+average_precision_score  0.999776  0.999776  0.999776  0.999776  
+matthews_corrcoef        0.917700  0.874805  0.794173  0.596184  
+recall_score             0.931464  0.892523  0.813084  0.584112  
+precision_score          1.000000  1.000000  1.000000  1.000000  
+f1_score                 0.964516  0.943210  0.896907  0.737463  
+ Class prediction performance (chloroplast): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.999053  0.999053  0.999053  0.999053  0.999053   
+average_precision_score  0.988015  0.988015  0.988015  0.988015  0.988015   
+matthews_corrcoef        0.837977  0.941977  0.892597  0.818100  0.783140   
+recall_score             1.000000  0.958904  0.821918  0.684932  0.630137   
+precision_score          0.722772  0.933333  0.983607  1.000000  1.000000   
+f1_score                 0.839080  0.945946  0.895522  0.813008  0.773109   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.999053  0.999053  0.999053  0.999053  
+average_precision_score  0.988015  0.988015  0.988015  0.988015  
+matthews_corrcoef        0.679430  0.483242  0.195874  0.000000  
+recall_score             0.479452  0.246575  0.041096  0.000000  
+precision_score          1.000000  1.000000  1.000000  0.000000  
+f1_score                 0.648148  0.395604  0.078947  0.000000  
+ Class prediction performance (Thylakoid): 
+
+                              0.1       0.2       0.3       0.4       0.5  \
+roc_auc_score            0.992897  0.992897  0.992897  0.992897  0.992897   
+average_precision_score  0.382243  0.382243  0.382243  0.382243  0.382243   
+matthews_corrcoef        0.317454  0.381136  0.450013  0.486564  0.533130   
+recall_score             1.000000  1.000000  1.000000  1.000000  1.000000   
+precision_score          0.108434  0.152542  0.209302  0.243243  0.290323   
+f1_score                 0.195652  0.264706  0.346154  0.391304  0.450000   
+
+                              0.6       0.7       0.8       0.9  
+roc_auc_score            0.992897  0.992897  0.992897  0.992897  
+average_precision_score  0.382243  0.382243  0.382243  0.382243  
+matthews_corrcoef        0.607974  0.591717  0.663160  0.476023  
+recall_score             1.000000  0.888889  0.888889  0.555556  
+precision_score          0.375000  0.400000  0.500000  0.416667  
+f1_score                 0.545455  0.551724  0.640000  0.476190  

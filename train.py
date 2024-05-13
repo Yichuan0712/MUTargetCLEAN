@@ -19,6 +19,7 @@ from loss import SupConHardLoss
 from utils import prepare_tensorboard
 from data_clean import prepare_dataloaders as prepare_dataloader_clean 
 from data_batchsample import prepare_dataloaders as prepare_dataloader_batchsample
+from model import MaskedLMDataCollator
 
 def loss_fix(id_frag, motif_logits, target_frag, tools):
     #id_frag [batch]
@@ -67,8 +68,8 @@ def train_loop(tools, configs, warm_starting,train_writer):
     scaler = GradScaler()
     size = len(tools['train_loader'].dataset)
     num_batches = len(tools['train_loader'])
+    print("size="+str(size)+" num_batches="+str(num_batches))
     train_loss = 0
-    num_train_samples = len(tools['train_loader']) #steps per epoch
     # cs_num=np.zeros(9)
     # cs_correct=np.zeros(9)
     # type_num=np.zeros(10)
@@ -83,62 +84,65 @@ def train_loop(tools, configs, warm_starting,train_writer):
         flag_batch_extension = False
         if (configs.supcon.apply and not warm_starting and pos_neg is not None) or \
                 (configs.supcon.apply and warm_starting):
+            
+            #customlog(tools["logfilepath"], f"flag_batch_extension")
+            #print("flag_batch_extension")
             """
-            For two scenarios (CASE B & C, see Encoder::forward()) where the batch needs to be extended, 
+            For two scenarios (CASE B & C, see Encoder::forward()) where the batch needs to be extended,
             extend the 6 tuples with pos_neg
-            0 - id_tuple, 
-            1 - id_frag_list_tuple, 
-            2 - seq_frag_list_tuple, 
-            3 - target_frag_nplist_tuple, 
-            4 - type_protein_pt_tuple, 
+            0 - id_tuple,
+            1 - id_frag_list_tuple,
+            2 - seq_frag_list_tuple,
+            3 - target_frag_nplist_tuple,
+            4 - type_protein_pt_tuple,
             5 - and sample_weight_tuple
             without the extending, each len(tuple) == batch_size
             after extending, len(tuple) == batch_size * (1 + n_pos + n_neg)
             """
-            #print("len of pos_neg = "+str(len(pos_neg)))
             flag_batch_extension = True
-            pos_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_pos)]
-            neg_transformed = [[[] for _ in range(6)] for _ in range(configs.supcon.n_neg)]
-            for i in range(b_size):
-                #print("pos_neg pos")
-                #print(len(pos_neg[i][0]))
-                for j in range(configs.supcon.n_pos):
-                    for k in range(6):
-                        pos_transformed[j][k].append(pos_neg[i][0][j][k])
-            # print(len(id_tuple))
-            for j in range(configs.supcon.n_pos):
-                id_tuple += tuple(pos_transformed[j][0])
-                id_frag_list_tuple += tuple(pos_transformed[j][1])
-                seq_frag_list_tuple += tuple(pos_transformed[j][2])
-                target_frag_nplist_tuple += tuple(pos_transformed[j][3])
-                type_protein_pt_tuple += tuple(torch.from_numpy(arr) for arr in pos_transformed[j][4])
-                sample_weight_tuple += tuple(pos_transformed[j][5])
-            # print(len(id_tuple))
-            for i in range(b_size):
-                #print("pos_neg neg")
-                #print(len(pos_neg[i][1]))
-                for j in range(configs.supcon.n_neg):
-                    for k in range(6):
-                        neg_transformed[j][k].append(pos_neg[i][1][j][k])
-            for j in range(configs.supcon.n_neg):
-                id_tuple += tuple(neg_transformed[j][0])
-                id_frag_list_tuple += tuple(neg_transformed[j][1])
-                seq_frag_list_tuple += tuple(neg_transformed[j][2])
-                target_frag_nplist_tuple += tuple(neg_transformed[j][3])
-                type_protein_pt_tuple += tuple(torch.from_numpy(arr) for arr in neg_transformed[j][4])
-                sample_weight_tuple += tuple(neg_transformed[j][5])
-            # print(len(id_tuple))
-
+            for one_in_a_batch in range(b_size):
+                # pos_neg[one_in_a_batch][0]
+                for one_of_pos in range(configs.supcon.n_pos):
+                    # pos_neg[one_in_a_batch][0][one_of_pos]
+                    id_tuple += (pos_neg[one_in_a_batch][0][one_of_pos][0],)
+                    id_frag_list_tuple += (pos_neg[one_in_a_batch][0][one_of_pos][1],)
+                    seq_frag_list_tuple += (pos_neg[one_in_a_batch][0][one_of_pos][2],)
+                    target_frag_nplist_tuple += (pos_neg[one_in_a_batch][0][one_of_pos][3],)
+                    type_protein_pt_tuple += (pos_neg[one_in_a_batch][0][one_of_pos][4],)
+                    sample_weight_tuple += (pos_neg[one_in_a_batch][0][one_of_pos][5],)
+            
+            for one_in_a_batch in range(b_size):
+                # pos_neg[one_in_a_batch][1]
+                for one_of_neg in range(configs.supcon.n_neg):
+                    # pos_neg[one_in_a_batch][1][one_of_neg]
+                    id_tuple += (pos_neg[one_in_a_batch][1][one_of_neg][0],)
+                    id_frag_list_tuple += (pos_neg[one_in_a_batch][1][one_of_neg][1],)
+                    seq_frag_list_tuple += (pos_neg[one_in_a_batch][1][one_of_neg][2],)
+                    target_frag_nplist_tuple += (pos_neg[one_in_a_batch][1][one_of_neg][3],)
+                    type_protein_pt_tuple += (pos_neg[one_in_a_batch][1][one_of_neg][4],)
+                    sample_weight_tuple += (pos_neg[one_in_a_batch][1][one_of_neg][5],)
+            
+            type_protein_pt_tuple_temp = [torch.from_numpy(x) if isinstance(x, np.ndarray) else x for x in type_protein_pt_tuple]
+            type_protein_pt_tuple = type_protein_pt_tuple_temp
+        
         id_frags_list, seq_frag_tuple, target_frag_pt, type_protein_pt = make_buffer(id_frag_list_tuple, seq_frag_list_tuple, target_frag_nplist_tuple, type_protein_pt_tuple)
         with autocast():
             # Compute prediction and loss
             encoded_seq=tokenize(tools, seq_frag_tuple)
+            #print(encoded_seq['input_ids'])
+            if configs.train_settings.MLM.enable:
+                encoded_seq['input_ids'], _ = tools['masked_lm_data_collator'].mask_tokens(encoded_seq['input_ids'])
+            
+            #print(encoded_seq['input_ids'])
+            #print(_)
             if type(encoded_seq)==dict:
                 for k in encoded_seq.keys():
                     encoded_seq[k]=encoded_seq[k].to(tools['train_device'])
             else:
                 encoded_seq=encoded_seq.to(tools['train_device'])
-
+            
+            #print(id_tuple)
+            #print(encoded_seq)
             classification_head, motif_logits, projection_head = tools['net'](
                                  encoded_seq, 
                                  id_tuple, 
@@ -153,10 +157,18 @@ def train_loop(tools, configs, warm_starting,train_writer):
             if not warm_starting:
                 motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
                 sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['train_device']).unsqueeze(1)
-                class_loss = tools['loss_function'](
+                position_loss = tools['loss_function'](
                                 motif_logits, 
                                 target_frag.to(tools['train_device']))
-                position_loss =  torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
+                
+                #class_weights = target_frag * (tools['pos_weight'] - 1) + 1 
+                #position_loss = torch.mean(position_loss * class_weights.to(tools['train_device']))
+                
+                if configs.train_settings.data_aug.enable:
+                    class_loss  =  torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device']))) #remove sample_weight_pt
+                else:
+                    class_loss  =  torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['train_device'])) * sample_weight_pt)
+                
                 train_writer.add_scalar('step class_loss', class_loss.item(), global_step=global_step)
                 train_writer.add_scalar('step position_loss', position_loss.item(), global_step=global_step)
                 print(f"{global_step} class_loss:{class_loss.item()}  position_loss:{position_loss.item()}")
@@ -184,7 +196,8 @@ def train_loop(tools, configs, warm_starting,train_writer):
         print(f"{global_step} loss:{weighted_loss_sum.item()}\n")
         train_writer.add_scalar('step loss', weighted_loss_sum.item(), global_step=global_step)
         train_writer.add_scalar('learning_rate', tools['scheduler'].get_lr()[0], global_step=global_step)
-        if global_step % configs.train_settings.log_every == 0: #30 before changed into 0
+        #if global_step % configs.train_settings.log_every == 0: #30 before changed into 0
+        if batch % configs.train_settings.log_every == 0: #for comparison with original codes
             loss, current = weighted_loss_sum.item(), (batch + 1) * b_size  # len(id_tuple)
             if flag_batch_extension:
                 customlog(tools["logfilepath"], f"{global_step} loss: {loss:>7f}  [{current:>5d}/{size:>5d}]  ->  " +
@@ -204,7 +217,7 @@ def train_loop(tools, configs, warm_starting,train_writer):
 
 
 
-def test_loop(tools, dataloader,train_writer,valid_writer):
+def test_loop(tools, dataloader,train_writer,valid_writer,configs):
     customlog(tools["logfilepath"], f'number of test steps per epoch: {len(dataloader)}\n')
     # Set the model to evaluation mode - important for batch normalization and dropout layers
     # Unnecessary in this situation but added for best practices
@@ -212,6 +225,8 @@ def test_loop(tools, dataloader,train_writer,valid_writer):
     tools['net'].eval().to(tools["valid_device"])
     num_batches = len(dataloader)
     test_loss=0
+    test_class_loss=0
+    test_position_loss=0
     # Evaluating the model with torch.no_grad() ensures that no gradients are computed during test mode
     # also serves to reduce unnecessary gradient computations and memory usage for tensors with requires_grad=True
     #print("in test loop")
@@ -232,11 +247,20 @@ def test_loop(tools, dataloader,train_writer,valid_writer):
             #print("ok2")
             weighted_loss_sum = 0
             #if not warm_starting:
+            class_loss = 0
+            position_loss=0
             motif_logits, target_frag = loss_fix(id_frags_list, motif_logits, target_frag_pt, tools)
             sample_weight_pt = torch.from_numpy(np.array(sample_weight_tuple)).to(tools['valid_device']).unsqueeze(1)
-            weighted_loss_sum = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))+\
-                                torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
+            position_loss = tools['loss_function'](motif_logits, target_frag.to(tools['valid_device']))
+            #class_weights = target_frag * (tools['pos_weight'] - 1) + 1 
+            #position_loss = torch.mean(position_loss * class_weights.to(tools['valid_device']))
             
+            if configs.train_settings.data_aug.enable:
+               class_loss = torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])))
+            else:
+                class_loss = torch.mean(tools['loss_function_pro'](classification_head, type_protein_pt.to(tools['valid_device'])) * sample_weight_pt)
+            
+            weighted_loss_sum=class_loss+position_loss
             """
             if configs.supcon.apply and warm_starting:
                 supcon_loss = tools['loss_function_supcon'](
@@ -246,6 +270,8 @@ def test_loop(tools, dataloader,train_writer,valid_writer):
                 weighted_loss_sum += configs.supcon.weight * supcon_loss
             """
             test_loss += weighted_loss_sum.item()
+            test_position_loss += position_loss.item()
+            test_class_loss += class_loss.item()
             # label = torch.argmax(label_1hot, dim=1)
             # type_pred = torch.argmax(type_probab, dim=1)
             # accuracy.update(type_pred.detach(), label.detach().to(tools['valid_device']))
@@ -253,11 +279,13 @@ def test_loop(tools, dataloader,train_writer,valid_writer):
             # f1_score.update(type_pred.detach(), label.detach().to(tools['valid_device']))
 
         test_loss = test_loss / num_batches
+        test_position_loss = test_position_loss / num_batches
+        test_class_loss = test_class_loss / num_batches
         # epoch_acc = np.array(accuracy.compute().cpu())
         # epoch_macro_f1 = macro_f1_score.compute().cpu().item()
         # epoch_f1 = np.array(f1_score.compute().cpu())
         # acc_cs = cs_correct / cs_num
-    return test_loss
+    return test_loss,test_class_loss,test_position_loss
 
 
 def frag2protein(data_dict, tools):
@@ -312,6 +340,7 @@ def evaluate_protein(dataloader, tools):
             else:
                 encoded_seq=encoded_seq.to(tools['valid_device'])
             classification_head, motif_logits, projection_head = tools['net'](encoded_seq, id_tuple, id_frags_list, seq_frag_tuple, None, False)
+            #remove on 5/3/2024 becuase has one in Encoder
             m=torch.nn.Sigmoid()
             motif_logits = m(motif_logits)
             classification_head = m(classification_head)
@@ -441,40 +470,73 @@ def get_scores(tools, cutoff, n, data_dict):
             "cs_acc": cs_acc} #[n]
     return scores
 
+def debug_dataloader(train_loader):
+    for batch in train_loader:
+        # id_batch, fragments_batch, target_frags_batch, weights_batch = batch
+        (prot_id, id_frag_list, seq_frag_list, target_frag_nplist, type_protein_pt, sample_weight,pos_neg) = batch
+        # id, type_protein = batch
+        # print(len(id_batch))
+        # print(len(fragments_batch))
+        # print(np.array(target_frags_batch).shape)
+        # print(len(weights_batch))
+        print("==========================")
+        print("==========================")
+        #print(type(prot_id))
+        print(prot_id)
+        print(pos_neg)
+        break
+
 def main(config_dict, args,valid_batch_number, test_batch_number):
     configs = load_configs(config_dict,args)
     if type(configs.fix_seed) == int:
         torch.manual_seed(configs.fix_seed)
         torch.random.manual_seed(configs.fix_seed)
         np.random.seed(configs.fix_seed)
-
+    
     torch.cuda.empty_cache()
     curdir_path, result_path, checkpoint_path, logfilepath = prepare_saving_dir(configs,args.config_path)
     
     train_writer, valid_writer = prepare_tensorboard(result_path)
     npz_file = os.path.join(curdir_path, "targetp_data.npz")
     seq_file = os.path.join(curdir_path, "idmapping_2023_08_25.tsv")
-
+    
     customlog(logfilepath, f'use k-fold index: {valid_batch_number}\n')
-    # dataloaders_dict = prepare_dataloaders(valid_batch_number, test_batch_number, npz_file, seq_file, configs)
+    
     if configs.train_settings.dataloader=="batchsample":
         dataloaders_dict = prepare_dataloader_batchsample(configs, valid_batch_number, test_batch_number)
     elif configs.train_settings.dataloader=="clean":
             dataloaders_dict = prepare_dataloader_clean(configs, valid_batch_number, test_batch_number)
     
+    #debug_dataloader(dataloaders_dict["train"]) #981
     customlog(logfilepath, "Done Loading data\n")
-    customlog(logfilepath, f'number of training data: {len(dataloaders_dict["train"])}\n')
-    customlog(logfilepath, f'number of valid data: {len(dataloaders_dict["valid"])}\n')
-    customlog(logfilepath, f'number of test data: {len(dataloaders_dict["test"])}\n')
-    print(f'number of training data: {len(dataloaders_dict["train"])}\n')
-    print(f'number of valid data: {len(dataloaders_dict["valid"])}\n')
-    print(f'number of test data: {len(dataloaders_dict["test"])}\n')
+    customlog(logfilepath, f'number of steps for training data: {len(dataloaders_dict["train"])}\n')
+    customlog(logfilepath, f'number of steps for valid data: {len(dataloaders_dict["valid"])}\n')
+    customlog(logfilepath, f'number of steps for test data: {len(dataloaders_dict["test"])}\n')
+    print(f'number of steps for training data: {len(dataloaders_dict["train"])}\n')
+    print(f'number of steps for valid data: {len(dataloaders_dict["valid"])}\n')
+    print(f'number of steps for test data: {len(dataloaders_dict["test"])}\n')
+    #debug_dataloader(dataloaders_dict["train"]) #981
     tokenizer = prepare_tokenizer(configs, curdir_path)
     customlog(logfilepath, "Done initialize tokenizer\n")
-
-    encoder = prepare_models(configs, logfilepath, curdir_path)
-    customlog(logfilepath, "Done initialize model\n")
+    #debug_dataloader(dataloaders_dict["train"]) #981
+    if hasattr(configs.train_settings,"MLM") and configs.train_settings.MLM.enable:
+       masked_lm_data_collator = MaskedLMDataCollator(tokenizer, mlm_probability=configs.train_settings.MLM.mask_ratio)
+    else:
+       masked_lm_data_collator=None
     
+    """
+    #for debug
+    config_path = "/data/duolin/MUTargetCLEAN/MUTarget-main/config.yaml"
+    with open(config_path) as file:
+        config_dict = yaml.full_load(file)
+    
+    configs = load_configs(config_dict)
+    #debug_dataloader(dataloaders_dict["train"]) #981 after prepare_models become 936
+    """
+    encoder = prepare_models(configs, logfilepath, curdir_path)
+    #debug_dataloader(dataloaders_dict["train"]) #936 after prepare_models become 936 , if use same config, 1575!
+    print("Done initialize model\n")
+    customlog(logfilepath, "Done initialize model\n")
     optimizer, scheduler = prepare_optimizer(encoder, configs, len(dataloaders_dict["train"]), logfilepath)
     if configs.optimizer.mode == 'skip':
         scheduler = optimizer
@@ -484,7 +546,8 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
 
     # w=(torch.ones([9,1,1])*5).to(configs.train_settings.device)
     w = torch.tensor(configs.train_settings.loss_pos_weight, dtype=torch.float32).to(configs.train_settings.device)
-
+    #debug_dataloader(dataloaders_dict["train"]) #936 after call dataloaders_dict['train']
+    
     tools = {
         'frag_overlap': configs.encoder.frag_overlap,
         'cutoffs': configs.predict_settings.cutoffs,
@@ -503,7 +566,9 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
         'optimizer': optimizer,
         # 'loss_function': torch.nn.CrossEntropyLoss(reduction="none"),
         'loss_function': torch.nn.BCEWithLogitsLoss(pos_weight=w, reduction="mean"),
-        # 'loss_function_pro': torch.nn.BCEWithLogitsLoss(reduction="mean"),
+        'pos_weight': w,
+        #'loss_function': torch.nn.BCELoss(reduction="none"),
+        #'loss_function_pro': torch.nn.BCELoss(reduction="none"),
         'loss_function_pro': torch.nn.BCEWithLogitsLoss(reduction="none"),
         'loss_function_supcon': SupConHardLoss,  # Yichuan
         'checkpoints_every': configs.checkpoints_every,
@@ -511,9 +576,9 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
         'result_path': result_path,
         'checkpoint_path': checkpoint_path,
         'logfilepath': logfilepath,
-        'num_classes': configs.encoder.num_classes
+        'num_classes': configs.encoder.num_classes,
+        'masked_lm_data_collator': masked_lm_data_collator,
     }
-
     if args.predict !=1:
         customlog(logfilepath, f'number of train steps per epoch: {len(tools["train_loader"])}\n')
         customlog(logfilepath, "Start training...\n")
@@ -521,6 +586,9 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
         best_valid_loss = np.inf
         global global_step
         global_step=0
+        if configs.train_settings.dataloader=="clean":
+           total_steps_per_epoch = int(len(tools["train_loader"].dataset.samples)/configs.train_settings.batch_size)
+        
         for epoch in range(start_epoch, configs.train_settings.num_epochs + 1):
             warm_starting = False
             if epoch < configs.supcon.warm_start:
@@ -537,13 +605,19 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
                 customlog(logfilepath,f"== Warm Start Finished ==\n")
         
             tools['epoch'] = epoch
-            if global_step % 100 == 0:
+            if (configs.train_settings.dataloader == "clean" and global_step % total_steps_per_epoch == 0) or configs.train_settings.dataloader != "clean":
                print(f"Fold {valid_batch_number} Epoch {epoch}\n-------------------------------")
                customlog(logfilepath, f"Fold {valid_batch_number} Epoch {epoch} train...\n-------------------------------\n")
             
             start_time = time()
-            
             train_loss = train_loop(tools, configs, warm_starting,train_writer)
+            if configs.train_settings.dataloader != "clean":
+               if configs.train_settings.data_aug.enable:
+                   tools['train_loader'].dataset.samples = tools['train_loader'].dataset.data_aug_train(tools['train_loader'].dataset.original_samples,configs,tools['train_loader'].dataset.class_weights)
+            else: #clean 
+               if configs.train_settings.data_aug.enable and global_step % total_steps_per_epoch==0:
+                  tools['train_loader'].dataset.samples = tools['train_loader'].dataset.data_aug_train(tools['train_loader'].dataset.original_samples,configs,tools['train_loader'].dataset.class_weights)
+            
             train_writer.add_scalar('epoch loss',train_loss,global_step=epoch)
             end_time = time()
         
@@ -556,11 +630,15 @@ def main(config_dict, args,valid_batch_number, test_batch_number):
                 start_time = time()
                 dataloader = tools["valid_loader"]
                 
-                valid_loss = test_loop(tools, dataloader,train_writer,valid_writer) #In test loop, never test supcon loss
+                valid_loss,valid_class_loss,valid_position_loss = test_loop(tools, dataloader,train_writer,valid_writer,configs) #In test loop, never test supcon loss
                 
                 valid_writer.add_scalar('epoch loss',valid_loss,global_step=epoch)
+                valid_writer.add_scalar('epoch class_loss',valid_class_loss,global_step=epoch)
+                valid_writer.add_scalar('epoch position_loss',valid_position_loss,global_step=epoch)
                 customlog(logfilepath,f'Epoch {epoch}: valid loss:{valid_loss:>5f}\n')
+                customlog(logfilepath,f'Epoch {epoch}: valid_class_loss:{valid_class_loss:>5f}\tvalid_position_loss:{valid_position_loss:>5f}\n')
                 print(f'Epoch {epoch}: valid loss:{valid_loss:>5f}\n')
+                print(f'Epoch {epoch}: valid_class_loss:{valid_class_loss:>5f}\tvalid_position_loss:{valid_position_loss:>5f}\n')
                 end_time = time()
             
         

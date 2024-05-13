@@ -18,6 +18,11 @@ class LocalizationDataset(Dataset):
         # self.transform = transform
         # self.target_transform = target_transform
         # self.cs_transform = cs_transform
+        self.original_samples = samples
+        if mode == "train" and configs.train_settings.data_aug.enable:
+           self.data_aug = True
+           samples = self.data_aug_train(samples,configs)
+        
         self.samples = samples
         self.n = configs.encoder.num_classes
         print(self.count_samples_by_class(self.n, self.samples))
@@ -31,6 +36,47 @@ class LocalizationDataset(Dataset):
            self.n_neg = configs.supcon.n_neg
            self.hard_neg = configs.supcon.hard_neg
            self.full_list = list(self.class_id.keys())
+        #"""
+    
+    def random_mutation(self,sequence,target,mutation_rate):
+        amino_acids = "ACDEFGHIKLMNPQRSTVWY"  # List of standard amino acids
+        seq = Seq(sequence)
+        seq_list = list(seq)
+        # Get the mutable positions
+        #print(target)
+        mutable_positions = [i for i, label in enumerate(target) if label == 0]
+        num_mutations = int(mutation_rate*len(mutable_positions))
+        if num_mutations>0:
+            num_mutations = min(num_mutations, len(mutable_positions))
+            mutation_positions = random.sample(mutable_positions, num_mutations)
+            for pos in mutation_positions:
+                # Ensure the mutated amino acid is different from the original
+                new_aa = random.choice([aa for aa in amino_acids if aa != seq_list[pos]])
+                seq_list[pos] = new_aa
+            
+            # Join the mutated amino acids back into a sequence
+            mutated_sequence = ''.join(seq_list)
+            #print(sequence)
+            #print(mutated_sequence)
+            return mutated_sequence
+        else:
+           return sequence
+    #"""
+    
+    def data_aug_train(self,samples,configs):
+        aug_samples=[]
+        for id, id_frag_list, seq_frag_list, target_frag_list, type_protein in samples:
+            if configs.train_settings.data_aug.add_original:
+               aug_samples.append((id, id_frag_list, seq_frag_list, target_frag_list, type_protein)) #add original 
+            for aug_i in range(configs.train_settings.data_aug.per_times):
+                aug_id = id+"_"+str(aug_i)
+                aug_id_frag_list = [aug_id+"@"+id_frag.split("@")[1] for id_frag in id_frag_list]
+                aug_seq_frag_list = [self.random_mutation(sequence,[int(max(set(column))) for column in zip(*target)][:len(sequence)],configs.train_settings.data_aug.mutation_rate) for sequence,target in zip(seq_frag_list,target_frag_list)]
+                aug_target_frag_list = target_frag_list
+                aug_type_protein = type_protein
+                aug_samples.append((aug_id, aug_id_frag_list, aug_seq_frag_list, aug_target_frag_list, aug_type_protein))
+        
+        return aug_samples
     
     @staticmethod
     def count_samples_by_class(n, samples):
@@ -74,8 +120,8 @@ class LocalizationDataset(Dataset):
         pos_neg = None
         if self.apply_supcon and self.mode=="train":
             # Even when not in warm starting, the following code is still executed, although its results are not used
-            pos_samples = self.get_pos_samples(idx)
-            neg_samples = self.get_neg_samples(idx)
+            pos_samples = self.get_pos_samples(anchor)
+            neg_samples = self.get_neg_samples(anchor)
             pos_neg = [pos_samples, neg_samples]
         return id, id_frag_list, seq_frag_list, target_frag_list, type_protein, sample_weight, pos_neg
         # return id, type_protein
