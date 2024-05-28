@@ -35,7 +35,7 @@ class LocalizationDataset(Dataset):
            self.n_neg = configs.supcon.n_neg
            self.hard_neg = configs.supcon.hard_neg
     
-    #"""
+    """
     def random_mutation(self,sequence,target,mutation_rate):
         amino_acids = "ACDEFGHIKLMNPQRSTVWY"  # List of standard amino acids
         seq = Seq(sequence)
@@ -59,12 +59,52 @@ class LocalizationDataset(Dataset):
             return mutated_sequence
         else:
            return sequence
+    """
     #"""
-    
+    def random_mutation(self,sequence,target,pos_mutation_rate,neg_mutation_rate):
+        amino_acids = "ACDEFGHIKLMNPQRSTVWY"  # List of standard amino acids
+        seq = Seq(sequence)
+        seq_list = list(seq)
+        # Get the mutable positions
+        #print(target)
+        pos_mutable_positions = [i for i, label in enumerate(target) if label == 1]
+        if len(pos_mutable_positions)==1:
+            num_pos_mutations = 1 if random.random() < pos_mutation_rate else 0
+        else:
+            num_pos_mutations = int(pos_mutation_rate*len(pos_mutable_positions))
+        
+        neg_mutable_positions = [i for i, label in enumerate(target) if label == 0]
+        num_neg_mutations = int(neg_mutation_rate*len(neg_mutable_positions))
+        if num_pos_mutations>0 or num_neg_mutations>0:
+            if num_pos_mutations>0:
+              num_pos_mutations = min(num_pos_mutations, len(pos_mutable_positions))
+              mutation_positions = random.sample(pos_mutable_positions, num_pos_mutations)
+              for pos in mutation_positions:
+                # Ensure the mutated amino acid is different from the original
+                new_aa = random.choice([aa for aa in amino_acids if aa != seq_list[pos]])
+                seq_list[pos] = new_aa
+            
+            if num_neg_mutations>0:
+              num_neg_mutations = min(num_neg_mutations, len(neg_mutable_positions))
+              mutation_positions = random.sample(neg_mutable_positions, num_neg_mutations)
+              for pos in mutation_positions:
+                # Ensure the mutated amino acid is different from the original
+                new_aa = random.choice([aa for aa in amino_acids if aa != seq_list[pos]])
+                seq_list[pos] = new_aa
+            
+            # Join the mutated amino acids back into a sequence
+            mutated_sequence = ''.join(seq_list)
+            #print(sequence)
+            #print(mutated_sequence)
+            return mutated_sequence
+        else:
+           return sequence
+        
+    """
     def data_aug_train(self,samples,configs,class_weights):
         print("data aug on len of "+str(len(samples)))
         aug_samples=[]
-        
+        pos_mutation_rate,neg_mutation_rate = configs.train_settings.data_aug.pos_mutation_rate,configs.train_settings.data_aug.neg_mutation_rate
         for id, id_frag_list, seq_frag_list, target_frag_list, type_protein in samples:
             if configs.train_settings.data_aug.add_original:
                aug_samples.append((id, id_frag_list, seq_frag_list, target_frag_list, type_protein)) #add original 
@@ -77,13 +117,133 @@ class LocalizationDataset(Dataset):
             for aug_i in range(per_times):
                 aug_id = id+"_"+str(aug_i)
                 aug_id_frag_list = [aug_id+"@"+id_frag.split("@")[1] for id_frag in id_frag_list]
-                aug_seq_frag_list = [self.random_mutation(sequence,[int(max(set(column))) for column in zip(*target)][:len(sequence)],configs.train_settings.data_aug.mutation_rate) for sequence,target in zip(seq_frag_list,target_frag_list)]
+                
+                aug_seq_frag_list = [self.random_mutation(sequence,[int(max(set(column))) for column in zip(*target)][:len(sequence)],pos_mutation_rate,neg_mutation_rate) for sequence,target in zip(seq_frag_list,target_frag_list)]
                 aug_target_frag_list = target_frag_list
                 aug_type_protein = type_protein
                 aug_samples.append((aug_id, aug_id_frag_list, aug_seq_frag_list, aug_target_frag_list, aug_type_protein))
         
         return aug_samples
-    
+    """
+    def data_aug_train(self, samples, configs, class_weights):
+        print("data aug on len of " + str(len(samples)))
+        aug_samples = []
+        pos_mutation_rate,neg_mutation_rate = configs.train_settings.data_aug.pos_mutation_rate,configs.train_settings.data_aug.neg_mutation_rate
+
+        for id, id_frag_list, seq_frag_list, target_frag_list, type_protein in samples:
+            if configs.train_settings.data_aug.add_original:
+                aug_samples.append((id, id_frag_list, seq_frag_list, target_frag_list, type_protein))  # add original
+
+            class_positions = np.where(type_protein == 1)[0]
+
+            # 这里我改了, 为了测试
+            per_times = np.max([2, int(np.ceil(
+                configs.train_settings.data_aug.per_times * np.max([class_weights[x] for x in class_positions])))])
+            # per_times = 1
+
+
+            temp_target_frag_list = target_frag_list.copy()
+            for aug_i in range(per_times):
+                aug_id = id + "_" + str(aug_i)
+                aug_id_frag_list = [aug_id + "@" + id_frag.split("@")[1] for id_frag in id_frag_list]
+
+                # print(aug_target_frag_list[0].shape) # (8, 1022)
+                # if len(aug_target_frag_list) > 1:
+                #     print(len(aug_target_frag_list))
+                #     exit(0)
+
+                # if aug_i == 110:
+                #     if len(aug_target_frag_list) == 1:
+                #         if 1 in aug_target_frag_list[0][0] or 1 in aug_target_frag_list[0][4]:
+                #             pass
+                #         if 1 in aug_target_frag_list[0][1]:
+                #             # pass
+                #             stop = aug_target_frag_list[0][1].tolist().index(1)
+                #             aug_target_frag_list[0][1][stop + 1:] = [1] * (len(aug_target_frag_list[0][1]) - stop - 1)
+                #         if 1 in aug_target_frag_list[0][2]:
+                #             # pass
+                #             stop = aug_target_frag_list[0][2].tolist().index(1)
+                #             if stop < len(aug_target_frag_list[0][2]) / 2:
+                #                 aug_target_frag_list[0][2][:stop] = [1] * stop
+                #             else:
+                #                 aug_target_frag_list[0][2][stop + 1:] = [1] * (
+                #                             len(aug_target_frag_list[0][2]) - stop - 1)
+                #         N_side = [3, 5, 6, 7]
+                #         for idx in N_side:
+                #             if 1 in aug_target_frag_list[0][idx]:
+                #                 # pass
+                #                 stop = aug_target_frag_list[0][idx].tolist().index(1)
+                #                 aug_target_frag_list[0][idx][:stop] = [1] * stop
+
+                if aug_i == 0:
+                    flattened_aug_target_frag_list = np.hstack(temp_target_frag_list)
+
+                    if 1 in flattened_aug_target_frag_list[0] or 1 in flattened_aug_target_frag_list[4]:
+                        pass
+
+                    if 1 in flattened_aug_target_frag_list[1]:
+                        # pass
+                        stop_left = flattened_aug_target_frag_list[1].tolist().index(1)
+                        flattened_aug_target_frag_list[1][stop_left + 1:] = [1] * \
+                                                                      (len(flattened_aug_target_frag_list[1]) - stop_left - 1)
+
+                    if 1 in flattened_aug_target_frag_list[2]:
+                        # pass
+                        stop_left = flattened_aug_target_frag_list[2].tolist().index(1)
+                        stop_right = len(flattened_aug_target_frag_list[2]) - 1 - \
+                                     flattened_aug_target_frag_list[2].tolist()[::-1].index(1)
+                        stop = (stop_left+stop_right)/2
+                        if stop < len(flattened_aug_target_frag_list[2]) / 2:
+                            flattened_aug_target_frag_list[2][:stop_right] = [1] * stop_right
+                        else:
+                            flattened_aug_target_frag_list[2][stop_left + 1:] = [1] * (
+                                        len(flattened_aug_target_frag_list[2]) - stop_left - 1)
+
+                    N_side = [3, 5, 6, 7]
+                    for idx in N_side:
+                        # pass
+                        if 1 in flattened_aug_target_frag_list[idx]:
+                            stop_right = len(flattened_aug_target_frag_list[idx]) - 1 - \
+                                         flattened_aug_target_frag_list[idx].tolist()[::-1].index(1)
+                            flattened_aug_target_frag_list[idx][:stop_right] = [1] * stop_right
+
+                    shapes = [arr.shape for arr in temp_target_frag_list]
+
+                    split_indices = np.cumsum([shape[1] for shape in shapes])[:-1]
+
+                    temp_target_frag_list = np.split(flattened_aug_target_frag_list, split_indices, axis=1)
+
+                # if len(seq_frag_list) == 2:
+                #     for sequence, target in zip(seq_frag_list, aug_target_frag_list):
+                #         print(sequence)
+                #         print(target)
+                #         print([int(max(set(column))) for column in zip(*target)][:len(sequence)])
+                #         print("!!!")
+                #     exit(0)
+
+                aug_seq_frag_list = [
+                    self.random_mutation(sequence, [int(max(set(column))) for column in zip(*target)][:len(sequence)],
+                                         pos_mutation_rate,neg_mutation_rate) for sequence, target in
+                    zip(seq_frag_list, temp_target_frag_list)]
+
+                # aug_seq_frag_list = [
+                #     self.random_mutation(sequence, [int(max(set(column))) for column in zip(*target)][:len(sequence)],
+                #                          configs.train_settings.data_aug.mutation_rate) for sequence, target in
+                #     zip(seq_frag_list, target_frag_list)]
+
+                aug_target_frag_list = target_frag_list
+                aug_type_protein = type_protein
+                aug_samples.append(
+                    (aug_id, aug_id_frag_list, aug_seq_frag_list, aug_target_frag_list, aug_type_protein))
+
+            # print(aug_type_protein)
+            # print(aug_seq_frag_list)
+            # print(target_frag_list)
+            # print(aug_target_frag_list)
+            # print()
+            # print()
+
+        return aug_samples
     @staticmethod
     def count_samples_by_class(n, samples):
         """Count the number of samples for each class."""
@@ -346,6 +506,11 @@ def prepare_dataloaders(configs, valid_batch_number, test_batch_number):
         samples.extend(prepare_samples("./parsed_EC7_v3/ANIMALS_uniprot.csv", configs))
         samples.extend(prepare_samples("./parsed_EC7_v3/FUNGI_uniprot.csv", configs))
         cv = pd.read_csv("./parsed_EC7_v3/split/type/partition.csv")
+    elif configs.train_settings.dataset == 'v4':
+        samples = prepare_samples("./parsed_v4/PLANTS_uniprot.csv", configs)
+        samples.extend(prepare_samples("./parsed_v4/ANIMALS_uniprot.csv", configs))
+        samples.extend(prepare_samples("./parsed_v4/FUNGI_uniprot.csv", configs))
+        cv = pd.read_csv("./parsed_v4/partition.csv")
 
     train_id = []
     val_id = []
